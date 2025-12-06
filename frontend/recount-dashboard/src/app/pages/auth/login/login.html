@@ -1,144 +1,49 @@
-<!-- Modern Financial Login Page -->
-<div class="login-container">
-  <!-- Background Elements -->
-  <div class="login-background">
-    <div class="bg-pattern"></div>
-    <div class="bg-gradient"></div>
-  </div>
-
-  <!-- Login Content -->
-  <div class="login-content">
-    
-    <!-- Left Side - Branding -->
-    <div class="login-branding">
-      <div class="brand-container">
-        <div class="brand-logo">
-          <div class="logo-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="logo-text">
-            <h1 class="brand-title">Recount</h1>
-            <p class="brand-subtitle">Financial Platform</p>
-          </div>
-        </div>
-        
-        <div class="brand-description">
-          <h2 class="description-title">Professional Financial Management</h2>
-          <p class="description-text">
-            Secure, comprehensive platform for managing financial transactions, 
-            account balances, and portfolio analytics with real-time insights.
-          </p>
-          
-          <div class="feature-list">
-            <div class="feature-item">
-              <i class="fas fa-shield-alt feature-icon"></i>
-              <span>Bank-level Security</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-chart-bar feature-icon"></i>
-              <span>Real-time Analytics</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-mobile-alt feature-icon"></i>
-              <span>Multi-platform Access</span>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Recount</h1>
+      <p>Financial Management Platform</p>
     </div>
 
-    <!-- Right Side - Login Form -->
-    <div class="login-form-container">
-      <div class="login-form-wrapper">
-        
-        <!-- Form Header -->
-        <div class="form-header">
-          <h2 class="form-title">Welcome Back</h2>
-          <p class="form-description">Sign in to access your financial dashboard</p>
-        </div>
-
-        <!-- Login Form -->
-        <form class="login-form" (ngSubmit)="onSubmit()">
-          
-          <!-- Email Field -->
-          <div class="form-group">
-            <label for="email" class="form-label">Email Address</label>
-            <div class="input-wrapper">
-              <div class="input-icon">
-                <i class="fas fa-envelope"></i>
-              </div>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            [(ngModel)]="email"
-                class="form-control"
-                placeholder="Enter your email address">
-            </div>
-          </div>
-
-          <!-- Password Field -->
-          <div class="form-group">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-wrapper">
-              <div class="input-icon">
-                <i class="fas fa-lock"></i>
-        </div>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            required
-            [(ngModel)]="password"
-                class="form-control"
-                placeholder="Enter your password">
-        </div>
+    <form (ngSubmit)="onSubmit()">
+      <div *ngIf="error" class="alert alert-error" style="margin-bottom: var(--space-4);">
+        {{ error }}
       </div>
 
-      <!-- Error Message -->
-          <div *ngIf="error" class="alert alert-error">
-            <i class="fas fa-exclamation-circle"></i>
-            <div class="alert-content">
-              <p class="alert-message">{{ error }}</p>
-        </div>
-      </div>
-
-          <!-- Demo Info -->
-          <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            <div class="alert-content">
-              <p class="alert-message">
-                <strong>Demo Access:</strong> Use any valid email and password to explore the platform
-            </p>
-        </div>
-      </div>
-
-          <!-- Submit Button -->
-        <button
-          type="submit"
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          class="form-control"
+          [(ngModel)]="email"
           [disabled]="loading"
-            class="btn btn-primary btn-lg login-submit">
-            <div class="loading-spinner" *ngIf="loading"></div>
-            <i class="fas fa-sign-in-alt" *ngIf="!loading"></i>
-            <span *ngIf="!loading">Sign In to Dashboard</span>
-            <span *ngIf="loading">Authenticating...</span>
-        </button>
-
-          <!-- Additional Options -->
-          <div class="form-footer">
-            <div class="forgot-password">
-              <a href="#" class="link-secondary">Forgot your password?</a>
-            </div>
-            <div class="need-account">
-              <span class="text-muted">Need an account?</span>
-              <a href="#" class="link-primary">Contact Administrator</a>
-            </div>
-          </div>
-        </form>
+          required
+          autocomplete="email">
       </div>
-    </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          class="form-control"
+          [(ngModel)]="password"
+          [disabled]="loading"
+          required
+          autocomplete="current-password">
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="loading"
+        style="width: 100%; justify-content: center;">
+        <span *ngIf="loading" class="loading"></span>
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
   </div>
 </div>
