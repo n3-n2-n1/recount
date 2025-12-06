@@ -1,0 +1,140 @@
+/* Simple Dashboard Layout */
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background: white;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h1 {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+/* Navigation */
+.nav {
+  flex: 1;
+  padding: var(--space-2) 0;
+}
+
+.nav-link {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-gray-600);
+  text-decoration: none;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-link:hover {
+  background: var(--color-gray-50);
+  color: var(--color-gray-900);
+}
+
+.nav-link.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.user-info {
+  margin-bottom: var(--space-3);
+}
+
+.user-name {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.user-role {
+  font-size: var(--font-xs);
+  color: var(--color-gray-500);
+  text-transform: capitalize;
+}
+
+.logout-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-gray-50);
+}
+
+/* Header */
+.header {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.header-info {
+  font-size: var(--font-sm);
+  color: var(--color-gray-500);
+  font-family: monospace;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+}
+
+  .sidebar-header h1,
+  .nav-link,
+  .user-info,
+  .logout-btn span {
+  display: none;
+}
+
+  .nav-link {
+    padding: var(--space-3);
+    text-align: center;
+}
+}

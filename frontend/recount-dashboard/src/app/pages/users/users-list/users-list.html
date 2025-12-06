@@ -1,0 +1,69 @@
+<!-- Simple Accounts Page -->
+<div page-content>
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex-between">
+          <span>Total Accounts</span>
+          <strong>{{ accounts.length }}</strong>
+  </div>
+</div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="flex-between">
+          <span>Active Balances</span>
+          <strong>{{ getActiveBalancesCount() }}</strong>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <!-- Accounts Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="flex-between">
+        <h3>Accounts</h3>
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <input type="text" placeholder="Search accounts..." class="form-control" 
+                 style="width: 200px;" [(ngModel)]="searchTerm" (input)="onSearchChange()">
+          <button class="btn btn-primary" (click)="onAddUser()">Add Account</button>
+      </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center">
+        <span class="loading"></span> Loading accounts...
+      </div>
+
+      <div *ngIf="!loading && filteredAccounts.length === 0 && searchTerm" class="text-center text-muted">
+        No accounts match your search.
+        <button class="btn btn-sm" (click)="clearSearch()" style="margin-left: var(--space-2);">Clear</button>
+</div>
+
+      <div *ngIf="!loading && accounts.length === 0 && !searchTerm" class="text-center text-muted">
+        No accounts created yet.
+  </div>
+
+      <div *ngIf="!loading && filteredAccounts.length > 0">
+  <app-editable-table
+    [data]="filteredAccounts"
+    [columns]="columns"
+    [loading]="loading"
+    [canEdit]="true"
+    [canDelete]="true"
+    [canAdd]="false"
+    (edit)="onEditUser($event)"
+    (delete)="onDeleteUser($event)">
+  </app-editable-table>
+      </div>
+    </div>
+</div>
+
+</div>

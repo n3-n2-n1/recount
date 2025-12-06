@@ -1,0 +1,18 @@
+<!-- Recount Dashboard Application -->
+
+<!-- Auth Routes (no layout) -->
+<div *ngIf="isAuthRoute">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Dashboard Routes (with layout) -->
+<div *ngIf="!isAuthRoute">
+  <app-dashboard-layout>
+    <div page-title>
+      <router-outlet name="title"></router-outlet>
+    </div>
+    <div page-content>
+      <router-outlet></router-outlet>
+    </div>
+  </app-dashboard-layout>
+</div>

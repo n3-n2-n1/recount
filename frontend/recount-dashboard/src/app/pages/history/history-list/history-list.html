@@ -1,0 +1,166 @@
+<!-- Simple History Page -->
+<div page-content>
+
+  <!-- Filters -->
+  <div class="card" style="margin-bottom: var(--space-4);">
+    <div class="card-header">
+      <div class="flex-between">
+        <h3>Filters</h3>
+        <div style="display: flex; gap: var(--space-2);">
+          <button class="btn btn-sm" (click)="clearFilters()" [disabled]="loading">Clear</button>
+          <button class="btn btn-sm" (click)="exportTransactions()" [disabled]="loading || filteredTransactions.length === 0">Export CSV</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Search -->
+      <div style="margin-bottom: var(--space-3);">
+        <input type="text" placeholder="Search transactions..." class="form-control"
+               [(ngModel)]="searchTerm" (input)="onSearchChange()" [disabled]="loading">
+      </div>
+
+      <!-- Filter Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3);">
+        <div class="form-group">
+          <label class="form-label">Account</label>
+          <select class="form-control" [(ngModel)]="filters.accountId" (change)="onFilterChange()" [disabled]="loading">
+            <option value="">All Accounts</option>
+            <option *ngFor="let account of accounts" [value]="account._id">{{ account.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-control" [(ngModel)]="filters.type" (change)="onFilterChange()" [disabled]="loading">
+            <option value="">All Types</option>
+            <option *ngFor="let type of transactionTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Currency</label>
+          <select class="form-control" [(ngModel)]="filters.currency" (change)="onFilterChange()" [disabled]="loading">
+            <option value="">All Currencies</option>
+            <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">From Date</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.dateFrom" (change)="onLocalFilterChange()" [disabled]="loading">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">To Date</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.dateTo" (change)="onLocalFilterChange()" [disabled]="loading">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Min Amount</label>
+          <input type="number" class="form-control" step="0.01" placeholder="0.00"
+                 [(ngModel)]="filters.amountMin" (change)="onLocalFilterChange()" [disabled]="loading">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Max Amount</label>
+          <input type="number" class="form-control" step="0.01" placeholder="No limit"
+                 [(ngModel)]="filters.amountMax" (change)="onLocalFilterChange()" [disabled]="loading">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <div class="card-header">
+      <div class="flex-between">
+        <h3>Transactions <span *ngIf="!loading">({{ totalItems }})</span></h3>
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <span style="font-size: var(--font-sm);">Show:</span>
+          <select class="form-control" style="width: 80px;" [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage(itemsPerPage)" [disabled]="loading">
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+            <option [value]="100">100</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center" style="padding: var(--space-8) 0;">
+        <span class="loading" style="width: 40px; height: 40px;"></span>
+        <p style="margin-top: var(--space-3); color: var(--color-gray-500);">Loading transactions...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredTransactions.length === 0" class="text-center text-muted">
+        No transactions found matching your criteria.
+      </div>
+
+      <div *ngIf="!loading && filteredTransactions.length > 0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="cursor: pointer;" (click)="setSortBy('createdAt')">
+                Date
+                <span *ngIf="sortBy === 'createdAt'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+              </th>
+              <th>Account</th>
+              <th style="cursor: pointer;" (click)="setSortBy('type')">
+                Type
+                <span *ngIf="sortBy === 'type'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+              </th>
+              <th style="cursor: pointer;" (click)="setSortBy('amount')">
+                Amount
+                <span *ngIf="sortBy === 'amount'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+              </th>
+              <th>Currency</th>
+              <th>Description</th>
+              <th>Created By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of getPaginatedTransactions()">
+              <td style="font-family: monospace; font-size: var(--font-xs);">
+                {{ formatDate(transaction.createdAt) }}
+              </td>
+              <td>{{ getAccountName(transaction.accountId) }}</td>
+              <td>{{ transaction.type }}</td>
+              <td class="text-right" [class]="getTransactionAmountColor(transaction)">
+                {{ getTransactionAmountDisplay(transaction) }}
+              </td>
+              <td>{{ transaction.currency }}</td>
+              <td>{{ getTransactionDescription(transaction) }}</td>
+              <td style="font-size: var(--font-xs);">{{ getUserName(transaction) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="flex-between" style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--border-color);">
+          <div style="font-size: var(--font-sm); color: var(--color-gray-500);">
+            Page {{ currentPage }} of {{ getTotalPages() }} ({{ totalItems }} total)
+          </div>
+          
+          <div style="display: flex; gap: var(--space-1);">
+            <button class="btn btn-sm" [disabled]="loading || currentPage === 1" (click)="changePage(currentPage - 1)">
+              Previous
+            </button>
+            
+            <button *ngFor="let page of getPageNumbers()" 
+                    class="btn btn-sm" 
+                    [class.btn-primary]="page === currentPage"
+                    [disabled]="loading"
+                    (click)="changePage(page)">
+              {{ page }}
+            </button>
+            
+            <button class="btn btn-sm" [disabled]="loading || currentPage === getTotalPages()" (click)="changePage(currentPage + 1)">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

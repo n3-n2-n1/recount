@@ -1,0 +1,120 @@
+<div page-content>
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+  <!-- Header -->
+  <div class="card" style="margin-bottom: var(--space-4);">
+    <div class="card-header">
+      <div class="flex-between">
+        <h3>Platform Users</h3>
+        <button *ngIf="canCreateUsers()" class="btn btn-primary" (click)="openCreateModal()">
+          Create User
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users List -->
+  <div class="card">
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center" style="padding: var(--space-8) 0;">
+        <span class="loading" style="width: 40px; height: 40px;"></span>
+        <p style="margin-top: var(--space-3); color: var(--color-gray-500);">Loading users...</p>
+      </div>
+
+      <div *ngIf="!loading && users.length === 0" class="text-center text-muted" style="padding: var(--space-8) 0;">
+        No users created yet. Click "Create User" to add the first user.
+      </div>
+
+      <table class="table" *ngIf="!loading && users.length > 0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ getRoleLabel(user.role) }}</td>
+            <td style="font-size: var(--font-xs);">{{ formatDate(user.createdAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create User Modal -->
+  <div *ngIf="showCreateModal" class="modal-overlay" (click)="!creatingUser && closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Create New User</h3>
+        <button class="btn-close" (click)="closeCreateModal()" [disabled]="creatingUser">&times;</button>
+      </div>
+
+      <form (ngSubmit)="createUser()" #userForm="ngForm">
+        <div class="modal-body">
+          <div *ngIf="errorMessage" class="alert alert-error" style="margin-bottom: var(--space-3);">
+            {{ errorMessage }}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.name" name="name" required placeholder="John Doe" #nameInput="ngModel" [disabled]="creatingUser">
+            <small *ngIf="nameInput.invalid && nameInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
+              Name is required
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" [(ngModel)]="newUser.email" name="email" required email placeholder="john@example.com" #emailInput="ngModel" [disabled]="creatingUser">
+            <small *ngIf="emailInput.invalid && emailInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
+              <span *ngIf="emailInput.errors?.['required']">Email is required</span>
+              <span *ngIf="emailInput.errors?.['email']">Invalid email format</span>
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password" required placeholder="Minimum 6 characters" minlength="6" #passwordInput="ngModel" [disabled]="creatingUser">
+            <small *ngIf="!passwordInput.invalid || !passwordInput.touched" style="font-size: var(--font-xs); color: var(--color-gray-500);">
+              Minimum 6 characters
+            </small>
+            <small *ngIf="passwordInput.invalid && passwordInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
+              <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+              <span *ngIf="passwordInput.errors?.['minlength']">Password must be at least 6 characters</span>
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Role *</label>
+            <select class="form-control" [(ngModel)]="newUser.role" name="role" required #roleInput="ngModel" [disabled]="creatingUser">
+              <option value="">Select a role</option>
+              <option value="viewer">Viewer (Read only)</option>
+              <option value="reviewer">Reviewer (Edit permissions)</option>
+              <option value="super_admin">Super Admin (Full access)</option>
+            </select>
+            <small *ngIf="roleInput.invalid && roleInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
+              Role is required
+            </small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm" (click)="closeCreateModal()" [disabled]="creatingUser">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="creatingUser || !userForm.valid">
+            <span *ngIf="creatingUser" class="loading" style="width: 12px; height: 12px;"></span>
+            {{ creatingUser ? 'Creating...' : 'Create User' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

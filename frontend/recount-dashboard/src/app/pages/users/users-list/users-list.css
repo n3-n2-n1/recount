@@ -1,0 +1,27 @@
+/* Simple Accounts Page Styles */
+
+/* Override global styles for specific needs */
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-error {
+  color: var(--color-error) !important;
+}
+
+.text-muted {
+  color: var(--color-gray-500) !important;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 768px) {
+  div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+}
+
+  .flex-between {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch !important;
+  }
+}

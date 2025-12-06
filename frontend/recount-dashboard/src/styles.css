@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== SIMPLE FINANCIAL PLATFORM STYLES ===== */
+
+:root {
+  /* Colors - Minimal Palette */
+  --color-primary: #2563eb;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+
+  /* Grays */
+  --color-white: #ffffff;
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+
+  /* Spacing - Reduced */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Typography */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+
+  /* Border */
+  --border-radius: 0.25rem;
+  --border-color: var(--color-gray-200);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: var(--font-sm);
+  line-height: 1.4;
+  color: var(--color-gray-900);
+  background: var(--color-gray-50);
+}
+
+/* Typography */
+h1 { font-size: var(--font-xl); font-weight: 600; margin-bottom: var(--space-2); }
+h2 { font-size: var(--font-lg); font-weight: 600; margin-bottom: var(--space-2); }
+h3 { font-size: var(--font-base); font-weight: 600; margin-bottom: var(--space-1); }
+
+p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
+
+/* Simple Components */
+.card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.card-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-body {
+  padding: var(--space-4);
+}
+
+/* Simple Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  text-decoration: none;
+  gap: var(--space-1);
+}
+
+.btn:hover { background: var(--color-gray-50); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-success { background: var(--color-success); color: white; border-color: var(--color-success); }
+.btn-success:hover { background: #15803d; }
+
+.btn-danger { background: var(--color-error); color: white; border-color: var(--color-error); }
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-sm { padding: var(--space-1) var(--space-2); font-size: var(--font-xs); }
+
+/* Simple Forms */
+.form-group {
+  margin-bottom: var(--space-3);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--color-gray-700);
+  margin-bottom: var(--space-1);
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--space-2);
+  font-size: var(--font-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* Simple Alerts */
+.alert {
+  padding: var(--space-3);
+  border: 1px solid;
+  border-radius: var(--border-radius);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-3);
+}
+
+.alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.alert-error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+/* Financial Colors */
+.text-success { color: var(--color-success); }
+.text-error { color: var(--color-error); }
+.text-muted { color: var(--color-gray-500); }
+
+/* Simple Utilities */
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.w-full { width: 100%; }
+
+/* Simple Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.table th {
+  font-weight: 600;
+  background: var(--color-gray-50);
+  color: var(--color-gray-700);
+}
+
+.table tbody tr:hover {
+  background: var(--color-gray-50);
+}
+
+/* Loading */
+.loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-gray-200);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
