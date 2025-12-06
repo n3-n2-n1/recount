@@ -1,5 +1,5 @@
 export type CurrencyType = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'CABLE BROKER';
-export type TransactionType = 'Entrada' | 'Salida' | 'Swap';
+export type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
 
 export interface Transaction {
   _id: string;
@@ -10,6 +10,7 @@ export interface Transaction {
   amount: number;
   targetCurrency?: CurrencyType;
   exchangeRate?: number;
+  targetAccountId?: string;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -23,6 +24,7 @@ export interface CreateTransactionRequest {
   amount: number;
   targetCurrency?: CurrencyType;
   exchangeRate?: number;
+  targetAccountId?: string;
 }
 
 // Import User to avoid circular dependency issues

@@ -41,6 +41,13 @@ export class Movements implements OnInit {
     exchangeRate: 1
   };
 
+  transferForm = {
+    amount: 0,
+    description: '',
+    currency: 'DÓLAR',
+    targetAccountId: ''
+  };
+
   currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
 
   constructor(
@@ -406,6 +413,76 @@ export class Movements implements OnInit {
     });
   }
 
+  createTransfer(): void {
+    if (!this.selectedAccountId || !this.transferForm.amount || !this.transferForm.description || !this.transferForm.targetAccountId) {
+      this.showError('Please fill all required fields');
+      return;
+    }
+
+    // Verify selected account still exists
+    const selectedAccount = this.accounts.find(acc => acc._id === this.selectedAccountId);
+    if (!selectedAccount) {
+      this.showError('Selected account no longer exists. Please select a valid account.');
+      return;
+    }
+
+    // Verify target account exists
+    const targetAccount = this.accounts.find(acc => acc._id === this.transferForm.targetAccountId);
+    if (!targetAccount) {
+      this.showError('Target account no longer exists. Please select a valid account.');
+      return;
+    }
+
+    // Verify source and target accounts are different
+    if (this.selectedAccountId === this.transferForm.targetAccountId) {
+      this.showError('Source and target accounts must be different');
+      return;
+    }
+
+    const transaction: CreateTransactionRequest = {
+      accountId: this.selectedAccountId,
+      type: 'Transferencia Interna',
+      description: this.transferForm.description,
+      currency: this.transferForm.currency as any,
+      amount: this.transferForm.amount,
+      targetAccountId: this.transferForm.targetAccountId
+    };
+
+    this.loading = true;
+    this.clearMessages();
+    this.ensureLoadingReset(); // Extra safety
+
+    // Safety timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (this.loading) {
+        this.loading = false;
+        this.showError('Request timeout - please try again');
+      }
+    }, 30000); // 30 seconds timeout
+
+    this.transactionsService.createTransaction(transaction).subscribe({
+      next: (result) => {
+        clearTimeout(timeout);
+        this.loading = false;
+        this.showSuccess('Internal transfer executed successfully!');
+        this.resetTransferForm();
+        // Refresh accounts to update balances
+        this.loadAccounts();
+        // Refresh recent transactions
+        this.loadRecentTransactions();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        clearTimeout(timeout);
+        this.loading = false;
+        console.error('Error creating transfer:', error);
+        const errorMessage = error?.message || 'Unknown error occurred';
+        this.showError('Error executing transfer: ' + errorMessage);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   resetInflowForm(): void {
     this.inflowForm = {
       amount: 0,
@@ -432,6 +509,15 @@ export class Movements implements OnInit {
     };
   }
 
+  resetTransferForm(): void {
+    this.transferForm = {
+      amount: 0,
+      description: '',
+      currency: 'DÓLAR',
+      targetAccountId: ''
+    };
+  }
+
   getSelectedAccountName(): string {
     const account = this.accounts.find(acc => acc._id === this.selectedAccountId);
     return account ? account.name : 'None selected';
@@ -450,6 +536,17 @@ export class Movements implements OnInit {
     return !!(this.swapForm.amount > 0 &&
               this.swapForm.description.trim() &&
               this.swapForm.currency !== this.swapForm.targetCurrency);
+  }
+
+  isTransferFormValid(): boolean {
+    return !!(this.transferForm.amount > 0 &&
+              this.transferForm.description.trim() &&
+              this.transferForm.targetAccountId &&
+              this.selectedAccountId !== this.transferForm.targetAccountId);
+  }
+
+  getAvailableTargetAccounts(): Account[] {
+    return this.accounts.filter(acc => acc._id !== this.selectedAccountId);
   }
 
   // Safety method to reset loading if something goes wrong

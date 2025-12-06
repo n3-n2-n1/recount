@@ -145,6 +145,47 @@
         </form>
       </div>
     </div>
+
+    <!-- Internal Transfer -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Transferencia Interna</h3>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="createTransfer()">
+          <div class="form-group">
+            <label class="form-label">Monto</label>
+            <input type="number" [(ngModel)]="transferForm.amount" name="transferAmount" 
+                   class="form-control" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Moneda</label>
+            <select [(ngModel)]="transferForm.currency" name="transferCurrency" class="form-control">
+              <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cuenta Destino</label>
+            <select [(ngModel)]="transferForm.targetAccountId" name="transferTargetAccount" class="form-control" required>
+              <option value="">Seleccionar cuenta</option>
+              <option *ngFor="let account of getAvailableTargetAccounts()" [value]="account._id">
+                {{ account.name }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción</label>
+            <input type="text" [(ngModel)]="transferForm.description" name="transferDescription" 
+                   class="form-control" required>
+          </div>
+          <button type="submit" [disabled]="loading || !isTransferFormValid()" 
+                  class="btn btn-primary w-full" style="background-color: #9333ea;">
+            <span *ngIf="loading" class="loading"></span>
+            {{ loading ? 'Procesando...' : 'Transferir' }}
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Recent Transactions -->
