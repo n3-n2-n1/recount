@@ -2,14 +2,14 @@
 
 ## 📋 Prerequisites
 
-- Railway account (for backend)
-- Vercel account (for frontend)
-- MongoDB Atlas account (or any MongoDB hosting)
+- Render account (for backend) - **FREE TIER AVAILABLE**
+- Vercel account (for frontend) - **FREE TIER AVAILABLE**
+- MongoDB Atlas account (or any MongoDB hosting) - **FREE TIER AVAILABLE**
 - GitHub repository
 
 ---
 
-## 🔧 Backend Deployment (Railway)
+## 🔧 Backend Deployment (Render)
 
 ### Step 1: Prepare MongoDB
 
@@ -20,23 +20,38 @@
    ```
 3. **Whitelist Railway IPs** or allow access from anywhere (0.0.0.0/0)
 
-### Step 2: Deploy to Railway
+### Step 2: Deploy to Render
 
-1. **Go to** [railway.app](https://railway.app)
-2. **Click** "New Project"
-3. **Select** "Deploy from GitHub repo"
-4. **Choose** your backend directory: `/backend`
-5. **Railway will auto-detect** the Dockerfile
+#### Option A: Usando render.yaml (Recomendado)
+
+1. **Go to** [render.com/dashboard](https://render.com/dashboard)
+2. **Click** "New +" → "Blueprint"
+3. **Connect your GitHub repository**
+4. Render detectará automáticamente el `render.yaml`
+5. **Click** "Apply"
+
+#### Option B: Manual
+
+1. **Go to** [render.com/dashboard](https://render.com/dashboard)
+2. **Click** "New +" → "Web Service"
+3. **Connect your GitHub repository**
+4. **Configure**:
+   - **Name**: `recount-backend`
+   - **Region**: Oregon (or closest to you)
+   - **Branch**: `main`
+   - **Root Directory**: `backend`
+   - **Runtime**: Docker
+   - **Plan**: Free
 
 ### Step 3: Configure Environment Variables
 
-In Railway dashboard, add these variables:
+In Render dashboard, go to **Environment** tab and add:
 
 ```bash
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/recount?retryWrites=true&w=majority
 JWT_SECRET=your-super-secret-random-string-change-this
 NODE_ENV=production
-PORT=3000
+PORT=10000
 FRONTEND_URL=https://your-app.vercel.app
 ```
 
@@ -45,14 +60,24 @@ FRONTEND_URL=https://your-app.vercel.app
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-### Step 4: Get Your Railway URL
+**⚠️ IMPORTANTE**: Render usa el puerto `10000` por defecto en el free tier.
 
-After deployment, Railway will give you a URL like:
+### Step 4: Get Your Render URL
+
+After deployment, Render will give you a URL like:
 ```
-https://your-app-name.railway.app
+https://recount-backend.onrender.com
 ```
 
 **Copy this URL** - you'll need it for the frontend!
+
+### ⚠️ Free Tier Notice
+
+El free tier de Render:
+- ✅ **GRATIS** para siempre
+- ⚠️ Se "duerme" después de 15 minutos de inactividad
+- ⏱️ Tarda ~30-60 segundos en "despertar"
+- 💡 **Primera request será lenta**, las siguientes serán rápidas
 
 ---
 
@@ -87,12 +112,12 @@ export const environment = {
 
 ### Step 3: Update Backend CORS
 
-1. **Go back to Railway**
+1. **Go back to Render**
 2. **Update** the `FRONTEND_URL` environment variable:
    ```
    FRONTEND_URL=https://your-app.vercel.app
    ```
-3. **Save** and Railway will redeploy automatically
+3. **Save** - Render will redeploy automatically
 
 ---
 
@@ -102,11 +127,13 @@ export const environment = {
 
 ```bash
 # Health check
-curl https://your-railway-app.railway.app/api/health
+curl https://recount-backend.onrender.com/api/health
 
 # Should return:
 # {"status":"OK","timestamp":"..."}
 ```
+
+**⚠️ Primera request**: Si el servicio está "dormido", esperá 30-60 segundos.
 
 ### Test Frontend
 
@@ -150,23 +177,25 @@ const hashedPassword = bcrypt.hashSync(password, 10);
 console.log(hashedPassword);
 ```
 
-**Or use Railway's console:**
+**Or use Render's Shell:**
 
+1. In Render dashboard → Your service
+2. Click "Shell" tab
+3. Run:
 ```bash
-# In Railway console
-npx tsx -e "import bcrypt from 'bcryptjs'; console.log(bcrypt.hashSync('your-password', 10))"
+node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('your-password', 10));"
 ```
 
 ---
 
 ## 📊 Environment Variables Summary
 
-### Backend (Railway)
+### Backend (Render)
 ```bash
 MONGODB_URI=mongodb+srv://...
 JWT_SECRET=your-secret-key
 NODE_ENV=production
-PORT=3000
+PORT=10000
 FRONTEND_URL=https://your-app.vercel.app
 ```
 
@@ -179,15 +208,18 @@ No environment variables needed! Just update `environment.prod.ts` file.
 
 ### Auto-Deploy Setup
 
-Both Railway and Vercel support auto-deployment:
+Both Render and Vercel support auto-deployment:
 
-**Railway:**
-- Automatically deploys when you push to main branch
-- Builds using the Dockerfile
+**Render:**
+- ✅ Automatically deploys when you push to main branch
+- ✅ Builds using the Dockerfile
+- ✅ Free tier included
+- ⚠️ Service "sleeps" after 15 min of inactivity (free tier)
 
 **Vercel:**
-- Automatically deploys when you push to main branch
-- Builds Angular app in production mode
+- ✅ Automatically deploys when you push to main branch
+- ✅ Builds Angular app in production mode
+- ✅ Always awake (no sleep mode)
 
 ---
 
@@ -201,15 +233,17 @@ Both Railway and Vercel support auto-deployment:
 - Check MongoDB user permissions
 
 **Error: 500 Internal Server Error**
-- Check Railway logs: `railway logs`
+- Check Render logs in the "Logs" tab
 - Verify all environment variables are set
+- Check if service is awake (free tier sleeps after 15 min)
 
 ### Frontend Issues
 
 **Error: Cannot connect to API**
-- Verify Railway URL in `environment.prod.ts`
+- Verify Render URL in `environment.prod.ts`
 - Check CORS settings in backend
-- Check Railway backend is running
+- Check if Render backend is awake (make a request to wake it up)
+- Wait 30-60 seconds on first request (free tier)
 
 **Error: Build failed**
 - Check build logs in Vercel
@@ -220,7 +254,7 @@ Both Railway and Vercel support auto-deployment:
 
 ## 📝 Post-Deployment Checklist
 
-- [ ] Backend is running on Railway
+- [ ] Backend is running on Render
 - [ ] Frontend is running on Vercel
 - [ ] MongoDB is connected
 - [ ] CORS is configured correctly
@@ -232,11 +266,22 @@ Both Railway and Vercel support auto-deployment:
 
 ---
 
+## 💰 Pricing Summary
+
+**COMPLETAMENTE GRATIS:**
+- ✅ Render Free Tier: 750 horas/mes (suficiente para 1 servicio 24/7)
+- ✅ Vercel Free: Deployments ilimitados
+- ✅ MongoDB Atlas Free: 512MB storage
+
+**Total cost: $0/mes** 🎉
+
+---
+
 ## 🎉 You're Done!
 
 Your Recount platform is now live! 
 
-**Backend:** `https://your-app.railway.app`
+**Backend:** `https://recount-backend.onrender.com`
 **Frontend:** `https://your-app.vercel.app`
 
 ---
@@ -245,7 +290,8 @@ Your Recount platform is now live!
 
 If you encounter issues:
 
-1. Check Railway logs: `railway logs`
+1. Check Render logs in dashboard (Logs tab)
 2. Check Vercel deployment logs
 3. Check browser console for frontend errors
 4. Verify environment variables are set correctly
+5. Remember: First request may be slow (30-60s) if service was sleeping

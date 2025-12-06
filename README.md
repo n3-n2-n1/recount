@@ -64,9 +64,11 @@ Visit `http://localhost:4200`
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions.
 
 **Quick links:**
-- Backend: Railway
-- Frontend: Vercel
-- Database: MongoDB Atlas
+- 🖥️ **Backend**: Render (Free tier available)
+- 🎨 **Frontend**: Vercel (Free tier available)
+- 💾 **Database**: MongoDB Atlas (Free tier available)
+
+**Total cost: $0/month** 🎉
 
 ## 🗂️ Project Structure
 
