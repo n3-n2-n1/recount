@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models';
-import { Subscription, interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -13,7 +13,6 @@ import { filter } from 'rxjs/operators';
 })
 export class DashboardLayout implements OnInit, OnDestroy {
   currentUser: User | null = null;
-  currentTime = new Date();
   currentRoute = '';
   
   private subscriptions = new Subscription();
@@ -35,12 +34,6 @@ export class DashboardLayout implements OnInit, OnDestroy {
         })
     );
 
-    this.subscriptions.add(
-      interval(60000).subscribe(() => {
-        this.currentTime = new Date();
-      })
-    );
-
     this.currentRoute = this.router.url;
   }
 
@@ -53,19 +46,11 @@ export class DashboardLayout implements OnInit, OnDestroy {
   }
 
   getCurrentPageTitle(): string {
-    if (this.currentRoute.includes('/movements')) return 'Movements';
-    if (this.currentRoute.includes('/users')) return 'Accounts';
-    if (this.currentRoute.includes('/history')) return 'History';
-    if (this.currentRoute.includes('/team')) return 'Team';
+    if (this.currentRoute.includes('/movements')) return 'Movimientos';
+    if (this.currentRoute.includes('/users')) return 'Cuentas';
+    if (this.currentRoute.includes('/history')) return 'Historial';
+    if (this.currentRoute.includes('/team')) return 'Equipo';
     return 'Dashboard';
-  }
-
-  getCurrentTime(): string {
-    return this.currentTime.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
   }
 
   goToMovements(): void {

@@ -11,23 +11,23 @@
       <a (click)="goToMovements()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/movements')">
-        Movements
+        Movimientos
       </a>
       <a (click)="goToUsers()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/users')">
-          Accounts
+          Cuentas
       </a>
       <a (click)="goToHistory()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/history')">
-        History
+        Historial
       </a>
       <a *ngIf="isSuperAdmin()" 
          (click)="goToTeam()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/team')">
-        Team
+        Equipo
       </a>
     </nav>
 
@@ -37,7 +37,7 @@
         <div class="user-role">{{ currentUser?.role?.replace('_', ' ') }}</div>
       </div>
       <button (click)="logout()" class="btn btn-sm logout-btn">
-        Logout
+        Salir
       </button>
     </div>
   </aside>
@@ -46,9 +46,6 @@
   <div class="main">
     <header class="header">
       <h2>{{ getCurrentPageTitle() }}</h2>
-      <div class="header-info">
-        {{ getCurrentTime() }}
-  </div>
     </header>
 
     <main class="content">
