@@ -93,10 +93,10 @@ export class UsersList implements OnInit, OnChanges {
   }
 
   onAddUser(): void {
-    const accountName = prompt('Enter account name:', '');
+    const accountName = prompt('Ingrese el nombre de la cuenta:', '');
 
     if (!accountName || !accountName.trim()) {
-      this.showError('Account name is required');
+      this.showError('El nombre de la cuenta es requerido');
       return;
     }
 
@@ -104,7 +104,7 @@ export class UsersList implements OnInit, OnChanges {
 
     // Check if account name already exists
     if (this.accounts.some(account => account.name.toLowerCase() === trimmedName.toLowerCase())) {
-      this.showError('An account with this name already exists');
+      this.showError('Ya existe una cuenta con este nombre');
       return;
     }
 
@@ -121,7 +121,7 @@ export class UsersList implements OnInit, OnChanges {
         // Create new array to force change detection
         this.accounts = [response, ...this.accounts];
         this.filterAccounts(); // Update filtered list
-        this.showSuccess('Account created successfully!');
+        this.showSuccess('Cuenta creada exitosamente!');
         this.loading = false;
         this.cdr.detectChanges();
 
@@ -133,7 +133,7 @@ export class UsersList implements OnInit, OnChanges {
       error: (error) => {
         console.error('Error creating account:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
-        this.showError('Error creating account: ' + errorMessage);
+        this.showError('Error al crear la cuenta: ' + errorMessage);
         this.loading = false;
         this.cdr.detectChanges();
       }

@@ -9,16 +9,16 @@
   <div class="card" style="margin-bottom: var(--space-4);">
     <div class="card-header">
       <div class="flex-between">
-        <h3>Account</h3>
+        <h3>Cuenta</h3>
         <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="form-control" style="width: 200px;">
-          <option value="">Select Account</option>
+          <option value="">Seleccionar cuenta</option>
           <option *ngFor="let account of accounts" [value]="account._id">{{ account.name }}</option>
         </select>
       </div>
     </div>
     <div class="card-body" *ngIf="getSelectedAccount()">
       <div class="flex-between">
-        <strong>Balance:</strong>
+        <strong>Saldo:</strong>
         <span [class]="getTotalBalance() > 0 ? 'text-success' : getTotalBalance() < 0 ? 'text-error' : ''">
           {{ formatCurrency(getTotalBalance()) }}
         </span>
@@ -40,30 +40,30 @@
     <!-- Inflow -->
     <div class="card">
       <div class="card-header">
-        <h3>Inflow</h3>
+        <h3>Ingreso</h3>
       </div>
       <div class="card-body">
         <form (ngSubmit)="createInflow()">
           <div class="form-group">
-            <label class="form-label">Amount</label>
+            <label class="form-label">Monto</label>
             <input type="number" [(ngModel)]="inflowForm.amount" name="inflowAmount" 
                    class="form-control" step="0.01" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Currency</label>
+            <label class="form-label">Moneda</label>
             <select [(ngModel)]="inflowForm.currency" name="inflowCurrency" class="form-control">
               <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Description</label>
+            <label class="form-label">Descripción</label>
             <input type="text" [(ngModel)]="inflowForm.description" name="inflowDescription" 
                    class="form-control" required>
           </div>
           <button type="submit" [disabled]="loading || !isInflowFormValid()" 
                   class="btn btn-success w-full">
             <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Processing...' : 'Create Inflow' }}
+            {{ loading ? 'Procesando...' : 'Crear ingreso' }}
           </button>
         </form>
       </div>
@@ -72,30 +72,30 @@
     <!-- Outflow -->
     <div class="card">
       <div class="card-header">
-        <h3>Outflow</h3>
+        <h3>Egreso</h3>
       </div>
       <div class="card-body">
         <form (ngSubmit)="createOutflow()">
           <div class="form-group">
-            <label class="form-label">Amount</label>
+            <label class="form-label">Monto</label>
             <input type="number" [(ngModel)]="outflowForm.amount" name="outflowAmount" 
                    class="form-control" step="0.01" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Currency</label>
+            <label class="form-label">Moneda</label>
             <select [(ngModel)]="outflowForm.currency" name="outflowCurrency" class="form-control">
               <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Description</label>
+            <label class="form-label">Descripción</label>
             <input type="text" [(ngModel)]="outflowForm.description" name="outflowDescription" 
                    class="form-control" required>
           </div>
           <button type="submit" [disabled]="loading || !isOutflowFormValid()" 
                   class="btn btn-danger w-full">
             <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Processing...' : 'Create Outflow' }}
+            {{ loading ? 'Procesando...' : 'Crear egreso' }}
           </button>
         </form>
       </div>
@@ -104,43 +104,43 @@
     <!-- Swap -->
     <div class="card">
       <div class="card-header">
-        <h3>Currency Swap</h3>
+        <h3>Swap</h3>
       </div>
       <div class="card-body">
         <form (ngSubmit)="createSwap()">
           <div class="form-group">
-            <label class="form-label">Amount</label>
+            <label class="form-label">Monto</label>
             <input type="number" [(ngModel)]="swapForm.amount" name="swapAmount" 
                    class="form-control" step="0.01" required>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
             <div class="form-group">
-              <label class="form-label">From</label>
+              <label class="form-label">De</label>
               <select [(ngModel)]="swapForm.currency" name="swapFromCurrency" class="form-control">
                 <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">To</label>
+              <label class="form-label">A</label>
               <select [(ngModel)]="swapForm.targetCurrency" name="swapToCurrency" class="form-control">
                 <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Exchange Rate</label>
+            <label class="form-label">Tasa de cambio</label>
             <input type="number" [(ngModel)]="swapForm.exchangeRate" name="swapExchangeRate" 
                    class="form-control" step="0.0001">
           </div>
           <div class="form-group">
-            <label class="form-label">Description</label>
+            <label class="form-label">Descripción</label>
             <input type="text" [(ngModel)]="swapForm.description" name="swapDescription" 
                    class="form-control" required>
           </div>
           <button type="submit" [disabled]="loading || !isSwapFormValid()" 
                   class="btn btn-primary w-full">
             <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Processing...' : 'Execute Swap' }}
+            {{ loading ? 'Procesando...' : 'Ejecutar intercambio' }}
           </button>
         </form>
       </div>

@@ -7,9 +7,9 @@
   <div class="card" style="margin-bottom: var(--space-4);">
     <div class="card-header">
       <div class="flex-between">
-        <h3>Platform Users</h3>
+        <h3>Usuarios</h3>
         <button *ngIf="canCreateUsers()" class="btn btn-primary" (click)="openCreateModal()">
-          Create User
+          Crear usuario
         </button>
       </div>
     </div>
@@ -20,20 +20,20 @@
     <div class="card-body">
       <div *ngIf="loading" class="text-center" style="padding: var(--space-8) 0;">
         <span class="loading" style="width: 40px; height: 40px;"></span>
-        <p style="margin-top: var(--space-3); color: var(--color-gray-500);">Loading users...</p>
+        <p style="margin-top: var(--space-3); color: var(--color-gray-500);">Cargando usuarios...</p>
       </div>
 
       <div *ngIf="!loading && users.length === 0" class="text-center text-muted" style="padding: var(--space-8) 0;">
-        No users created yet. Click "Create User" to add the first user.
+        No se han creado usuarios aún. Haz clic en "Crear usuario" para agregar el primer usuario.
       </div>
 
       <table class="table" *ngIf="!loading && users.length > 0">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Nombre</th>
             <th>Email</th>
-            <th>Role</th>
-            <th>Created</th>
+            <th>Rol</th>
+            <th>Creado</th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +52,7 @@
   <div *ngIf="showCreateModal" class="modal-overlay" (click)="!creatingUser && closeCreateModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Create New User</h3>
+        <h3>Crear nuevo usuario</h3>
         <button class="btn-close" (click)="closeCreateModal()" [disabled]="creatingUser">&times;</button>
       </div>
 
@@ -63,55 +63,55 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Full Name *</label>
+            <label class="form-label">Nombre completo *</label>
             <input type="text" class="form-control" [(ngModel)]="newUser.name" name="name" required placeholder="John Doe" #nameInput="ngModel" [disabled]="creatingUser">
             <small *ngIf="nameInput.invalid && nameInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
-              Name is required
+              El nombre completo es requerido
             </small>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Email *</label>
+            <label class="form-label">Correo electrónico *</label>
             <input type="email" class="form-control" [(ngModel)]="newUser.email" name="email" required email placeholder="john@example.com" #emailInput="ngModel" [disabled]="creatingUser">
             <small *ngIf="emailInput.invalid && emailInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
-              <span *ngIf="emailInput.errors?.['required']">Email is required</span>
-              <span *ngIf="emailInput.errors?.['email']">Invalid email format</span>
+              <span *ngIf="emailInput.errors?.['required']">El correo electrónico es requerido</span>
+              <span *ngIf="emailInput.errors?.['email']">Formato de correo electrónico inválido</span>
             </small>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Password *</label>
+            <label class="form-label">Contraseña *</label>
             <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password" required placeholder="Minimum 6 characters" minlength="6" #passwordInput="ngModel" [disabled]="creatingUser">
             <small *ngIf="!passwordInput.invalid || !passwordInput.touched" style="font-size: var(--font-xs); color: var(--color-gray-500);">
-              Minimum 6 characters
+              La contraseña debe tener al menos 6 caracteres
             </small>
             <small *ngIf="passwordInput.invalid && passwordInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
-              <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
-              <span *ngIf="passwordInput.errors?.['minlength']">Password must be at least 6 characters</span>
+              <span *ngIf="passwordInput.errors?.['required']">La contraseña es requerida</span>
+              <span *ngIf="passwordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</span>
             </small>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Role *</label>
+            <label class="form-label">Rol *</label>
             <select class="form-control" [(ngModel)]="newUser.role" name="role" required #roleInput="ngModel" [disabled]="creatingUser">
-              <option value="">Select a role</option>
-              <option value="viewer">Viewer (Read only)</option>
-              <option value="reviewer">Reviewer (Edit permissions)</option>
-              <option value="super_admin">Super Admin (Full access)</option>
+              <option value="">Seleccionar un rol</option>
+              <option value="viewer">Viewer (Solo lectura)</option>
+              <option value="reviewer">Reviewer (Editar permisos)</option>
+              <option value="super_admin">Super Admin (Acceso completo)</option>
             </select>
             <small *ngIf="roleInput.invalid && roleInput.touched" style="color: var(--color-error); font-size: var(--font-xs);">
-              Role is required
+              El rol es requerido
             </small>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-sm" (click)="closeCreateModal()" [disabled]="creatingUser">
-            Cancel
+            Cancelar
           </button>
           <button type="submit" class="btn btn-primary btn-sm" [disabled]="creatingUser || !userForm.valid">
             <span *ngIf="creatingUser" class="loading" style="width: 12px; height: 12px;"></span>
-            {{ creatingUser ? 'Creating...' : 'Create User' }}
+            {{ creatingUser ? 'Creando...' : 'Crear usuario' }}
           </button>
         </div>
       </form>
