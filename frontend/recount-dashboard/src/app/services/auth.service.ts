@@ -116,4 +116,20 @@ export class AuthService {
   getAllUsers(): Observable<any> {
     return this.apiService.get('/auth/users');
   }
+
+  updateUser(userId: string, userData: any): Observable<any> {
+    return this.apiService.put(`/auth/users/${userId}`, userData).pipe(
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteUser(userId: string): Observable<any> {
+    return this.apiService.delete(`/auth/users/${userId}`).pipe(
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
+  }
 }

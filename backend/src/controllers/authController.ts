@@ -146,3 +146,99 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { email, password, name, role } = req.body;
+
+    // Find user
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    // Update fields if provided
+    if (email) {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res.status(400).json({ message: 'Invalid email format' });
+        return;
+      }
+
+      // Check if email already exists (excluding current user)
+      const existingUser = await User.findOne({ email: email.toLowerCase(), _id: { $ne: id } });
+      if (existingUser) {
+        res.status(409).json({ message: 'Email already in use' });
+        return;
+      }
+
+      user.email = email.toLowerCase();
+    }
+
+    if (password) {
+      // Validate password length
+      if (password.length < 6) {
+        res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        return;
+      }
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    if (name) {
+      user.name = name;
+    }
+
+    if (role) {
+      const validRoles = ['super_admin', 'reviewer', 'viewer'];
+      if (!validRoles.includes(role)) {
+        res.status(400).json({ message: 'Invalid role' });
+        return;
+      }
+      user.role = role;
+    }
+
+    await user.save();
+
+    res.json({
+      message: 'User updated successfully',
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Update user error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const currentUser = (req as any).user;
+
+    // Prevent users from deleting themselves
+    if (currentUser._id.toString() === id) {
+      res.status(400).json({ message: 'Cannot delete your own account' });
+      return;
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    await User.findByIdAndDelete(id);
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

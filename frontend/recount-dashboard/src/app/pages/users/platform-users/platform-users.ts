@@ -19,10 +19,22 @@ export class PlatformUsers implements OnInit {
   users: PlatformUser[] = [];
   loading = true; // Start as true
   showCreateModal = false;
+  showEditModal = false;
+  showDeleteModal = false;
   creatingUser = false; // Separate flag for modal loading
+  updatingUser = false;
+  deletingUser = false;
+  selectedUser: PlatformUser | null = null;
   
   // Form data
   newUser = {
+    email: '',
+    password: '',
+    name: '',
+    role: '' as any
+  };
+
+  editUser = {
     email: '',
     password: '',
     name: '',
@@ -50,6 +62,12 @@ export class PlatformUsers implements OnInit {
   onEscapeKey(): void {
     if (this.showCreateModal && !this.creatingUser) {
       this.closeCreateModal();
+    }
+    if (this.showEditModal && !this.updatingUser) {
+      this.closeEditModal();
+    }
+    if (this.showDeleteModal && !this.deletingUser) {
+      this.closeDeleteModal();
     }
   }
 
@@ -202,5 +220,155 @@ export class PlatformUsers implements OnInit {
       month: 'short',
       day: 'numeric'
     });
+  }
+
+  openEditModal(user: PlatformUser): void {
+    this.selectedUser = user;
+    this.editUser = {
+      email: user.email,
+      password: '', // Don't pre-fill password
+      name: user.name,
+      role: user.role
+    };
+    this.showEditModal = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  closeEditModal(): void {
+    if (this.updatingUser) return;
+    
+    this.showEditModal = false;
+    this.selectedUser = null;
+    this.errorMessage = '';
+    this.editUser = {
+      email: '',
+      password: '',
+      name: '',
+      role: '' as any
+    };
+  }
+
+  updateUserData(): void {
+    if (!this.selectedUser) return;
+
+    if (!this.editUser.name || !this.editUser.email || !this.editUser.role) {
+      this.errorMessage = 'Por favor, complete todos los campos requeridos';
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.editUser.email)) {
+      this.errorMessage = 'Formato de email inválido';
+      return;
+    }
+
+    // Validate password if provided
+    if (this.editUser.password && this.editUser.password.length < 6) {
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
+      return;
+    }
+
+    this.updatingUser = true;
+    this.errorMessage = '';
+
+    const updateData: any = {
+      email: this.editUser.email,
+      name: this.editUser.name,
+      role: this.editUser.role
+    };
+
+    // Only include password if it was changed
+    if (this.editUser.password) {
+      updateData.password = this.editUser.password;
+    }
+
+    this.authService.updateUser(this.selectedUser.id, updateData).subscribe({
+      next: (response) => {
+        this.updatingUser = false;
+        this.showEditModal = false;
+        this.successMessage = 'Usuario actualizado exitosamente!';
+        this.loadUsers();
+        
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 5000);
+      },
+      error: (error) => {
+        this.updatingUser = false;
+        
+        if (error.message.includes('already in use') || error.message.includes('already exists')) {
+          this.errorMessage = 'Este email ya está en uso';
+        } else {
+          this.errorMessage = error.message || 'Error al actualizar usuario';
+        }
+      }
+    });
+  }
+
+  openDeleteModal(user: PlatformUser): void {
+    this.selectedUser = user;
+    this.showDeleteModal = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  closeDeleteModal(): void {
+    if (this.deletingUser) return;
+    
+    this.showDeleteModal = false;
+    this.selectedUser = null;
+    this.errorMessage = '';
+  }
+
+  confirmDelete(): void {
+    if (!this.selectedUser) return;
+
+    this.deletingUser = true;
+    this.errorMessage = '';
+
+    this.authService.deleteUser(this.selectedUser.id).subscribe({
+      next: (response) => {
+        this.deletingUser = false;
+        this.showDeleteModal = false;
+        this.successMessage = 'Usuario eliminado exitosamente!';
+        this.loadUsers();
+        
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 5000);
+      },
+      error: (error) => {
+        this.deletingUser = false;
+        
+        if (error.message.includes('Cannot delete your own account')) {
+          this.errorMessage = 'No puedes eliminar tu propia cuenta';
+        } else {
+          this.errorMessage = error.message || 'Error al eliminar usuario';
+        }
+      }
+    });
+  }
+
+  isEditFormValid(): boolean {
+    if (!this.editUser.name || !this.editUser.email || !this.editUser.role) {
+      return false;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.editUser.email)) {
+      return false;
+    }
+    
+    if (this.editUser.password && this.editUser.password.length < 6) {
+      return false;
+    }
+    
+    return true;
+  }
+
+  isCurrentUser(user: PlatformUser): boolean {
+    return this.currentUser?.id === user.id;
   }
 }
