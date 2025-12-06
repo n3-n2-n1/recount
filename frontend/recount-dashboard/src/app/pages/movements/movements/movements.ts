@@ -282,8 +282,10 @@ export class Movements implements OnInit {
       next: (result) => {
         clearTimeout(timeout);
         this.loading = false;
-        this.showSuccess('Inflow created successfully!');
+        this.showSuccess('Ingreso creado exitosamente!');
         this.resetInflowForm();
+        // Refresh accounts to update balances
+        this.loadAccounts();
         // Refresh recent transactions
         this.loadRecentTransactions();
         this.cdr.detectChanges();
@@ -335,8 +337,10 @@ export class Movements implements OnInit {
       next: (result) => {
         clearTimeout(timeout);
         this.loading = false;
-        this.showSuccess('Outflow created successfully!');
+        this.showSuccess('Egreso creado exitosamente!');
         this.resetOutflowForm();
+        // Refresh accounts to update balances
+        this.loadAccounts();
         // Refresh recent transactions
         this.loadRecentTransactions();
         this.cdr.detectChanges();
@@ -354,19 +358,19 @@ export class Movements implements OnInit {
 
   createSwap(): void {
     if (!this.selectedAccountId || !this.swapForm.amount || !this.swapForm.description) {
-      this.showError('Please fill all required fields');
+      this.showError('Por favor, complete todos los campos requeridos');
       return;
     }
 
     // Verify selected account still exists
     const selectedAccount = this.accounts.find(acc => acc._id === this.selectedAccountId);
     if (!selectedAccount) {
-      this.showError('Selected account no longer exists. Please select a valid account.');
+      this.showError('La cuenta seleccionada ya no existe. Por favor, seleccione una cuenta válida.');
       return;
     }
 
     if (this.swapForm.currency === this.swapForm.targetCurrency) {
-      this.showError('Source and target currencies must be different');
+      this.showError('Las monedas de origen y destino deben ser diferentes');
       return;
     }
 
@@ -396,8 +400,10 @@ export class Movements implements OnInit {
       next: (result) => {
         clearTimeout(timeout);
         this.loading = false;
-        this.showSuccess('Currency swap executed successfully!');
+        this.showSuccess('Intercambio ejecutado exitosamente!');
         this.resetSwapForm();
+        // Refresh accounts to update balances
+        this.loadAccounts();
         // Refresh recent transactions
         this.loadRecentTransactions();
         this.cdr.detectChanges();

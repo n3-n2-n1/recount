@@ -8,27 +8,32 @@
   <!-- Account Selection -->
   <div class="card" style="margin-bottom: var(--space-4);">
     <div class="card-header">
-      <div class="flex-between">
-        <h3>Cuenta</h3>
-        <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="form-control" style="width: 200px;">
+      <h3>Selección de Cuenta</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group" style="margin-bottom: var(--space-3);">
+        <label class="form-label">Cuenta</label>
+        <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="form-control">
           <option value="">Seleccionar cuenta</option>
           <option *ngFor="let account of accounts" [value]="account._id">{{ account.name }}</option>
         </select>
       </div>
-    </div>
-    <div class="card-body" *ngIf="getSelectedAccount()">
-      <div class="flex-between">
-        <strong>Saldo:</strong>
-        <span [class]="getTotalBalance() > 0 ? 'text-success' : getTotalBalance() < 0 ? 'text-error' : ''">
-          {{ formatCurrency(getTotalBalance()) }}
-        </span>
-      </div>
-      <div style="margin-top: var(--space-2);">
-        <div *ngFor="let balance of getSortedBalances()" class="flex-between" style="margin-bottom: var(--space-1);">
-          <span>{{ balance.currency }}:</span>
-          <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''">
-            {{ formatCurrency(balance.amount) }}
+      
+      <div *ngIf="getSelectedAccount()" style="padding-top: var(--space-3); border-top: 1px solid var(--border-color);">
+        <div class="flex-between" style="margin-bottom: var(--space-2);">
+          <strong style="font-size: 1.1rem;">Saldo Total:</strong>
+          <span [class]="getTotalBalance() > 0 ? 'text-success' : getTotalBalance() < 0 ? 'text-error' : ''" 
+                style="font-size: 1.2rem; font-weight: 600;">
+            {{ formatCurrency(getTotalBalance()) }}
           </span>
+        </div>
+        <div style="margin-top: var(--space-2);">
+          <div *ngFor="let balance of getSortedBalances()" class="flex-between" style="margin-bottom: var(--space-1);">
+            <span>{{ balance.currency }}:</span>
+            <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''">
+              {{ formatCurrency(balance.amount) }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
