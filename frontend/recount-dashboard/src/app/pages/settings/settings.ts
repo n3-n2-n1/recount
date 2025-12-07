@@ -24,6 +24,7 @@ export class Settings implements OnInit {
   availableCurrencies: CurrencyType[] = [];
 
   // Exchange rates
+  allCurrencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
   exchangeRates: ExchangeRate[] = [];
   rateHistory: ExchangeRateHistory[] = [];
   editingRates: { [key: string]: number } = {};
@@ -68,17 +69,48 @@ export class Settings implements OnInit {
     this.loadingRates = true;
     this.exchangeRateService.getExchangeRates().subscribe({
       next: (response) => {
-        this.exchangeRates = response.rates;
-        // Initialize editing rates
-        this.exchangeRates.forEach(rate => {
-          this.editingRates[rate.currency] = rate.rateToUSD;
+        const existingRates = response.rates || [];
+
+        // Create complete list with all currencies, using existing rates where available
+        this.exchangeRates = this.allCurrencies.map(currency => {
+          const existingRate = existingRates.find(r => r.currency === currency);
+          return existingRate || {
+            _id: '',
+            currency,
+            rateToUSD: 1.0, // Default value
+            updatedBy: '',
+            updatedAt: new Date(),
+            createdAt: new Date()
+          } as ExchangeRate;
         });
+
+        // Initialize editing rates with current values
+        this.allCurrencies.forEach(currency => {
+          const existingRate = existingRates.find(r => r.currency === currency);
+          this.editingRates[currency] = existingRate ? existingRate.rateToUSD : 1.0;
+        });
+
         this.loadingRates = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading exchange rates:', error);
         this.showError('Error al cargar las tasas de cambio');
+
+        // Fallback: show all currencies with default values
+        this.exchangeRates = this.allCurrencies.map(currency => ({
+          _id: '',
+          currency,
+          rateToUSD: 1.0,
+          updatedBy: '',
+          updatedAt: new Date(),
+          createdAt: new Date()
+        } as ExchangeRate));
+
+        this.allCurrencies.forEach(currency => {
+          this.editingRates[currency] = 1.0;
+        });
+
         this.loadingRates = false;
         this.cdr.detectChanges();
       }
@@ -145,14 +177,17 @@ export class Settings implements OnInit {
 
   hasRateChanged(currency: CurrencyType): boolean {
     const currentRate = this.exchangeRates.find(r => r.currency === currency);
-    if (!currentRate) return false;
+    if (!currentRate || !currentRate._id) return true; // Allow creating new rates
     return this.editingRates[currency] !== currentRate.rateToUSD;
   }
 
   resetRate(currency: CurrencyType): void {
     const currentRate = this.exchangeRates.find(r => r.currency === currency);
-    if (currentRate) {
+    if (currentRate && currentRate._id) {
       this.editingRates[currency] = currentRate.rateToUSD;
+    } else {
+      // Reset to default for new rates
+      this.editingRates[currency] = 1.0;
     }
   }
 
@@ -170,7 +205,10 @@ export class Settings implements OnInit {
     if (typeof rate.updatedBy === 'object' && rate.updatedBy.name) {
       return rate.updatedBy.name;
     }
-    return 'Sistema';
+    if (typeof rate.updatedBy === 'string' && rate.updatedBy) {
+      return 'Usuario del sistema';
+    }
+    return 'No configurado';
   }
 
   getChangedByName(historyItem: ExchangeRateHistory): string {

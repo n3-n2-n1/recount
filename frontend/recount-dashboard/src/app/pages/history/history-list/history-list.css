@@ -143,3 +143,92 @@ th[style*="cursor: pointer"]:hover {
   height: 38px !important;
   min-height: 38px !important;
 }
+
+/* Transaction type styling */
+.transaction-type {
+  font-weight: 500;
+}
+
+/* Exchange Rate Changes Styling */
+.exchange-rate-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.exchange-rate-indicator i {
+  color: #f59e0b;
+}
+
+.exchange-rate-type {
+  font-weight: 600;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.exchange-rate-change {
+  font-family: monospace;
+  font-weight: 600;
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.exchange-rate-description {
+  font-style: italic;
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+}
+
+/* Dark mode styles for exchange rate changes */
+.dark-mode .exchange-rate-indicator {
+  color: #fbbf24;
+}
+
+.dark-mode .exchange-rate-indicator i {
+  color: #fbbf24;
+}
+
+.dark-mode .exchange-rate-type {
+  color: #fbbf24;
+  background: rgba(245, 187, 36, 0.2);
+}
+
+.dark-mode .exchange-rate-change {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.dark-mode .exchange-rate-description {
+  color: #9ca3af;
+}
+
+/* Dark mode styles for exchange rate changes */
+.dark-mode .exchange-rate-indicator {
+  color: #fbbf24;
+}
+
+.dark-mode .exchange-rate-indicator i {
+  color: #fbbf24;
+}
+
+.dark-mode .exchange-rate-type {
+  color: #fbbf24;
+  background: rgba(245, 187, 36, 0.2);
+}
+
+.dark-mode .exchange-rate-change {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.dark-mode .exchange-rate-description {
+  color: #9ca3af;
+}

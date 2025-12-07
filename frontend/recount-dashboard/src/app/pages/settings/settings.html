@@ -64,37 +64,44 @@
       </div>
 
       <div *ngIf="!loadingRates" class="rates-grid">
-        <div *ngFor="let rate of exchangeRates" class="rate-item">
+        <div *ngFor="let rate of exchangeRates" class="rate-item" [class.rate-new]="!rate._id">
           <div class="rate-currency">
             <strong>{{ rate.currency }}</strong>
-            <span class="rate-updated">
+            <div class="rate-status" *ngIf="!rate._id">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>No configurado</span>
+            </div>
+            <span class="rate-updated" *ngIf="rate._id">
               Actualizado: {{ formatDate(rate.updatedAt) }}
             </span>
-            <span class="rate-updatedby">
+            <span class="rate-updatedby" *ngIf="rate._id">
               Por: {{ getUpdatedByName(rate) }}
             </span>
           </div>
-          
+
           <div class="rate-input-group">
             <label class="form-label">Tasa a USD</label>
-            <input type="number" 
+            <div class="rate-current-value" *ngIf="rate._id">
+              Valor actual: <strong>{{ rate.rateToUSD.toFixed(4) }}</strong>
+            </div>
+            <input type="number"
                    [(ngModel)]="editingRates[rate.currency]"
                    [disabled]="savingRates"
-                   class="form-control" 
+                   class="form-control"
                    step="0.0001"
                    min="0">
           </div>
 
           <div class="rate-actions">
-            <button class="btn btn-primary btn-sm" 
+            <button class="btn btn-primary btn-sm"
                     (click)="updateRate(rate.currency)"
-                    [disabled]="!hasRateChanged(rate.currency) || savingRates">
+                    [disabled]="savingRates">
               <i class="fas fa-save"></i>
-              Guardar
+              {{ rate._id ? 'Actualizar' : 'Crear' }}
             </button>
-            <button class="btn btn-sm" 
+            <button class="btn btn-sm"
                     (click)="resetRate(rate.currency)"
-                    [disabled]="!hasRateChanged(rate.currency) || savingRates">
+                    [disabled]="savingRates">
               <i class="fas fa-undo"></i>
               Resetear
             </button>

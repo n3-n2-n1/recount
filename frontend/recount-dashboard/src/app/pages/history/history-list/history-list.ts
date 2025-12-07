@@ -2,8 +2,9 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { TransactionsService } from '../../../services/transactions.service';
 import { AccountsService } from '../../../services/accounts.service';
+import { ExchangeRateService } from '../../../services/exchange-rate.service';
 import { AuthService } from '../../../services/auth.service';
-import { Transaction, Account } from '../../../models';
+import { Transaction, Account, ExchangeRateHistory } from '../../../models';
 import { Subscription } from 'rxjs';
 
 interface FilterOptions {
@@ -25,6 +26,7 @@ interface FilterOptions {
 export class HistoryList implements OnInit, OnDestroy {
   transactions: Transaction[] = [];
   filteredTransactions: Transaction[] = [];
+  exchangeRateChanges: ExchangeRateHistory[] = [];
   accounts: Account[] = [];
   loading = true; // Start as true to show loading initially
   searchTerm = '';
@@ -59,6 +61,7 @@ export class HistoryList implements OnInit, OnDestroy {
   constructor(
     private transactionsService: TransactionsService,
     private accountsService: AccountsService,
+    private exchangeRateService: ExchangeRateService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -67,10 +70,11 @@ export class HistoryList implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('🎬 HistoryList ngOnInit - Component initialized');
     console.log('🎬 Current URL:', this.router.url);
-    
+
     // Load data immediately
     this.loadAccounts();
     this.loadTransactions();
+    this.loadExchangeRateHistory();
   }
 
   ngOnDestroy(): void {
@@ -93,6 +97,20 @@ export class HistoryList implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading accounts:', error);
+        }
+      })
+    );
+  }
+
+  loadExchangeRateHistory(): void {
+    this.subscriptions.add(
+      this.exchangeRateService.getHistory(undefined, 100).subscribe({
+        next: (response) => {
+          this.exchangeRateChanges = response.history || [];
+        },
+        error: (error) => {
+          console.warn('Could not load exchange rate history:', error.message || error);
+          this.exchangeRateChanges = [];
         }
       })
     );
@@ -240,6 +258,17 @@ export class HistoryList implements OnInit, OnDestroy {
 
   getTotalPages(): number {
     return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  getCombinedHistory(): any[] {
+    // Combine transactions and exchange rate changes
+    const combined = [
+      ...this.filteredTransactions.map(t => ({ type: 'transaction', data: t, date: new Date(t.createdAt) })),
+      ...this.exchangeRateChanges.map(c => ({ type: 'exchange-rate-change', data: c, date: new Date(c.timestamp) }))
+    ];
+
+    // Sort by date (newest first)
+    return combined.sort((a, b) => b.date.getTime() - a.date.getTime());
   }
 
   getPaginatedTransactions(): Transaction[] {
@@ -443,5 +472,9 @@ export class HistoryList implements OnInit, OnDestroy {
       return transaction.createdBy.name;
     }
     return 'System';
+  }
+
+  getChangedByName(change: ExchangeRateHistory): string {
+    return change.changedBy?.name || 'Sistema';
   }
 }

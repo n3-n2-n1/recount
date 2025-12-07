@@ -35,23 +35,14 @@
         
         <!-- Currency selector -->
         <div class="currency-selector" *ngIf="!loadingRates && exchangeRates.length > 0">
-          <label class="form-label">Mostrar total en:</label>
-          <div style="display: flex; gap: var(--space-2); align-items: center;">
-            <select [(ngModel)]="preferredCurrency" 
-                    (change)="onPreferredCurrencyChange()" 
-                    class="form-control" 
-                    style="max-width: 200px;">
-              <option *ngFor="let currency of currencies" [value]="currency">
-                {{ currency }}
-              </option>
-            </select>
-            <button *ngIf="canEditRates" 
-                    class="btn btn-sm" 
-                    (click)="goToSettings()"
-                    title="Configurar tasas de cambio">
-              <i class="fas fa-cog"></i>
-            </button>
-          </div>
+          <select [(ngModel)]="preferredCurrency"
+                  (change)="onPreferredCurrencyChange()"
+                  class="form-control"
+                  style="max-width: 150px;">
+            <option *ngFor="let currency of currencies" [value]="currency">
+              Total en {{ currency }}
+            </option>
+          </select>
         </div>
 
         <!-- Balance details with conversion -->
@@ -75,7 +66,7 @@
 
         <!-- Total balance -->
         <div class="balance-total" *ngIf="!loadingRates && exchangeRates.length > 0">
-          <strong class="balance-label">Total en {{ preferredCurrency }}:</strong>
+          <span class="balance-label">Total en {{ preferredCurrency }}:</span>
           <span [class]="getTotalBalanceConverted() > 0 ? 'text-success' : getTotalBalanceConverted() < 0 ? 'text-error' : ''" 
                 class="balance-value">
             {{ formatCurrency(getTotalBalanceConverted()) }}
@@ -85,7 +76,7 @@
         <!-- Loading rates indicator -->
         <div *ngIf="loadingRates" class="loading-rates">
           <span class="loading"></span>
-          <span>Cargando tasas de cambio...</span>
+          <small>Cargando tasas...</small>
         </div>
       </div>
     </div>

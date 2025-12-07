@@ -119,18 +119,51 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let transaction of getPaginatedTransactions()">
-              <td style="font-family: monospace; font-size: var(--font-xs);">
-                {{ formatDate(transaction.createdAt) }}
-              </td>
-              <td>{{ getAccountName(transaction.accountId) }}</td>
-              <td>{{ transaction.type }}</td>
-              <td class="text-right" [class]="getTransactionAmountColor(transaction)">
-                {{ getTransactionAmountDisplay(transaction) }}
-              </td>
-              <td>{{ transaction.currency }}</td>
-              <td>{{ getTransactionDescription(transaction) }}</td>
-              <td style="font-size: var(--font-xs);">{{ getUserName(transaction) }}</td>
+            <tr *ngFor="let item of getCombinedHistory()">
+              <!-- Transaction rows -->
+              <ng-container *ngIf="item.type === 'transaction'">
+                <td style="font-family: monospace; font-size: var(--font-xs);">
+                  {{ formatDate(item.data.createdAt) }}
+                </td>
+                <td>{{ getAccountName(item.data.accountId) }}</td>
+                <td>
+                  <span class="transaction-type">{{ item.data.type }}</span>
+                </td>
+                <td class="text-right" [class]="getTransactionAmountColor(item.data)">
+                  {{ getTransactionAmountDisplay(item.data) }}
+                </td>
+                <td>{{ item.data.currency }}</td>
+                <td>{{ getTransactionDescription(item.data) }}</td>
+                <td style="font-size: var(--font-xs);">{{ getUserName(item.data) }}</td>
+              </ng-container>
+
+              <!-- Exchange rate change rows -->
+              <ng-container *ngIf="item.type === 'exchange-rate-change'">
+                <td style="font-family: monospace; font-size: var(--font-xs);">
+                  {{ formatDate(item.data.timestamp) }}
+                </td>
+                <td>
+                  <span class="exchange-rate-indicator">
+                    <i class="fas fa-exchange-alt"></i>
+                    Configuración
+                  </span>
+                </td>
+                <td>
+                  <span class="exchange-rate-type">Cambio de tasa</span>
+                </td>
+                <td class="text-right">
+                  <span class="exchange-rate-change">
+                    {{ item.data.currency }}: {{ item.data.oldRate.toFixed(4) }} → {{ item.data.newRate.toFixed(4) }}
+                  </span>
+                </td>
+                <td>USD</td>
+                <td>
+                  <span class="exchange-rate-description">
+                    Tasa de cambio actualizada para {{ item.data.currency }}
+                  </span>
+                </td>
+                <td style="font-size: var(--font-xs);">{{ getChangedByName(item.data) }}</td>
+              </ng-container>
             </tr>
           </tbody>
         </table>
