@@ -1,0 +1,37 @@
+[
+  {
+    "currency": "DÓLAR",
+    "rateToUSD": 1.0000,
+    "updatedBy": {"$oid": "6933b46203e7803c847956cd"},
+    "createdAt": {"$date": "2024-12-07T02:00:00.000Z"},
+    "updatedAt": {"$date": "2024-12-07T02:00:00.000Z"}
+  },
+  {
+    "currency": "CABLE",
+    "rateToUSD": 1.0100,
+    "updatedBy": {"$oid": "6933b46203e7803c847956cd"},
+    "createdAt": {"$date": "2024-12-07T02:00:00.000Z"},
+    "updatedAt": {"$date": "2024-12-07T02:00:00.000Z"}
+  },
+  {
+    "currency": "PESOS",
+    "rateToUSD": 0.0010,
+    "updatedBy": {"$oid": "6933b46203e7803c847956cd"},
+    "createdAt": {"$date": "2024-12-07T02:00:00.000Z"},
+    "updatedAt": {"$date": "2024-12-07T02:00:00.000Z"}
+  },
+  {
+    "currency": "CHEQUE",
+    "rateToUSD": 0.9500,
+    "updatedBy": {"$oid": "6933b46203e7803c847956cd"},
+    "createdAt": {"$date": "2024-12-07T02:00:00.000Z"},
+    "updatedAt": {"$date": "2024-12-07T02:00:00.000Z"}
+  },
+  {
+    "currency": "CABLE BROKER",
+    "rateToUSD": 1.0050,
+    "updatedBy": {"$oid": "6933b46203e7803c847956cd"},
+    "createdAt": {"$date": "2024-12-07T02:00:00.000Z"},
+    "updatedAt": {"$date": "2024-12-07T02:00:00.000Z"}
+  }
+]

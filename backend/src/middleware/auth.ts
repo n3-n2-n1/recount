@@ -46,3 +46,6 @@ export const authorizeRoles = (...roles: string[]) => {
     next();
   };
 };
+
+// Middleware specifically for admin or reviewer roles
+export const requireAdminOrReviewer = authorizeRoles('super_admin', 'reviewer');

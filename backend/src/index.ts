@@ -6,6 +6,7 @@ import { connectDB } from './config/database.js';
 import authRoutes from './routes/auth.js';
 import accountRoutes from './routes/accounts.js';
 import transactionRoutes from './routes/transactions.js';
+import exchangeRateRoutes from './routes/exchangeRates.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/exchange-rates', exchangeRateRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

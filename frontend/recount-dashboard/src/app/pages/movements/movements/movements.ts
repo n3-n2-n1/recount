@@ -2,7 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountsService } from '../../../services/accounts.service';
 import { TransactionsService } from '../../../services/transactions.service';
-import { Account, CreateTransactionRequest, Transaction } from '../../../models';
+import { ExchangeRateService } from '../../../services/exchange-rate.service';
+import { SettingsService } from '../../../services/settings.service';
+import { AuthService } from '../../../services/auth.service';
+import { Account, CreateTransactionRequest, Transaction, ExchangeRate } from '../../../models';
+import { CurrencyType } from '../../../models/transaction.model';
+import { convertBalancesToTarget, calculateTotalBalance, formatCurrencyWithSymbol } from '../../../utils/currency-converter';
 
 interface Toast {
   id: number;
@@ -26,6 +31,12 @@ export class Movements implements OnInit {
   toasts: Toast[] = [];
   private toastIdCounter = 0;
   recentTransactions: Transaction[] = [];
+  
+  // Exchange rates
+  exchangeRates: ExchangeRate[] = [];
+  loadingRates = false;
+  preferredCurrency: CurrencyType = 'DÓLAR';
+  canEditRates = false;
 
   // Movement form data
   selectedAccountId = '';
@@ -63,12 +74,43 @@ export class Movements implements OnInit {
   constructor(
     private accountsService: AccountsService,
     private transactionsService: TransactionsService,
+    private exchangeRateService: ExchangeRateService,
+    private settingsService: SettingsService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadAccounts();
+    this.loadExchangeRates();
+    this.preferredCurrency = this.settingsService.getPreferredCurrency();
+    this.checkPermissions();
+  }
+
+  private checkPermissions(): void {
+    const user = this.authService.currentUser;
+    this.canEditRates = user?.role === 'super_admin' || user?.role === 'reviewer';
+  }
+
+  loadExchangeRates(): void {
+    this.loadingRates = true;
+    this.exchangeRateService.getExchangeRates().subscribe({
+      next: (response) => {
+        this.exchangeRates = response.rates;
+        this.loadingRates = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading exchange rates:', error);
+        this.loadingRates = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onPreferredCurrencyChange(): void {
+    this.settingsService.setPreferredCurrency(this.preferredCurrency);
   }
 
   loadAccounts(): void {
@@ -613,5 +655,38 @@ export class Movements implements OnInit {
 
   goToFullHistory(): void {
     this.router.navigate(['/history']);
+  }
+
+  getTotalBalanceConverted(): number {
+    const selectedAccount = this.getSelectedAccount();
+    if (!selectedAccount || !this.exchangeRates.length) return 0;
+    
+    return calculateTotalBalance(
+      selectedAccount.balances,
+      this.preferredCurrency,
+      this.exchangeRates
+    );
+  }
+
+  getBalancesWithConversion() {
+    const selectedAccount = this.getSelectedAccount();
+    if (!selectedAccount || !this.exchangeRates.length) return [];
+    
+    return convertBalancesToTarget(
+      selectedAccount.balances,
+      this.preferredCurrency,
+      this.exchangeRates
+    );
+  }
+
+  formatCurrencyDisplay(amount: number, currency?: CurrencyType): string {
+    if (currency) {
+      return formatCurrencyWithSymbol(amount, currency);
+    }
+    return this.formatCurrency(amount);
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/settings']);
   }
 }

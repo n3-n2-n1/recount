@@ -1,0 +1,171 @@
+<div page-content>
+  
+  <!-- Toast Notifications -->
+  <div class="toast-container">
+    <div *ngFor="let toast of toasts" 
+         [class]="'toast toast-' + toast.type + ' ' + (toast.show ? 'toast-show' : '')">
+      <div class="toast-icon">
+        <i [class]="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-message">{{ toast.message }}</div>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <h2 style="margin-bottom: var(--space-4);">Configuración</h2>
+
+  <!-- User Preferences Section -->
+  <div class="card" style="margin-bottom: var(--space-4);">
+    <div class="card-header">
+      <h3>Preferencias de Visualización</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">Moneda base para mostrar saldos totales</label>
+        <select [(ngModel)]="preferredCurrency" 
+                (change)="onPreferredCurrencyChange()" 
+                class="form-control">
+          <option *ngFor="let currency of availableCurrencies" [value]="currency">
+            {{ currency }}
+          </option>
+        </select>
+        <p class="help-text">
+          Esta moneda se usará para calcular y mostrar los saldos totales en todas las vistas.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exchange Rates Section (Only for admin/reviewer) -->
+  <div *ngIf="canEditRates" class="card" style="margin-bottom: var(--space-4);">
+    <div class="card-header">
+      <div class="flex-between">
+        <h3>Tasas de Cambio</h3>
+        <button class="btn btn-sm" (click)="loadHistory()" [disabled]="loadingHistory">
+          <i class="fas" [class.fa-history]="!showHistory" [class.fa-times]="showHistory"></i>
+          {{ showHistory ? 'Ocultar' : 'Ver' }} Historial
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      
+      <p class="help-text" style="margin-bottom: var(--space-4);">
+        Las tasas se expresan como el valor de conversión a USD. Por ejemplo, si 1 USD = 1000 ARS, 
+        la tasa para PESOS debe ser 0.001.
+      </p>
+
+      <div *ngIf="loadingRates" class="loading-container">
+        <span class="loading"></span>
+        <p>Cargando tasas...</p>
+      </div>
+
+      <div *ngIf="!loadingRates" class="rates-grid">
+        <div *ngFor="let rate of exchangeRates" class="rate-item">
+          <div class="rate-currency">
+            <strong>{{ rate.currency }}</strong>
+            <span class="rate-updated">
+              Actualizado: {{ formatDate(rate.updatedAt) }}
+            </span>
+            <span class="rate-updatedby">
+              Por: {{ getUpdatedByName(rate) }}
+            </span>
+          </div>
+          
+          <div class="rate-input-group">
+            <label class="form-label">Tasa a USD</label>
+            <input type="number" 
+                   [(ngModel)]="editingRates[rate.currency]"
+                   [disabled]="savingRates"
+                   class="form-control" 
+                   step="0.0001"
+                   min="0">
+          </div>
+
+          <div class="rate-actions">
+            <button class="btn btn-primary btn-sm" 
+                    (click)="updateRate(rate.currency)"
+                    [disabled]="!hasRateChanged(rate.currency) || savingRates">
+              <i class="fas fa-save"></i>
+              Guardar
+            </button>
+            <button class="btn btn-sm" 
+                    (click)="resetRate(rate.currency)"
+                    [disabled]="!hasRateChanged(rate.currency) || savingRates">
+              <i class="fas fa-undo"></i>
+              Resetear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Section -->
+      <div *ngIf="showHistory" class="history-section">
+        <h4 style="margin-top: var(--space-4); margin-bottom: var(--space-3);">
+          Historial de Cambios
+        </h4>
+
+        <div *ngIf="loadingHistory" class="loading-container">
+          <span class="loading"></span>
+          <p>Cargando historial...</p>
+        </div>
+
+        <div *ngIf="!loadingHistory && rateHistory.length === 0" class="empty-state">
+          <p>No hay historial de cambios disponible.</p>
+        </div>
+
+        <div *ngIf="!loadingHistory && rateHistory.length > 0" class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Moneda</th>
+                <th>Tasa Anterior</th>
+                <th>Nueva Tasa</th>
+                <th>Cambiado Por</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of rateHistory">
+                <td>{{ formatDate(item.timestamp) }}</td>
+                <td><strong>{{ item.currency }}</strong></td>
+                <td>{{ item.oldRate.toFixed(4) }}</td>
+                <td>{{ item.newRate.toFixed(4) }}</td>
+                <td>{{ getChangedByName(item) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Info section for non-admin users -->
+  <div *ngIf="!canEditRates" class="card">
+    <div class="card-header">
+      <h3>Tasas de Cambio</h3>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loadingRates" class="loading-container">
+        <span class="loading"></span>
+        <p>Cargando tasas...</p>
+      </div>
+
+      <div *ngIf="!loadingRates" class="rates-display">
+        <p class="help-text" style="margin-bottom: var(--space-3);">
+          Tasas de cambio actuales utilizadas en el sistema:
+        </p>
+        <div *ngFor="let rate of exchangeRates" class="rate-display-item">
+          <span class="rate-currency-name">{{ rate.currency }}</span>
+          <span class="rate-value">{{ rate.rateToUSD.toFixed(4) }} USD</span>
+          <span class="rate-updated-small">Actualizado: {{ formatDate(rate.updatedAt) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

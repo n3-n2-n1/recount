@@ -15,6 +15,7 @@ import { AccountDetail } from './pages/users/account-detail/account-detail';
 import { PlatformUsers } from './pages/users/platform-users/platform-users';
 import { Movements } from './pages/movements/movements/movements';
 import { HistoryList } from './pages/history/history-list/history-list';
+import { Settings } from './pages/settings/settings';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { HistoryList } from './pages/history/history-list/history-list';
     AccountDetail,
     PlatformUsers,
     Movements,
-    HistoryList
+    HistoryList,
+    Settings
   ],
   imports: [
     BrowserModule,

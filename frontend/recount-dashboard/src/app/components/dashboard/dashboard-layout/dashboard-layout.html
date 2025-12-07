@@ -29,6 +29,11 @@
          [class.active]="isActiveRoute('/team')">
         Equipo
       </a>
+      <a (click)="goToSettings()" 
+         class="nav-link" 
+         [class.active]="isActiveRoute('/settings')">
+        Configuración
+      </a>
     </nav>
 
     <div class="sidebar-footer">

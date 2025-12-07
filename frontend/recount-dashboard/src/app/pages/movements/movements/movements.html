@@ -32,20 +32,60 @@
       </div>
       
       <div *ngIf="getSelectedAccount()" class="balance-summary">
-        <div class="balance-total">
-          <strong class="balance-label">Saldo Total:</strong>
-          <span [class]="getTotalBalance() > 0 ? 'text-success' : getTotalBalance() < 0 ? 'text-error' : ''" 
+        
+        <!-- Currency selector -->
+        <div class="currency-selector" *ngIf="!loadingRates && exchangeRates.length > 0">
+          <label class="form-label">Mostrar total en:</label>
+          <div style="display: flex; gap: var(--space-2); align-items: center;">
+            <select [(ngModel)]="preferredCurrency" 
+                    (change)="onPreferredCurrencyChange()" 
+                    class="form-control" 
+                    style="max-width: 200px;">
+              <option *ngFor="let currency of currencies" [value]="currency">
+                {{ currency }}
+              </option>
+            </select>
+            <button *ngIf="canEditRates" 
+                    class="btn btn-sm" 
+                    (click)="goToSettings()"
+                    title="Configurar tasas de cambio">
+              <i class="fas fa-cog"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Balance details with conversion -->
+        <div class="balance-details">
+          <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item-detailed">
+            <div class="balance-item-main">
+              <span class="balance-currency">{{ balance.currency }}:</span>
+              <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''" 
+                    class="balance-amount">
+                {{ formatCurrency(balance.amount) }}
+              </span>
+            </div>
+            <div class="balance-item-converted" *ngIf="balance.currency !== preferredCurrency && exchangeRates.length > 0">
+              <span class="converted-label">≈</span>
+              <span class="converted-amount">
+                {{ formatCurrency(balance.convertedAmount) }} {{ preferredCurrency }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total balance -->
+        <div class="balance-total" *ngIf="!loadingRates && exchangeRates.length > 0">
+          <strong class="balance-label">Total en {{ preferredCurrency }}:</strong>
+          <span [class]="getTotalBalanceConverted() > 0 ? 'text-success' : getTotalBalanceConverted() < 0 ? 'text-error' : ''" 
                 class="balance-value">
-            {{ formatCurrency(getTotalBalance()) }}
+            {{ formatCurrency(getTotalBalanceConverted()) }}
           </span>
         </div>
-        <div class="balance-details">
-          <div *ngFor="let balance of getSortedBalances()" class="balance-item">
-            <span>{{ balance.currency }}:</span>
-            <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''">
-              {{ formatCurrency(balance.amount) }}
-            </span>
-          </div>
+
+        <!-- Loading rates indicator -->
+        <div *ngIf="loadingRates" class="loading-rates">
+          <span class="loading"></span>
+          <span>Cargando tasas de cambio...</span>
         </div>
       </div>
     </div>

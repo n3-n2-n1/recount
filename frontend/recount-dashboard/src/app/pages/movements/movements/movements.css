@@ -47,11 +47,77 @@ textarea.form-control {
   margin-top: var(--space-3);
 }
 
+/* Currency selector */
+.currency-selector {
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.currency-selector .form-label {
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Balance details with conversion */
+.balance-details {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.balance-item-detailed {
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  background: var(--color-bg-secondary);
+}
+
+.balance-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.balance-currency {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.balance-amount {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.balance-item-converted {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
+  font-style: italic;
+}
+
+.converted-label {
+  opacity: 0.7;
+}
+
+.converted-amount {
+  font-family: monospace;
+}
+
+/* Balance total */
 .balance-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-secondary);
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-color);
 }
 
 .balance-label {
@@ -60,14 +126,21 @@ textarea.form-control {
 }
 
 .balance-value {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
-.balance-details {
-  margin-top: var(--space-2);
+/* Loading rates */
+.loading-rates {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
 }
 
+/* Legacy balance item (if still used) */
 .balance-item {
   display: flex;
   justify-content: space-between;
@@ -263,9 +336,35 @@ textarea.form-control {
   border-top-color: var(--border-color-dark);
 }
 
+.dark-mode .currency-selector {
+  border-bottom-color: var(--border-color-dark);
+}
+
+.dark-mode .balance-item-detailed {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+}
+
+.dark-mode .balance-currency {
+  color: #ffffff;
+}
+
+.dark-mode .balance-item-converted {
+  color: #9ca3af;
+}
+
+.dark-mode .balance-total {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+}
+
 .dark-mode .balance-label,
 .dark-mode .balance-value {
   color: #ffffff;
+}
+
+.dark-mode .loading-rates {
+  color: #9ca3af;
 }
 
 .dark-mode .balance-item span {

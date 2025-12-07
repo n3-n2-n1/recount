@@ -62,6 +62,7 @@ export class DashboardLayout implements OnInit, OnDestroy {
     if (this.currentRoute.includes('/users')) return 'Cuentas';
     if (this.currentRoute.includes('/history')) return 'Historial';
     if (this.currentRoute.includes('/team')) return 'Equipo';
+    if (this.currentRoute.includes('/settings')) return 'Configuración';
     return 'Dashboard';
   }
 
@@ -79,6 +80,10 @@ export class DashboardLayout implements OnInit, OnDestroy {
 
   goToTeam(): void {
     this.router.navigate(['/team']);
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/settings']);
   }
 
   isSuperAdmin(): boolean {
