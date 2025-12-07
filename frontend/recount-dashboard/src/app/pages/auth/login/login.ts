@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { ThemeService } from '../../../services/theme.service';
 import { LoginRequest } from '../../../models';
@@ -20,6 +20,7 @@ export class Login implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private themeService: ThemeService
   ) {}
 
@@ -28,6 +29,18 @@ export class Login implements OnInit {
     this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
     });
+
+    // Check for messages from query params (e.g., from force logout)
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.error = params['message'];
+      }
+    });
+
+    // Clear any error messages and reset form on component init (only if no query param message)
+    if (!this.route.snapshot.queryParams['message']) {
+      this.error = '';
+    }
   }
 
   toggleDarkMode(): void {
@@ -35,28 +48,69 @@ export class Login implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.email || !this.password) {
-      this.error = 'Please enter both email and password';
+    // Reset previous errors
+    this.error = '';
+
+    // Validate input
+    if (!this.email?.trim()) {
+      this.error = 'Please enter your email address';
+      return;
+    }
+
+    if (!this.password?.trim()) {
+      this.error = 'Please enter your password';
+      return;
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email.trim())) {
+      this.error = 'Please enter a valid email address';
       return;
     }
 
     this.loading = true;
-    this.error = '';
 
     const credentials: LoginRequest = {
-      email: this.email,
+      email: this.email.trim().toLowerCase(),
       password: this.password
     };
+
+    console.log('🔐 Attempting login for:', credentials.email);
 
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.loading = false;
-        console.log('✅ Login exitoso, redirigiendo a /movements');
+        console.log('✅ Login successful, redirecting to /movements');
+
+        // Clear form after successful login
+        this.email = '';
+        this.password = '';
+
         this.router.navigate(['/movements']);
       },
       error: (error) => {
         this.loading = false;
-        this.error = error.message || 'Login failed. Please check your credentials.';
+
+        // Handle different error types
+        if (error.name === 'AuthError') {
+          this.error = error.message;
+        } else if (error.status === 401) {
+          this.error = 'Invalid email or password. Please check your credentials.';
+        } else if (error.status === 429) {
+          this.error = 'Too many login attempts. Please wait a few minutes before trying again.';
+        } else if (error.status >= 500) {
+          this.error = 'Server error. Please try again later.';
+        } else if (!navigator.onLine) {
+          this.error = 'No internet connection. Please check your connection and try again.';
+        } else {
+          this.error = error.message || 'Login failed. Please try again.';
+        }
+
+        console.error('❌ Login error:', error);
+
+        // Clear password on error for security
+        this.password = '';
       }
     });
   }

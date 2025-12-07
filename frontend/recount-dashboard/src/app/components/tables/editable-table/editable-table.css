@@ -3,13 +3,14 @@
 /* Clickable cells */
 .clickable-cell {
   cursor: pointer;
-  color: #3b82f6;
-  text-decoration: underline;
+  color: #111827; /* Negro en modo claro */
+  text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .clickable-cell:hover {
-  color: #2563eb;
+  color: #374151; /* Gris oscuro en hover para modo claro */
 }
 
 /* Transiciones globales para dark mode */
@@ -589,11 +590,11 @@ html.dark-mode .border-gray-300 {
 }
 
 html.dark-mode .clickable-cell {
-  color: #60a5fa !important;
+  color: #ffffff !important; /* Blanco en modo oscuro */
 }
 
 html.dark-mode .clickable-cell:hover {
-  color: #93c5fd !important;
+  color: #f3f4f6 !important; /* Gris claro en hover para modo oscuro */
 }
 
 html.dark-mode .bg-yellow-50 {
