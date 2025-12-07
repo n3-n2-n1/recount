@@ -8,16 +8,13 @@ import { authenticateToken, requireAdminOrReviewer } from '../middleware/auth.js
 
 const router = express.Router();
 
-// All routes require authentication
-router.use(authenticateToken);
-
-// Get all exchange rates (available to all authenticated users)
+// Get all exchange rates (public - no authentication required)
 router.get('/', getExchangeRates);
 
-// Get exchange rate history (available to all authenticated users)
-router.get('/history', getExchangeRateHistory);
+// Get exchange rate history (requires authentication)
+router.get('/history', authenticateToken, getExchangeRateHistory);
 
 // Update exchange rate (only super_admin and reviewer)
-router.put('/:currency', requireAdminOrReviewer, updateExchangeRate);
+router.put('/:currency', authenticateToken, requireAdminOrReviewer, updateExchangeRate);
 
 export default router;

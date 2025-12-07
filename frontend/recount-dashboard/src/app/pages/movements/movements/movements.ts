@@ -97,12 +97,14 @@ export class Movements implements OnInit {
     this.loadingRates = true;
     this.exchangeRateService.getExchangeRates().subscribe({
       next: (response) => {
-        this.exchangeRates = response.rates;
+        this.exchangeRates = response.rates || [];
         this.loadingRates = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading exchange rates:', error);
+        console.warn('Could not load exchange rates:', error.message || error);
+        // Continue without rates - user can still use the app
+        this.exchangeRates = [];
         this.loadingRates = false;
         this.cdr.detectChanges();
       }
