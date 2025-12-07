@@ -51,7 +51,6 @@ textarea.form-control {
 .currency-selector {
   margin-bottom: var(--space-2);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .currency-selector .form-label {
@@ -330,9 +329,7 @@ textarea.form-control {
   border-top-color: var(--border-color-dark);
 }
 
-.dark-mode .currency-selector {
-  border-bottom-color: var(--border-color-dark);
-}
+/* Currency selector dark mode styles removed */
 
 .dark-mode .currency-selector .form-label {
   color: #9ca3af;
