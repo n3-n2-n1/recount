@@ -65,10 +65,10 @@
             <input type="text" [(ngModel)]="inflowForm.description" name="inflowDescription" 
                    class="form-control" required>
           </div>
-          <button type="submit" [disabled]="loading || !isInflowFormValid()" 
+          <button type="submit" [disabled]="loadingInflow || !isInflowFormValid()" 
                   class="btn btn-success w-full">
-            <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Procesando...' : 'Crear ingreso' }}
+            <span *ngIf="loadingInflow" class="loading"></span>
+            {{ loadingInflow ? 'Procesando...' : 'Crear ingreso' }}
           </button>
         </form>
       </div>
@@ -97,10 +97,10 @@
             <input type="text" [(ngModel)]="outflowForm.description" name="outflowDescription" 
                    class="form-control" required>
           </div>
-          <button type="submit" [disabled]="loading || !isOutflowFormValid()" 
+          <button type="submit" [disabled]="loadingOutflow || !isOutflowFormValid()" 
                   class="btn btn-danger w-full">
-            <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Procesando...' : 'Crear egreso' }}
+            <span *ngIf="loadingOutflow" class="loading"></span>
+            {{ loadingOutflow ? 'Procesando...' : 'Crear egreso' }}
           </button>
         </form>
       </div>
@@ -142,10 +142,10 @@
             <input type="text" [(ngModel)]="swapForm.description" name="swapDescription" 
                    class="form-control" required>
           </div>
-          <button type="submit" [disabled]="loading || !isSwapFormValid()" 
+          <button type="submit" [disabled]="loadingSwap || !isSwapFormValid()" 
                   class="btn btn-primary w-full">
-            <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Procesando...' : 'Ejecutar intercambio' }}
+            <span *ngIf="loadingSwap" class="loading"></span>
+            {{ loadingSwap ? 'Procesando...' : 'Ejecutar intercambio' }}
           </button>
         </form>
       </div>
@@ -183,10 +183,10 @@
             <input type="text" [(ngModel)]="transferForm.description" name="transferDescription" 
                    class="form-control" required>
           </div>
-          <button type="submit" [disabled]="loading || !isTransferFormValid()" 
+          <button type="submit" [disabled]="loadingTransfer || !isTransferFormValid()" 
                   class="btn btn-primary w-full" style="background-color: #9333ea;">
-            <span *ngIf="loading" class="loading"></span>
-            {{ loading ? 'Procesando...' : 'Transferir' }}
+            <span *ngIf="loadingTransfer" class="loading"></span>
+            {{ loadingTransfer ? 'Procesando...' : 'Transferir' }}
           </button>
         </form>
       </div>

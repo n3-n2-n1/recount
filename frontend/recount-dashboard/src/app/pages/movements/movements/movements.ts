@@ -12,7 +12,10 @@ import { Account, CreateTransactionRequest, Transaction } from '../../../models'
 })
 export class Movements implements OnInit {
   accounts: Account[] = [];
-  loading = false;
+  loadingInflow = false;
+  loadingOutflow = false;
+  loadingSwap = false;
+  loadingTransfer = false;
   successMessage = '';
   errorMessage = '';
   recentTransactions: Transaction[] = [];
@@ -266,14 +269,13 @@ export class Movements implements OnInit {
       amount: this.inflowForm.amount
     };
 
-    this.loading = true;
+    this.loadingInflow = true;
     this.clearMessages();
-    this.ensureLoadingReset(); // Extra safety
 
     // Safety timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      if (this.loading) {
-        this.loading = false;
+      if (this.loadingInflow) {
+        this.loadingInflow = false;
         this.showError('Request timeout - please try again');
       }
     }, 30000); // 30 seconds timeout
@@ -281,7 +283,7 @@ export class Movements implements OnInit {
     this.transactionsService.createTransaction(transaction).subscribe({
       next: (result) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingInflow = false;
         this.showSuccess('Ingreso creado exitosamente!');
         this.resetInflowForm();
         // Refresh accounts to update balances
@@ -292,7 +294,7 @@ export class Movements implements OnInit {
       },
       error: (error) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingInflow = false;
         const errorMessage = error?.message || 'Unknown error occurred';
         this.showError('Error creating inflow: ' + errorMessage);
         this.cdr.detectChanges();
@@ -321,14 +323,13 @@ export class Movements implements OnInit {
       amount: this.outflowForm.amount
     };
 
-    this.loading = true;
+    this.loadingOutflow = true;
     this.clearMessages();
-    this.ensureLoadingReset(); // Extra safety
 
     // Safety timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      if (this.loading) {
-        this.loading = false;
+      if (this.loadingOutflow) {
+        this.loadingOutflow = false;
         this.showError('Request timeout - please try again');
       }
     }, 30000); // 30 seconds timeout
@@ -336,7 +337,7 @@ export class Movements implements OnInit {
     this.transactionsService.createTransaction(transaction).subscribe({
       next: (result) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingOutflow = false;
         this.showSuccess('Egreso creado exitosamente!');
         this.resetOutflowForm();
         // Refresh accounts to update balances
@@ -347,7 +348,7 @@ export class Movements implements OnInit {
       },
       error: (error) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingOutflow = false;
         console.error('Error creating outflow:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
         this.showError('Error creating outflow: ' + errorMessage);
@@ -384,14 +385,13 @@ export class Movements implements OnInit {
       exchangeRate: this.swapForm.exchangeRate
     };
 
-    this.loading = true;
+    this.loadingSwap = true;
     this.clearMessages();
-    this.ensureLoadingReset(); // Extra safety
 
     // Safety timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      if (this.loading) {
-        this.loading = false;
+      if (this.loadingSwap) {
+        this.loadingSwap = false;
         this.showError('Request timeout - please try again');
       }
     }, 30000); // 30 seconds timeout
@@ -399,7 +399,7 @@ export class Movements implements OnInit {
     this.transactionsService.createTransaction(transaction).subscribe({
       next: (result) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingSwap = false;
         this.showSuccess('Intercambio ejecutado exitosamente!');
         this.resetSwapForm();
         // Refresh accounts to update balances
@@ -410,7 +410,7 @@ export class Movements implements OnInit {
       },
       error: (error) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingSwap = false;
         console.error('Error creating swap:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
         this.showError('Error executing swap: ' + errorMessage);
@@ -454,14 +454,13 @@ export class Movements implements OnInit {
       targetAccountId: this.transferForm.targetAccountId
     };
 
-    this.loading = true;
+    this.loadingTransfer = true;
     this.clearMessages();
-    this.ensureLoadingReset(); // Extra safety
 
     // Safety timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      if (this.loading) {
-        this.loading = false;
+      if (this.loadingTransfer) {
+        this.loadingTransfer = false;
         this.showError('Request timeout - please try again');
       }
     }, 30000); // 30 seconds timeout
@@ -469,7 +468,7 @@ export class Movements implements OnInit {
     this.transactionsService.createTransaction(transaction).subscribe({
       next: (result) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingTransfer = false;
         this.showSuccess('Internal transfer executed successfully!');
         this.resetTransferForm();
         // Refresh accounts to update balances
@@ -480,7 +479,7 @@ export class Movements implements OnInit {
       },
       error: (error) => {
         clearTimeout(timeout);
-        this.loading = false;
+        this.loadingTransfer = false;
         console.error('Error creating transfer:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
         this.showError('Error executing transfer: ' + errorMessage);
@@ -555,16 +554,6 @@ export class Movements implements OnInit {
     return this.accounts.filter(acc => acc._id !== this.selectedAccountId);
   }
 
-  // Safety method to reset loading if something goes wrong
-  private ensureLoadingReset(): void {
-    setTimeout(() => {
-      if (this.loading) {
-        console.warn('Loading state was not reset properly, forcing reset');
-        this.loading = false;
-        this.showError('Operation timed out - please try again');
-      }
-    }, 35000); // Slightly longer than the timeout in individual methods
-  }
 
   private showSuccess(message: string): void {
     this.successMessage = message;
