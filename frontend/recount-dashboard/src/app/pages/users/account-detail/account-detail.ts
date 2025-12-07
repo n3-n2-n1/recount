@@ -109,9 +109,10 @@ export class AccountDetail implements OnInit {
 
   loadTransactions(): void {
     console.log('Loading transactions for account:', this.accountId);
-    // Cargar transacciones filtradas por esta cuenta usando el backend
+    // Cargar transacciones filtradas por esta cuenta incluyendo transferencias internas
     this.transactionsService.getAllTransactions({
-      accountId: this.accountId
+      accountId: this.accountId,
+      includeInternalTransfers: 'true'
     }).subscribe({
       next: (response: any) => {
         console.log('Transactions loaded successfully:', response);
@@ -190,6 +191,65 @@ export class AccountDetail implements OnInit {
       case 'Transferencia Interna': return 'text-info';
       default: return '';
     }
+  }
+
+  /**
+   * Get the transaction sign and display type for this account
+   * For internal transfers, show as positive if this account received the transfer
+   */
+  getTransactionSignAndType(transaction: any): { sign: string, type: string } {
+    if (transaction.type === 'Transferencia Interna') {
+      // Check if this account is the target (received the transfer)
+      const targetAccountId = typeof transaction.targetAccountId === 'object'
+        ? transaction.targetAccountId?._id
+        : transaction.targetAccountId;
+
+      const isTargetAccount = targetAccountId === this.accountId;
+
+      if (isTargetAccount) {
+        // This account received the transfer (Entrada)
+        return { sign: '+', type: 'Transferencia Interna (Recibida)' };
+      } else {
+        // This account sent the transfer (Salida)
+        return { sign: '-', type: 'Transferencia Interna (Enviada)' };
+      }
+    }
+
+    // Regular transactions
+    return {
+      sign: transaction.type === 'Entrada' ? '+' : '-',
+      type: transaction.type
+    };
+  }
+
+  /**
+   * Get the transaction description with account information for internal transfers
+   */
+  getTransactionDescription(transaction: any): string {
+    if (transaction.type === 'Transferencia Interna') {
+      // Check if this account is the target (received the transfer)
+      const targetAccountId = typeof transaction.targetAccountId === 'object'
+        ? transaction.targetAccountId?._id
+        : transaction.targetAccountId;
+
+      const isTargetAccount = targetAccountId === this.accountId;
+
+      if (isTargetAccount) {
+        // This account received the transfer - show source account
+        const sourceAccountName = typeof transaction.accountId === 'object'
+          ? transaction.accountId?.name
+          : 'Cuenta origen';
+        return `Recibido desde: ${sourceAccountName}`;
+      } else {
+        // This account sent the transfer - show target account
+        const targetAccountName = typeof transaction.targetAccountId === 'object'
+          ? transaction.targetAccountId?.name
+          : 'Cuenta destino';
+        return `Enviado a: ${targetAccountName}`;
+      }
+    }
+
+    return transaction.description || '-';
   }
 
   formatDate(date: string | Date): string {

@@ -150,16 +150,14 @@
                 <td>{{ formatDate(transaction.createdAt) }}</td>
                 <td>
                   <span class="transaction-type" [class]="getTransactionTypeClass(transaction.type)">
-                    {{ transaction.type }}
+                    {{ getTransactionSignAndType(transaction).type }}
                   </span>
                 </td>
-                <td>{{ transaction.description || '-' }}</td>
+                <td>{{ getTransactionDescription(transaction) }}</td>
                 <td>{{ transaction.currency }}</td>
                 <td class="text-right">
                   <span class="amount" [class]="getTransactionTypeClass(transaction.type)">
-                    <span *ngIf="transaction.type === 'Entrada'">+</span>
-                    <span *ngIf="transaction.type === 'Salida'">-</span>
-                    {{ transaction.amount | number:'1.2-2' }}
+                    {{ getTransactionSignAndType(transaction).sign }}{{ transaction.amount | number:'1.2-2' }}
                   </span>
                 </td>
               </tr>

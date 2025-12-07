@@ -36,12 +36,20 @@ const updateAccountBalance = async (
 
 export const getTransactions = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { accountId, type, currency, page = 1, limit = 20 } = req.query;
+    const { accountId, type, currency, page = 1, limit = 20, includeInternalTransfers = 'false' } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     let query: any = {};
     if (accountId && accountId !== 'undefined') {
-      query.accountId = accountId;
+      if (includeInternalTransfers === 'true') {
+        // Include transactions where account is either source or target
+        query.$or = [
+          { accountId: accountId },
+          { targetAccountId: accountId, type: 'Transferencia Interna' }
+        ];
+      } else {
+        query.accountId = accountId;
+      }
     }
     if (type && type !== 'undefined') {
       query.type = type;

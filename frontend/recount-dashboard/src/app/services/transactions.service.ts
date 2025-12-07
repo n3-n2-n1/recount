@@ -27,6 +27,7 @@ export class TransactionsService {
     currency?: string;
     dateFrom?: string;
     dateTo?: string;
+    includeInternalTransfers?: string;
   }): Observable<{ transactions: Transaction[], pagination?: any }> {
     let queryParams = '';
     
@@ -40,6 +41,7 @@ export class TransactionsService {
       if (params.currency) searchParams.append('currency', params.currency);
       if (params.dateFrom) searchParams.append('dateFrom', params.dateFrom);
       if (params.dateTo) searchParams.append('dateTo', params.dateTo);
+      if (params.includeInternalTransfers) searchParams.append('includeInternalTransfers', params.includeInternalTransfers);
       
       queryParams = searchParams.toString();
     }
