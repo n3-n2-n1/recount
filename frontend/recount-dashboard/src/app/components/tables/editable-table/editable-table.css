@@ -590,13 +590,15 @@ html.dark-mode .border-gray-300 {
 }
 
 /* Higher specificity for clickable cells in dark mode */
-html.dark-mode td .clickable-cell,
-html.dark-mode .clickable-cell {
+html.dark-mode app-editable-table td .clickable-cell,
+html.dark-mode app-editable-table .clickable-cell,
+html.dark-mode td .clickable-cell {
   color: #ffffff !important; /* Blanco en modo oscuro */
 }
 
-html.dark-mode td .clickable-cell:hover,
-html.dark-mode .clickable-cell:hover {
+html.dark-mode app-editable-table td .clickable-cell:hover,
+html.dark-mode app-editable-table .clickable-cell:hover,
+html.dark-mode td .clickable-cell:hover {
   color: #e5e7eb !important; /* Blanco grisáceo en hover para modo oscuro */
 }
 
