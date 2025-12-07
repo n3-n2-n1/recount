@@ -90,7 +90,6 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); transition: col
 
 .card-header {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -392,7 +391,6 @@ body.dark-mode app-root {
 }
 
 .dark-mode .card-header {
-  border-color: #1f1f1f !important;
   background: #141414 !important;
 }
 
