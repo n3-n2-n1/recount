@@ -7,7 +7,6 @@ import { SettingsService } from '../../../services/settings.service';
 import { AuthService } from '../../../services/auth.service';
 import { Account, CreateTransactionRequest, Transaction, ExchangeRate } from '../../../models';
 import { CurrencyType } from '../../../models/transaction.model';
-import { convertBalancesToTarget, calculateTotalBalance, formatCurrencyWithSymbol } from '../../../utils/currency-converter';
 
 interface Toast {
   id: number;
@@ -32,11 +31,10 @@ export class Movements implements OnInit {
   private toastIdCounter = 0;
   recentTransactions: Transaction[] = [];
   
-  // Exchange rates
+  // Exchange rates for currency selector
   exchangeRates: ExchangeRate[] = [];
   loadingRates = false;
   preferredCurrency: CurrencyType = 'DÓLAR';
-  canEditRates = false;
 
   // Movement form data
   selectedAccountId = '';
@@ -659,27 +657,6 @@ export class Movements implements OnInit {
     this.router.navigate(['/history']);
   }
 
-  getTotalBalanceConverted(): number {
-    const selectedAccount = this.getSelectedAccount();
-    if (!selectedAccount || !this.exchangeRates.length) return 0;
-    
-    return calculateTotalBalance(
-      selectedAccount.balances,
-      this.preferredCurrency,
-      this.exchangeRates
-    );
-  }
-
-  getBalancesWithConversion() {
-    const selectedAccount = this.getSelectedAccount();
-    if (!selectedAccount || !this.exchangeRates.length) return [];
-    
-    return convertBalancesToTarget(
-      selectedAccount.balances,
-      this.preferredCurrency,
-      this.exchangeRates
-    );
-  }
 
   formatCurrencyDisplay(amount: number, currency?: CurrencyType): string {
     if (currency) {
@@ -690,5 +667,11 @@ export class Movements implements OnInit {
 
   goToSettings(): void {
     this.router.navigate(['/settings']);
+  }
+
+  goToAccountDetail(): void {
+    if (this.selectedAccountId) {
+      this.router.navigate(['/account', this.selectedAccountId]);
+    }
   }
 }
