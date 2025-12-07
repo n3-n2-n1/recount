@@ -315,6 +315,17 @@ html.dark-mode .editable-table-container td {
   border-color: #1f1f1f !important;
 }
 
+/* Nombres de cuentas clickables - blanco en dark mode */
+html.dark-mode .editable-table-container td .clickable-cell,
+html.dark-mode .editable-table-container .clickable-cell {
+  color: #ffffff !important; /* Blanco para nombres de cuentas */
+}
+
+html.dark-mode .editable-table-container td .clickable-cell:hover,
+html.dark-mode .editable-table-container .clickable-cell:hover {
+  color: #e5e7eb !important; /* Blanco grisáceo en hover */
+}
+
 html.dark-mode .editable-table-container tbody tr {
   background: #0a0a0a !important;
   background-color: #0a0a0a !important;
