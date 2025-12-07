@@ -1,8 +1,8 @@
 <div page-content>
-  
+
   <!-- Toast Notifications -->
   <div class="toast-container">
-    <div *ngFor="let toast of toasts" 
+    <div *ngFor="let toast of toasts"
          [class]="'toast toast-' + toast.type + ' ' + (toast.show ? 'toast-show' : '')">
       <div class="toast-icon">
         <i [class]="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
@@ -15,40 +15,31 @@
       </button>
     </div>
   </div>
-
-  <h2 style="margin-bottom: var(--space-4);">Configuración</h2>
-
+  
   <!-- User Preferences Section -->
-  <div class="card" style="margin-bottom: var(--space-4);">
-    <div class="card-header">
-      <h3>Preferencias</h3>
-    </div>
-    <div class="card-body">
-      <div class="form-group">
-        <label class="form-label">Moneda base/label>
-        <select [(ngModel)]="preferredCurrency" 
-                (change)="onPreferredCurrencyChange()" 
-                class="form-control">
-          <option *ngFor="let currency of availableCurrencies" [value]="currency">
-            {{ currency }}
-          </option>
-        </select>
-      </div>
+  <div style="margin-bottom: var(--space-6);">
+    <h3 style="margin-bottom: var(--space-3); color: var(--text-primary);">Preferencias</h3>
+    <div class="form-group" style="max-width: 300px;">
+      <label class="form-label">Moneda base</label>
+      <select [(ngModel)]="preferredCurrency"
+              (change)="onPreferredCurrencyChange()"
+              class="form-control">
+        <option *ngFor="let currency of availableCurrencies" [value]="currency">
+          {{ currency }}
+        </option>
+      </select>
     </div>
   </div>
 
   <!-- Exchange Rates Section (Only for admin/reviewer) -->
-  <div *ngIf="canEditRates" class="card" style="margin-bottom: var(--space-4);">
-    <div class="card-header">
-      <div class="flex-between">
-        <h3>Tasas de Cambio</h3>
-        <button class="btn btn-sm" (click)="loadHistory()" [disabled]="loadingHistory">
-          <i class="fas" [class.fa-history]="!showHistory" [class.fa-times]="showHistory"></i>
-          {{ showHistory ? 'Ocultar' : 'Ver' }} Historial
-        </button>
-      </div>
+  <div *ngIf="canEditRates" style="margin-bottom: var(--space-6);">
+    <div class="flex-between" style="margin-bottom: var(--space-3);">
+      <h3 style="color: var(--text-primary);">Tasas de Cambio</h3>
+      <button class="btn btn-sm" (click)="loadHistory()" [disabled]="loadingHistory">
+        <i class="fas" [class.fa-history]="!showHistory" [class.fa-times]="showHistory"></i>
+        {{ showHistory ? 'Ocultar' : 'Ver' }} Historial
+      </button>
     </div>
-    <div class="card-body">
 
       <div *ngIf="loadingRates" class="loading-container">
         <span class="loading"></span>
@@ -154,15 +145,11 @@
         </div>
       </div>
 
-    </div>
   </div>
 
   <!-- Info section for non-admin users -->
-  <div *ngIf="!canEditRates" class="card">
-    <div class="card-header">
-      <h3>Tasas de Cambio</h3>
-    </div>
-    <div class="card-body">
+  <div *ngIf="!canEditRates">
+    <h3 style="margin-bottom: var(--space-3); color: var(--text-primary);">Tasas de Cambio</h3>
       <div *ngIf="loadingRates" class="loading-container">
         <span class="loading"></span>
         <p>Cargando tasas de cambio...</p>
@@ -187,7 +174,6 @@
           <span class="rate-updated-small">Actualizado: {{ formatDate(rate.updatedAt) }}</span>
         </div>
       </div>
-    </div>
   </div>
 
 </div>
