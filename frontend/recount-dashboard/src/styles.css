@@ -6,7 +6,7 @@
 
 :root {
   /* Colors - Minimal Palette */
-  --color-primary: #2563eb;
+  --color-primary: #1e293b;
   --color-success: #16a34a;
   --color-error: #dc2626;
   --color-warning: #f59e0b;
@@ -102,7 +102,7 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
-.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:hover { background: #0f172a; }
 
 .btn-success { background: var(--color-success); color: white; border-color: var(--color-success); }
 .btn-success:hover { background: #15803d; }
