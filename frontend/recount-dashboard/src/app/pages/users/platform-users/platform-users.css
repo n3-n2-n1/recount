@@ -112,3 +112,38 @@
     align-items: stretch !important;
   }
 }
+
+/* ===== DARK MODE - PLATFORM USERS ===== */
+.dark-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.dark-mode .modal-content {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--border-color-dark);
+}
+
+.dark-mode .modal-header {
+  border-bottom-color: var(--border-color-dark);
+}
+
+.dark-mode .modal-header h3 {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .btn-close {
+  color: var(--color-text-muted);
+}
+
+.dark-mode .btn-close:hover {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .modal-body {
+  background: var(--color-bg-secondary);
+}
+
+.dark-mode .modal-footer {
+  border-top-color: var(--border-color-dark);
+  background: var(--color-bg-secondary);
+}
