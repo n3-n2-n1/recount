@@ -1,124 +1,115 @@
 <!-- Account Detail Page -->
 <div page-content>
-  
-  <!-- Header con botón de volver -->
-  <div style="margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-3);">
+
+  <!-- Header -->
+  <div class="account-header">
     <button class="btn" (click)="goBack()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
-    <h2 style="margin: 0;">Detalles de la Cuenta</h2>
+    <h2 *ngIf="account">{{ account.name }}</h2>
+    <h2 *ngIf="!account">Detalles de la Cuenta</h2>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="error" class="alert alert-error" style="margin-bottom: var(--space-4);">
+  <div *ngIf="error" class="alert alert-error">
     {{ error }}
   </div>
 
   <!-- Loading -->
-  <div *ngIf="loading" class="text-center" style="padding: var(--space-8);">
-    <span class="loading"></span> Cargando información...
+  <div *ngIf="loading" class="loading-container">
+    <span class="loading"></span>
+    <p>Cargando información...</p>
   </div>
 
   <!-- Account Information -->
   <div *ngIf="!loading && account">
-    
-    <!-- Account Info Card -->
-    <div class="card" style="margin-bottom: var(--space-4);">
-      <div class="card-header">
-        <h3>{{ account.name }}</h3>
-      </div>
+
+    <!-- Account Summary Card -->
+    <div class="card account-summary">
       <div class="card-body">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
-          
-          <!-- Balances -->
-          <div>
-            <label class="form-label">Balances por Moneda</label>
-            
+        <div class="summary-grid">
+
+          <!-- Account Balances -->
+          <div class="summary-section">
+            <h4>Balances por Moneda</h4>
+
             <!-- Currency selector -->
-            <div *ngIf="!loadingRates && exchangeRates.length > 0" style="margin-bottom: var(--space-2);">
-              <select [(ngModel)]="preferredCurrency"
-                      (change)="onPreferredCurrencyChange()"
-                      class="form-control"
-                      style="font-size: 0.875rem;">
+            <div *ngIf="!loadingRates && exchangeRates.length > 0" class="currency-selector">
+              <select [(ngModel)]="preferredCurrency" (change)="onPreferredCurrencyChange()" class="form-control">
                 <option *ngFor="let currency of currencies" [value]="currency">
                   Ver en {{ currency }}
                 </option>
               </select>
             </div>
-            <div *ngIf="!loadingRates && exchangeRates.length === 0" style="margin-bottom: var(--space-2);">
-              <small style="color: var(--color-gray-600); font-style: italic;">
-                Cargando tasas de cambio...
-              </small>
-            </div>
 
-            <div *ngIf="getAccountBalances().length > 0">
-              <!-- When exchange rates are available -->
+            <div class="balances-list" *ngIf="getAccountBalances().length > 0; else noBalances">
+              <!-- With exchange rates -->
               <ng-container *ngIf="exchangeRates.length > 0">
-                <div *ngFor="let balance of getBalancesWithConversion()"
-                     style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
-                  <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
-                  <div *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined"
-                       style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">
+                <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item">
+                  <div class="balance-main">
+                    <span class="balance-currency">{{ balance.currency }}:</span>
+                    <span class="balance-amount" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
+                      {{ balance.amount | number:'1.2-2' }}
+                    </span>
+                  </div>
+                  <div *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined" class="balance-converted">
                     ≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }}
                   </div>
                 </div>
               </ng-container>
 
-              <!-- When no exchange rates are available -->
+              <!-- Without exchange rates -->
               <ng-container *ngIf="exchangeRates.length === 0">
-                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance"
-                     style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
-                  <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
-                  <!-- Debug info -->
-                  <div style="font-size: 10px; color: red;">DEBUG: {{ balance.amount }}</div>
+                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance" class="balance-item">
+                  <div class="balance-main">
+                    <span class="balance-currency">{{ balance.currency }}:</span>
+                    <span class="balance-amount" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
+                      {{ balance.amount | number:'1.2-2' }}
+                    </span>
+                  </div>
                 </div>
               </ng-container>
             </div>
-            <div *ngIf="getAccountBalances().length === 0" class="text-muted">
-              Sin balances
-            </div>
+
+            <ng-template #noBalances>
+              <div class="no-balances">
+                <i class="fas fa-wallet"></i>
+                <span>Sin balances</span>
+              </div>
+            </ng-template>
           </div>
 
           <!-- Total Balance -->
-          <div>
-            <label class="form-label">Balance Total</label>
-            <div style="font-size: var(--font-xl); font-weight: 600;" 
-                 [class.text-success]="getTotalBalance() > 0"
-                 [class.text-error]="getTotalBalance() < 0">
+          <div class="summary-section">
+            <h4>Balance Total</h4>
+            <div class="total-balance" [class]="getTotalBalance() > 0 ? 'positive' : getTotalBalance() < 0 ? 'negative' : ''">
               {{ getTotalBalance() | number:'1.2-2' }}
             </div>
-            
-            <div *ngIf="!loadingRates && exchangeRates.length > 0" style="margin-top: var(--space-2);">
-              <label class="form-label">Total en {{ preferredCurrency }}</label>
-              <div style="font-size: var(--font-lg); font-weight: 600;"
-                   [class.text-success]="getTotalBalanceConverted() > 0"
-                   [class.text-error]="getTotalBalanceConverted() < 0">
+
+            <div *ngIf="!loadingRates && exchangeRates.length > 0" class="converted-total">
+              <div class="converted-label">En {{ preferredCurrency }}</div>
+              <div class="converted-amount" [class]="getTotalBalanceConverted() > 0 ? 'positive' : getTotalBalanceConverted() < 0 ? 'negative' : ''">
                 {{ getTotalBalanceConverted() | number:'1.2-2' }}
               </div>
             </div>
-            <div *ngIf="!loadingRates && exchangeRates.length === 0 && getAccountBalances().length > 0" style="margin-top: var(--space-2);">
-              <label class="form-label">Total sin conversión</label>
-              <div style="font-size: var(--font-lg); font-weight: 600;"
-                   [class.text-success]="getTotalBalance() > 0"
-                   [class.text-error]="getTotalBalance() < 0">
-                {{ getTotalBalance() | number:'1.2-2' }}
+          </div>
+
+          <!-- Account Info -->
+          <div class="summary-section">
+            <h4>Información</h4>
+            <div class="account-info">
+              <div class="info-item">
+                <span class="info-label">Creada:</span>
+                <span class="info-value">{{ formatDate(account.createdAt) }}</span>
               </div>
-            </div>
-          </div>
-
-          <!-- Dates -->
-          <div>
-            <label class="form-label">Fecha de Creación</label>
-            <div>{{ formatDate(account.createdAt) }}</div>
-            <label class="form-label" style="margin-top: var(--space-2);">Última Actualización</label>
-            <div>{{ formatDate(account.updatedAt) }}</div>
-          </div>
-
-          <!-- Transacciones Count -->
-          <div>
-            <label class="form-label">Total de Transacciones</label>
-            <div style="font-size: var(--font-xl); font-weight: 600;">
-              {{ transactions.length }}
+              <div class="info-item">
+                <span class="info-label">Actualizada:</span>
+                <span class="info-value">{{ formatDate(account.updatedAt) }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Transacciones:</span>
+                <span class="info-value">{{ transactions.length }}</span>
+              </div>
             </div>
           </div>
 
@@ -126,21 +117,21 @@
       </div>
     </div>
 
-    <!-- Transactions History Card -->
+    <!-- Transactions History -->
     <div class="card">
       <div class="card-header">
         <h3>Historial de Transacciones</h3>
       </div>
       <div class="card-body">
-        
+
         <!-- Empty State -->
-        <div *ngIf="transactions.length === 0" class="text-center text-muted" style="padding: var(--space-8);">
-          <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.3;"></i>
+        <div *ngIf="transactions.length === 0" class="empty-state">
+          <i class="fas fa-inbox"></i>
           <p>No hay transacciones para esta cuenta</p>
         </div>
 
         <!-- Transactions Table -->
-        <div *ngIf="transactions.length > 0" style="overflow-x: auto;">
+        <div *ngIf="transactions.length > 0" class="table-responsive">
           <table class="table">
             <thead>
               <tr>
@@ -148,23 +139,25 @@
                 <th>Tipo</th>
                 <th>Descripción</th>
                 <th>Moneda</th>
-                <th style="text-align: right;">Monto</th>
+                <th class="text-right">Monto</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions">
                 <td>{{ formatDate(transaction.createdAt) }}</td>
                 <td>
-                  <span [class]="getTransactionTypeClass(transaction.type)">
+                  <span class="transaction-type" [class]="getTransactionTypeClass(transaction.type)">
                     {{ transaction.type }}
                   </span>
                 </td>
                 <td>{{ transaction.description || '-' }}</td>
                 <td>{{ transaction.currency }}</td>
-                <td style="text-align: right;" [class]="getTransactionTypeClass(transaction.type)">
-                  <span *ngIf="transaction.type === 'Entrada'">+</span>
-                  <span *ngIf="transaction.type === 'Salida'">-</span>
-                  {{ transaction.amount | number:'1.2-2' }}
+                <td class="text-right">
+                  <span class="amount" [class]="getTransactionTypeClass(transaction.type)">
+                    <span *ngIf="transaction.type === 'Entrada'">+</span>
+                    <span *ngIf="transaction.type === 'Salida'">-</span>
+                    {{ transaction.amount | number:'1.2-2' }}
+                  </span>
                 </td>
               </tr>
             </tbody>
