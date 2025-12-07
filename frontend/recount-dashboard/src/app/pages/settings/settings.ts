@@ -59,9 +59,6 @@ export class Settings implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Settings component initializing...');
-    console.log('Initial state - loadingRates:', this.loadingRates, 'exchangeRates.length:', this.exchangeRates.length);
-
     // Load user preferences first (synchronous)
     this.loadUserPreferences();
 
@@ -69,16 +66,7 @@ export class Settings implements OnInit {
     this.checkPermissions();
 
     // Load exchange rates immediately
-    console.log('About to call loadExchangeRates...');
     this.loadExchangeRates();
-
-    // Fallback: force reload exchange rates if they don't load within 3 seconds
-    setTimeout(() => {
-      if (this.loadingRates && this.exchangeRates.length === 0) {
-        console.warn('Exchange rates not loaded after 3 seconds, forcing reload...');
-        this.loadExchangeRates();
-      }
-    }, 3000);
   }
 
   private checkPermissions(): void {
@@ -92,12 +80,10 @@ export class Settings implements OnInit {
   }
 
   loadExchangeRates(): void {
-    console.log('Loading exchange rates...');
     this.loadingRates = true;
 
     this.exchangeRateService.getExchangeRates().subscribe({
       next: (response) => {
-        console.log('Exchange rates response:', response);
         const existingRates = response?.rates || [];
 
         // Create complete list with all currencies, marking which ones exist
@@ -120,33 +106,8 @@ export class Settings implements OnInit {
           this.editingRates[currency] = existingRate ? existingRate.rateToUSD : 1.0;
         });
 
-        console.log('Exchange rates loaded:', this.exchangeRates.length, 'rates');
-        console.log('Editing rates initialized:', Object.keys(this.editingRates).length, 'currencies');
-
-        // Verify data integrity
-        if (this.exchangeRates.length !== this.allCurrencies.length) {
-          console.warn('Warning: Exchange rates count mismatch', {
-            expected: this.allCurrencies.length,
-            actual: this.exchangeRates.length
-          });
-        }
-
-        if (Object.keys(this.editingRates).length !== this.allCurrencies.length) {
-          console.warn('Warning: Editing rates count mismatch', {
-            expected: this.allCurrencies.length,
-            actual: Object.keys(this.editingRates).length
-          });
-        }
-
-        console.log('Setting loadingRates to false, exchangeRates.length:', this.exchangeRates.length);
         this.loadingRates = false;
-
-        // Force multiple change detection cycles
         this.cdr.detectChanges();
-        setTimeout(() => {
-          this.cdr.detectChanges();
-          console.log('Additional change detection triggered');
-        }, 10);
       },
       error: (error) => {
         console.error('Error loading exchange rates:', error);
