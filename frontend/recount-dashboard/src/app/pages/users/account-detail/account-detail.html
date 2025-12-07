@@ -36,25 +36,41 @@
             
             <!-- Currency selector -->
             <div *ngIf="!loadingRates && exchangeRates.length > 0" style="margin-bottom: var(--space-2);">
-              <select [(ngModel)]="preferredCurrency" 
-                      (change)="onPreferredCurrencyChange()" 
-                      class="form-control" 
+              <select [(ngModel)]="preferredCurrency"
+                      (change)="onPreferredCurrencyChange()"
+                      class="form-control"
                       style="font-size: 0.875rem;">
                 <option *ngFor="let currency of currencies" [value]="currency">
                   Ver en {{ currency }}
                 </option>
               </select>
             </div>
+            <div *ngIf="!loadingRates && exchangeRates.length === 0" style="margin-bottom: var(--space-2);">
+              <small style="color: var(--color-gray-600); font-style: italic;">
+                Cargando tasas de cambio...
+              </small>
+            </div>
 
             <div *ngIf="account.balances && account.balances.length > 0">
-              <div *ngFor="let balance of getBalancesWithConversion()" 
-                   style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
-                <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
-                <div *ngIf="balance.currency !== preferredCurrency && exchangeRates.length > 0" 
-                     style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">
-                  ≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }}
+              <!-- When exchange rates are available -->
+              <ng-container *ngIf="exchangeRates.length > 0">
+                <div *ngFor="let balance of getBalancesWithConversion()"
+                     style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
+                  <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
+                  <div *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined"
+                       style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">
+                    ≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }}
+                  </div>
                 </div>
-              </div>
+              </ng-container>
+
+              <!-- When no exchange rates are available -->
+              <ng-container *ngIf="exchangeRates.length === 0">
+                <div *ngFor="let balance of account.balances"
+                     style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
+                  <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
+                </div>
+              </ng-container>
             </div>
             <div *ngIf="!account.balances || account.balances.length === 0" class="text-muted">
               Sin balances
@@ -72,10 +88,18 @@
             
             <div *ngIf="!loadingRates && exchangeRates.length > 0" style="margin-top: var(--space-2);">
               <label class="form-label">Total en {{ preferredCurrency }}</label>
-              <div style="font-size: var(--font-lg); font-weight: 600;" 
+              <div style="font-size: var(--font-lg); font-weight: 600;"
                    [class.text-success]="getTotalBalanceConverted() > 0"
                    [class.text-error]="getTotalBalanceConverted() < 0">
                 {{ getTotalBalanceConverted() | number:'1.2-2' }}
+              </div>
+            </div>
+            <div *ngIf="!loadingRates && exchangeRates.length === 0 && account.balances" style="margin-top: var(--space-2);">
+              <label class="form-label">Total sin conversión</label>
+              <div style="font-size: var(--font-lg); font-weight: 600;"
+                   [class.text-success]="getTotalBalance() > 0"
+                   [class.text-error]="getTotalBalance() < 0">
+                {{ getTotalBalance() | number:'1.2-2' }}
               </div>
             </div>
           </div>

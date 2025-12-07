@@ -67,19 +67,29 @@ export function convertBalancesToTarget(
   targetCurrency: CurrencyType,
   rates: ExchangeRate[]
 ): Array<Balance & { convertedAmount: number }> {
+  console.log('convertBalancesToTarget called with:', { balances, targetCurrency, rates });
+
   if (!balances || balances.length === 0) {
+    console.log('No balances to convert');
     return [];
   }
 
-  return balances.map(balance => ({
-    ...balance,
-    convertedAmount: convertToBase(
+  const result = balances.map(balance => {
+    const converted = convertToBase(
       balance.amount,
       balance.currency,
       targetCurrency,
       rates
-    )
-  }));
+    );
+    console.log(`Converting ${balance.amount} ${balance.currency} to ${targetCurrency}:`, converted);
+    return {
+      ...balance,
+      convertedAmount: converted
+    };
+  });
+
+  console.log('convertBalancesToTarget result:', result);
+  return result;
 }
 
 /**

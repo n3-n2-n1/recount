@@ -4,9 +4,13 @@ import { AccountsService } from '../../../services/accounts.service';
 import { TransactionsService } from '../../../services/transactions.service';
 import { ExchangeRateService } from '../../../services/exchange-rate.service';
 import { SettingsService } from '../../../services/settings.service';
-import { Account, Transaction, ExchangeRate } from '../../../models';
+import { Account, Transaction, ExchangeRate, Balance } from '../../../models';
 import { CurrencyType } from '../../../models/transaction.model';
 import { convertBalancesToTarget, calculateTotalBalance } from '../../../utils/currency-converter';
+
+interface BalanceWithConversion extends Balance {
+  convertedAmount?: number;
+}
 
 @Component({
   selector: 'app-account-detail',
@@ -60,6 +64,7 @@ export class AccountDetail implements OnInit {
     this.loadingRates = true;
     this.exchangeRateService.getExchangeRates().subscribe({
       next: (response) => {
+        console.log('Exchange rates loaded:', response);
         this.exchangeRates = response.rates || [];
         this.loadingRates = false;
       },
@@ -140,14 +145,23 @@ export class AccountDetail implements OnInit {
     );
   }
 
-  getBalancesWithConversion() {
-    if (!this.account || !this.exchangeRates.length) return [];
-    
-    return convertBalancesToTarget(
+  getBalancesWithConversion(): BalanceWithConversion[] {
+    if (!this.account || !this.exchangeRates.length) {
+      console.log('getBalancesWithConversion: no account or no exchange rates', {
+        account: !!this.account,
+        exchangeRates: this.exchangeRates.length
+      });
+      return [];
+    }
+
+    const result = convertBalancesToTarget(
       this.account.balances,
       this.preferredCurrency,
       this.exchangeRates
     );
+
+    console.log('getBalancesWithConversion result:', result);
+    return result;
   }
 
   getTransactionTypeClass(type: string): string {
