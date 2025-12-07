@@ -51,7 +51,8 @@ export class Login implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.loading = false;
-        this.router.navigate(['/dashboard']);
+        console.log('✅ Login exitoso, redirigiendo a /movements');
+        this.router.navigate(['/movements']);
       },
       error: (error) => {
         this.loading = false;
