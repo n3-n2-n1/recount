@@ -21,11 +21,11 @@
   <!-- User Preferences Section -->
   <div class="card" style="margin-bottom: var(--space-4);">
     <div class="card-header">
-      <h3>Preferencias de Visualización</h3>
+      <h3>Preferencias</h3>
     </div>
     <div class="card-body">
       <div class="form-group">
-        <label class="form-label">Moneda base para mostrar saldos totales</label>
+        <label class="form-label">Moneda base/label>
         <select [(ngModel)]="preferredCurrency" 
                 (change)="onPreferredCurrencyChange()" 
                 class="form-control">
@@ -33,9 +33,6 @@
             {{ currency }}
           </option>
         </select>
-        <p class="help-text">
-          Esta moneda se usará para calcular y mostrar los saldos totales en todas las vistas.
-        </p>
       </div>
     </div>
   </div>
@@ -52,18 +49,22 @@
       </div>
     </div>
     <div class="card-body">
-      
-      <p class="help-text" style="margin-bottom: var(--space-4);">
-        Las tasas se expresan como el valor de conversión a USD. Por ejemplo, si 1 USD = 1000 ARS, 
-        la tasa para PESOS debe ser 0.001.
-      </p>
 
       <div *ngIf="loadingRates" class="loading-container">
         <span class="loading"></span>
-        <p>Cargando tasas...</p>
+        <p>Cargando tasas de cambio...</p>
       </div>
 
-      <div *ngIf="!loadingRates" class="rates-grid">
+      <!-- Error state when no rates are loaded -->
+      <div *ngIf="!loadingRates && !hasExchangeRates" class="text-center text-muted" style="padding: var(--space-4);">
+        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem; margin-bottom: var(--space-2);"></i>
+        <p>No se pudieron cargar las tasas de cambio.</p>
+        <button class="btn btn-sm btn-primary" (click)="loadExchangeRates()" [disabled]="loadingRates">
+          <i class="fas fa-refresh"></i> Reintentar
+        </button>
+      </div>
+
+      <div *ngIf="!loadingRates && hasExchangeRates && hasEditingRates" class="rates-grid">
         <div *ngFor="let rate of exchangeRates" class="rate-item" [class.rate-new]="!rate._id">
           <div class="rate-currency">
             <strong>{{ rate.currency }}</strong>
@@ -108,6 +109,11 @@
           </div>
         </div>
       </div>
+
+      <p class="help-text" style="margin-bottom: var(--space-4);">
+        Las tasas se expresan como el valor de conversión a USD. Por ejemplo, si 1 USD = 1000 ARS, 
+        la tasa para PESOS debe ser 0.001.
+      </p>
 
       <!-- History Section -->
       <div *ngIf="showHistory" class="history-section">
@@ -159,10 +165,19 @@
     <div class="card-body">
       <div *ngIf="loadingRates" class="loading-container">
         <span class="loading"></span>
-        <p>Cargando tasas...</p>
+        <p>Cargando tasas de cambio...</p>
       </div>
 
-      <div *ngIf="!loadingRates" class="rates-display">
+      <!-- Error state for read-only users -->
+      <div *ngIf="!loadingRates && !hasExchangeRates" class="text-center text-muted" style="padding: var(--space-4);">
+        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem; margin-bottom: var(--space-2);"></i>
+        <p>No se pudieron cargar las tasas de cambio.</p>
+        <button class="btn btn-sm btn-primary" (click)="loadExchangeRates()" [disabled]="loadingRates">
+          <i class="fas fa-refresh"></i> Reintentar
+        </button>
+      </div>
+
+      <div *ngIf="!loadingRates && hasExchangeRates" class="rates-display">
         <p class="help-text" style="margin-bottom: var(--space-3);">
           Tasas de cambio actuales utilizadas en el sistema:
         </p>

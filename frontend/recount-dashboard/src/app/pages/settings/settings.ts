@@ -42,6 +42,15 @@ export class Settings implements OnInit {
   // User role
   canEditRates = false;
 
+  // Computed properties for better state management
+  get hasExchangeRates(): boolean {
+    return this.exchangeRates.length > 0;
+  }
+
+  get hasEditingRates(): boolean {
+    return Object.keys(this.editingRates).length > 0;
+  }
+
   constructor(
     private exchangeRateService: ExchangeRateService,
     private settingsService: SettingsService,
@@ -49,10 +58,19 @@ export class Settings implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    console.log('Settings component initializing...');
+
+    // Load user preferences first (synchronous)
     this.loadUserPreferences();
-    this.loadExchangeRates();
+
+    // Check permissions
     this.checkPermissions();
+
+    // Load exchange rates with a small delay to ensure component is fully initialized
+    setTimeout(() => {
+      this.loadExchangeRates();
+    }, 100);
   }
 
   private checkPermissions(): void {
@@ -66,38 +84,60 @@ export class Settings implements OnInit {
   }
 
   loadExchangeRates(): void {
+    console.log('Loading exchange rates...');
     this.loadingRates = true;
+
     this.exchangeRateService.getExchangeRates().subscribe({
       next: (response) => {
-        const existingRates = response.rates || [];
+        console.log('Exchange rates response:', response);
+        const existingRates = response?.rates || [];
 
-        // Create complete list with all currencies, using existing rates where available
+        // Create complete list with all currencies, marking which ones exist
         this.exchangeRates = this.allCurrencies.map(currency => {
           const existingRate = existingRates.find(r => r.currency === currency);
-          return existingRate || {
+          return existingRate ? existingRate : {
             _id: '',
             currency,
-            rateToUSD: 1.0, // Default value
+            rateToUSD: 1.0, // Default value for new currencies
             updatedBy: '',
             updatedAt: new Date(),
             createdAt: new Date()
           } as ExchangeRate;
         });
 
-        // Initialize editing rates with current values
+        // Initialize editing rates with current values or defaults
+        this.editingRates = {};
         this.allCurrencies.forEach(currency => {
           const existingRate = existingRates.find(r => r.currency === currency);
           this.editingRates[currency] = existingRate ? existingRate.rateToUSD : 1.0;
         });
+
+        console.log('Exchange rates loaded:', this.exchangeRates.length, 'rates');
+        console.log('Editing rates initialized:', Object.keys(this.editingRates).length, 'currencies');
+
+        // Verify data integrity
+        if (this.exchangeRates.length !== this.allCurrencies.length) {
+          console.warn('Warning: Exchange rates count mismatch', {
+            expected: this.allCurrencies.length,
+            actual: this.exchangeRates.length
+          });
+        }
+
+        if (Object.keys(this.editingRates).length !== this.allCurrencies.length) {
+          console.warn('Warning: Editing rates count mismatch', {
+            expected: this.allCurrencies.length,
+            actual: Object.keys(this.editingRates).length
+          });
+        }
 
         this.loadingRates = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading exchange rates:', error);
-        this.showError('Error al cargar las tasas de cambio');
+        this.showError('Error al cargar las tasas de cambio. Usando valores por defecto.');
 
-        // Fallback: show all currencies with default values
+        // Create fallback with default values
         this.exchangeRates = this.allCurrencies.map(currency => ({
           _id: '',
           currency,
@@ -107,6 +147,8 @@ export class Settings implements OnInit {
           createdAt: new Date()
         } as ExchangeRate));
 
+        // Initialize editing rates with defaults
+        this.editingRates = {};
         this.allCurrencies.forEach(currency => {
           this.editingRates[currency] = 1.0;
         });
@@ -147,28 +189,47 @@ export class Settings implements OnInit {
 
   updateRate(currency: CurrencyType): void {
     const newRate = this.editingRates[currency];
-    
+
+    // Validate input
     if (!newRate || newRate <= 0) {
       this.showError('La tasa debe ser mayor a 0');
       return;
     }
 
+    if (newRate > 1000000) {
+      this.showError('La tasa parece demasiado alta. Verifique el valor.');
+      return;
+    }
+
+    if (newRate < 0.000001) {
+      this.showError('La tasa parece demasiado baja. Verifique el valor.');
+      return;
+    }
+
+    console.log(`Updating rate for ${currency}: ${newRate}`);
+
     this.savingRates = true;
     this.exchangeRateService.updateExchangeRate(currency, newRate).subscribe({
       next: (response) => {
-        this.showSuccess(response.message);
+        console.log('Rate updated successfully:', response);
+        this.showSuccess(response.message || 'Tasa actualizada correctamente');
+
+        // Reload rates to get updated data
         this.loadExchangeRates();
+
         // Reload history if it's visible
         if (this.showHistory) {
           this.rateHistory = []; // Clear to force reload
           this.loadHistory();
         }
+
         this.savingRates = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error updating rate:', error);
-        this.showError('Error al actualizar la tasa');
+        const errorMessage = error?.error?.message || 'Error al actualizar la tasa';
+        this.showError(errorMessage);
         this.savingRates = false;
         this.cdr.detectChanges();
       }
@@ -177,18 +238,29 @@ export class Settings implements OnInit {
 
   hasRateChanged(currency: CurrencyType): boolean {
     const currentRate = this.exchangeRates.find(r => r.currency === currency);
-    if (!currentRate || !currentRate._id) return true; // Allow creating new rates
-    return this.editingRates[currency] !== currentRate.rateToUSD;
+    const editingValue = this.editingRates[currency];
+
+    // If no current rate exists, always allow saving (creating new rate)
+    if (!currentRate || !currentRate._id) {
+      return editingValue !== undefined && editingValue > 0;
+    }
+
+    // If current rate exists, check if editing value is different
+    return editingValue !== currentRate.rateToUSD;
   }
 
   resetRate(currency: CurrencyType): void {
     const currentRate = this.exchangeRates.find(r => r.currency === currency);
+
     if (currentRate && currentRate._id) {
+      // Reset to current saved value
       this.editingRates[currency] = currentRate.rateToUSD;
     } else {
-      // Reset to default for new rates
+      // Reset to default for currencies without saved rates
       this.editingRates[currency] = 1.0;
     }
+
+    console.log(`Reset rate for ${currency}:`, this.editingRates[currency]);
   }
 
   formatDate(date: Date | string): string {
@@ -251,5 +323,16 @@ export class Settings implements OnInit {
         this.cdr.detectChanges();
       }, 300);
     }
+  }
+
+  /**
+   * Debug method to reinitialize exchange rates data
+   * Useful for troubleshooting loading issues
+   */
+  reinitializeRates(): void {
+    console.log('Reinitializing exchange rates...');
+    this.exchangeRates = [];
+    this.editingRates = {};
+    this.loadExchangeRates();
   }
 }

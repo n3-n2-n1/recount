@@ -40,7 +40,7 @@
         <div class="form-group">
           <label class="form-label">Moneda</label>
           <select class="form-control" [(ngModel)]="filters.currency" (change)="onFilterChange()" [disabled]="loading">
-            <option value="">Todas las monedas</option>
+            <option value="">Todas</option>
             <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
           </select>
         </div>
