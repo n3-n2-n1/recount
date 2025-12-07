@@ -50,7 +50,7 @@
           <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item-detailed">
             <div class="balance-item-main">
               <span class="balance-currency">{{ balance.currency }}:</span>
-              <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''" 
+              <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''"
                     class="balance-amount">
                 {{ formatCurrency(balance.amount) }}
               </span>

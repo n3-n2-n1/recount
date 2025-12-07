@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountsService } from '../../../services/accounts.service';
 import { TransactionsService } from '../../../services/transactions.service';
@@ -33,17 +33,27 @@ export class AccountDetail implements OnInit {
     private accountsService: AccountsService,
     private transactionsService: TransactionsService,
     private exchangeRateService: ExchangeRateService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.preferredCurrency = this.settingsService.getPreferredCurrency();
     this.loadExchangeRates();
-    
+
     this.route.params.subscribe(params => {
       this.accountId = params['id'];
       this.loadAccountData();
     });
+
+    // Fallback: asegurar que loading se ponga a false después de 10 segundos máximo
+    setTimeout(() => {
+      if (this.loading) {
+        console.warn('Loading timeout reached, forcing loading to false');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    }, 10000);
   }
 
   loadExchangeRates(): void {
@@ -69,10 +79,12 @@ export class AccountDetail implements OnInit {
   loadAccountData(): void {
     this.loading = true;
     this.error = '';
+    console.log('Loading account data for ID:', this.accountId);
 
     // Cargar información de la cuenta directamente por ID
     this.accountsService.getAccountById(this.accountId).subscribe({
       next: (account: Account) => {
+        console.log('Account loaded successfully:', account);
         this.account = account;
         this.loadTransactions();
       },
@@ -80,24 +92,35 @@ export class AccountDetail implements OnInit {
         console.error('Error loading account:', error);
         this.error = 'Cuenta no encontrada';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   loadTransactions(): void {
+    console.log('Loading transactions for account:', this.accountId);
     // Cargar transacciones filtradas por esta cuenta usando el backend
     this.transactionsService.getAllTransactions({
       accountId: this.accountId
     }).subscribe({
       next: (response: any) => {
+        console.log('Transactions loaded successfully:', response);
         this.transactions = (response.transactions || [])
           .sort((a: Transaction, b: Transaction) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        this.loading = false;
+        // Solo cambiar loading a false si la cuenta ya está cargada
+        if (this.account) {
+          console.log('Setting loading to false');
+          this.loading = false;
+          this.cdr.detectChanges();
+        } else {
+          console.warn('Account not loaded yet, keeping loading true');
+        }
       },
       error: (error: any) => {
         console.error('Error loading transactions:', error);
         this.error = 'Error al cargar las transacciones';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
