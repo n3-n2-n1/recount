@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -7,6 +9,8 @@ import authRoutes from './routes/auth.js';
 import accountRoutes from './routes/accounts.js';
 import transactionRoutes from './routes/transactions.js';
 import exchangeRateRoutes from './routes/exchangeRates.js';
+
+// Load environment variables
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,7 +44,17 @@ app.use('/api/exchange-rates', exchangeRateRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      JWT_SECRET: process.env.JWT_SECRET ? 'configured' : 'not configured',
+      MONGODB_URI: process.env.MONGODB_URI ? 'configured' : 'not configured',
+      FRONTEND_URL: process.env.FRONTEND_URL,
+      PORT: process.env.PORT
+    }
+  });
 });
 
 // Error handling middleware

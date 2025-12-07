@@ -5,31 +5,42 @@ import User from '../models/User.js';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('🔐 LOGIN ATTEMPT:', { email: req.body?.email, hasPassword: !!req.body?.password });
+
     const { email, password } = req.body;
 
     if (!email || !password) {
+      console.log('❌ LOGIN: Missing email or password');
       res.status(400).json({ message: 'Email and password are required' });
       return;
     }
 
+    console.log('🔍 LOGIN: Searching user:', email.toLowerCase());
     const user = await User.findOne({ email: email.toLowerCase() });
+
     if (!user) {
+      console.log('❌ LOGIN: User not found in database');
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
+    console.log('✅ LOGIN: User found, checking password');
     const isValidPassword = await bcrypt.compare(password, user.password);
+
     if (!isValidPassword) {
+      console.log('❌ LOGIN: Invalid password');
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
+    console.log('✅ LOGIN: Password valid, generating token');
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '24h' }
     );
 
+    console.log('✅ LOGIN: Login successful');
     res.json({
       token,
       user: {
@@ -40,7 +51,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ LOGIN ERROR:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
