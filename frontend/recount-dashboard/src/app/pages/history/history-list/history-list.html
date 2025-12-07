@@ -129,9 +129,14 @@
                 <td>
                   <span class="transaction-type" [class]="getTransactionTypeClass(item.data.type)">
                     {{ item.data.type }}
-                    <span *ngIf="item.data.type === 'Transferencia Interna' && getTargetAccountName(item.data)" class="transfer-arrow">
+                    <span *ngIf="item.data.type === 'Transferencia Interna'" class="transfer-arrow">
                       <i class="fas fa-arrow-right"></i>
-                      {{ getTargetAccountName(item.data) }}
+                      <span *ngIf="getTargetAccountName(item.data) === 'Cargando...'" class="loading-text">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando...
+                      </span>
+                      <span *ngIf="getTargetAccountName(item.data) !== 'Cargando...'">
+                        {{ getTargetAccountName(item.data) }}
+                      </span>
                     </span>
                   </span>
                 </td>

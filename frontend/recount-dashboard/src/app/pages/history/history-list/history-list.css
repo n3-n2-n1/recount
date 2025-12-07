@@ -403,3 +403,12 @@ th[style*="cursor: pointer"]:hover {
 .transfer-arrow i {
   font-size: 0.8em;
 }
+
+.transfer-arrow .loading-text {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.transfer-arrow .loading-text i {
+  margin-right: 0.25rem;
+}

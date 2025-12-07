@@ -67,12 +67,12 @@ export class HistoryList implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     console.log('🎬 HistoryList ngOnInit - Component initialized');
     console.log('🎬 Current URL:', this.router.url);
 
-    // Load data immediately
-    this.loadAccounts();
+    // Load accounts first, then other data
+    await this.loadAccountsAsync();
     this.loadTransactions();
     this.loadExchangeRateHistory();
   }
@@ -94,12 +94,31 @@ export class HistoryList implements OnInit, OnDestroy {
       this.accountsService.getAccounts().subscribe({
         next: (response) => {
           this.accounts = response.accounts;
+          console.log('📋 Accounts loaded:', this.accounts.length, 'accounts');
         },
         error: (error) => {
           console.error('Error loading accounts:', error);
         }
       })
     );
+  }
+
+  private async loadAccountsAsync(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.subscriptions.add(
+        this.accountsService.getAccounts().subscribe({
+          next: (response) => {
+            this.accounts = response.accounts;
+            console.log('📋 Accounts loaded (async):', this.accounts.length, 'accounts');
+            resolve();
+          },
+          error: (error) => {
+            console.error('Error loading accounts:', error);
+            resolve(); // Don't reject, just continue without accounts
+          }
+        })
+      );
+    });
   }
 
   loadExchangeRateHistory(): void {
@@ -484,10 +503,25 @@ export class HistoryList implements OnInit, OnDestroy {
     }
   }
 
-  getTargetAccountName(transaction: Transaction): string {
+  getTargetAccountName(transaction: any): string {
     if (transaction.type === 'Transferencia Interna' && transaction.targetAccountId) {
-      const targetAccount = this.accounts.find(account => account._id === transaction.targetAccountId);
-      return targetAccount ? targetAccount.name : 'Cuenta desconocida';
+      // Handle populated targetAccountId (object with _id and name)
+      if (typeof transaction.targetAccountId === 'object' && transaction.targetAccountId !== null) {
+        if (transaction.targetAccountId.name) {
+          return transaction.targetAccountId.name;
+        }
+        // If it's an object but doesn't have name, it might be incomplete population
+        return 'Cargando...';
+      }
+
+      // Handle targetAccountId as string (ID), search in local accounts array
+      if (typeof transaction.targetAccountId === 'string') {
+        if (this.accounts.length === 0) {
+          return 'Cargando...';
+        }
+        const targetAccount = this.accounts.find(account => account._id === transaction.targetAccountId);
+        return targetAccount ? targetAccount.name : 'Cuenta desconocida';
+      }
     }
     return '';
   }
