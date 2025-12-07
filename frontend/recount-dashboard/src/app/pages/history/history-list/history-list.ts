@@ -48,7 +48,7 @@ export class HistoryList implements OnInit, OnDestroy {
   };
   
   // Available options
-  transactionTypes = ['Entrada', 'Salida', 'Swap'];
+  transactionTypes = ['Entrada', 'Salida', 'Swap', 'Transferencia Interna'];
   currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
   
   // View options
@@ -482,6 +482,14 @@ export class HistoryList implements OnInit, OnDestroy {
       case 'Transferencia Interna': return 'text-info';
       default: return '';
     }
+  }
+
+  getTargetAccountName(transaction: Transaction): string {
+    if (transaction.type === 'Transferencia Interna' && transaction.targetAccountId) {
+      const targetAccount = this.accounts.find(account => account._id === transaction.targetAccountId);
+      return targetAccount ? targetAccount.name : 'Cuenta desconocida';
+    }
+    return '';
   }
 
   getChangedByName(change: ExchangeRateHistory): string {
