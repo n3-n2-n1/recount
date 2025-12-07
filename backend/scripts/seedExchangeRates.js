@@ -18,7 +18,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 import ExchangeRate from '../src/models/ExchangeRate.js';
 import User from '../src/models/User.js';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/recount';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/test';
 
 const defaultRates = [
   { currency: 'DÓLAR', rateToUSD: 1.0000, description: 'Base currency' },

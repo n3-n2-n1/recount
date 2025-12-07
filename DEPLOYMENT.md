@@ -16,7 +16,7 @@
 1. **Create a MongoDB Atlas cluster** (or use any MongoDB hosting)
 2. **Get your connection string**:
    ```
-   mongodb+srv://username:password@cluster.mongodb.net/recount?retryWrites=true&w=majority
+   mongodb+srv://username:password@cluster.mongodb.net/test?retryWrites=true&w=majority
    ```
 3. **Whitelist Railway IPs** or allow access from anywhere (0.0.0.0/0)
 
@@ -48,7 +48,7 @@
 In Render dashboard, go to **Environment** tab and add:
 
 ```bash
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/recount?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/test?retryWrites=true&w=majority
 JWT_SECRET=your-super-secret-random-string-change-this
 NODE_ENV=production
 PORT=10000

@@ -47,13 +47,8 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    env: {
-      NODE_ENV: process.env.NODE_ENV,
-      JWT_SECRET: process.env.JWT_SECRET ? 'configured' : 'not configured',
-      MONGODB_URI: process.env.MONGODB_URI ? 'configured' : 'not configured',
-      FRONTEND_URL: process.env.FRONTEND_URL,
-      PORT: process.env.PORT
-    }
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
