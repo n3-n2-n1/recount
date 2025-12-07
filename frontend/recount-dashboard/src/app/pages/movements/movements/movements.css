@@ -376,46 +376,13 @@ textarea.form-control {
   color: #9ca3af;
 }
 
-.dark-mode .balance-item span {
-  color: #e5e5e5;
-}
 
-/* Toast Dark Mode específico para movements */
+/* Toast Dark Mode */
 .dark-mode .toast {
   background: var(--color-bg-secondary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-color-dark);
-}
-
-.dark-mode .toast-success {
-  border-left-color: #16a34a;
-}
-
-.dark-mode .toast-error {
-  border-left-color: #dc2626;
-}
-
-.dark-mode .toast-icon {
-  color: inherit;
-}
-
-.dark-mode .toast-success .toast-icon {
-  color: #4ade80;
-}
-
-.dark-mode .toast-error .toast-icon {
-  color: #f87171;
 }
 
 .dark-mode .toast-message {
-  color: var(--color-text-primary);
-}
-
-.dark-mode .toast-close {
-  color: var(--color-text-muted);
-}
-
-.dark-mode .toast-close:hover {
-  background: var(--color-bg-tertiary);
   color: var(--color-text-primary);
 }
 
@@ -505,57 +472,19 @@ textarea.form-control {
   box-shadow: none !important;
 }
 
-/* ===== DARK MODE - BUTTON STYLES ===== */
-
-.dark-mode .btn-success {
-  background: #16a34a !important;
-  color: white !important;
-  border-color: #16a34a !important;
-}
-
+/* Dark mode button adjustments */
 .dark-mode .btn-success:hover:not(:disabled) {
-  background: #15803d !important;
-  border-color: #15803d !important;
   box-shadow: 0 4px 6px rgba(22, 163, 74, 0.4);
 }
 
-.dark-mode .btn-danger {
-  background: #dc2626 !important;
-  color: white !important;
-  border-color: #dc2626 !important;
-}
-
 .dark-mode .btn-danger:hover:not(:disabled) {
-  background: #b91c1c !important;
-  border-color: #b91c1c !important;
   box-shadow: 0 4px 6px rgba(220, 38, 38, 0.4);
 }
 
-.dark-mode .btn-primary {
-  background: linear-gradient(135deg, #141414 0%, #000000 100%) !important;
-  color: white !important;
-  border-color: #1f1f1f !important;
-}
-
 .dark-mode .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%) !important;
-  border-color: #2a2a2a !important;
   box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .btn-transfer {
-  background: #9333ea !important;
-  color: white !important;
-  border-color: #9333ea !important;
-}
-
 .dark-mode .btn-transfer:hover:not(:disabled) {
-  background: #7e22ce !important;
-  border-color: #7e22ce !important;
   box-shadow: 0 4px 6px rgba(147, 51, 234, 0.4);
-}
-
-.dark-mode .btn:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
 }
