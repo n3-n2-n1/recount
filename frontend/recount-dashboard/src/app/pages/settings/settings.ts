@@ -60,6 +60,7 @@ export class Settings implements OnInit {
 
   ngOnInit(): void {
     console.log('Settings component initializing...');
+    console.log('Initial state - loadingRates:', this.loadingRates, 'exchangeRates.length:', this.exchangeRates.length);
 
     // Load user preferences first (synchronous)
     this.loadUserPreferences();
@@ -68,7 +69,16 @@ export class Settings implements OnInit {
     this.checkPermissions();
 
     // Load exchange rates immediately
+    console.log('About to call loadExchangeRates...');
     this.loadExchangeRates();
+
+    // Fallback: force reload exchange rates if they don't load within 3 seconds
+    setTimeout(() => {
+      if (this.loadingRates && this.exchangeRates.length === 0) {
+        console.warn('Exchange rates not loaded after 3 seconds, forcing reload...');
+        this.loadExchangeRates();
+      }
+    }, 3000);
   }
 
   private checkPermissions(): void {
@@ -128,8 +138,15 @@ export class Settings implements OnInit {
           });
         }
 
+        console.log('Setting loadingRates to false, exchangeRates.length:', this.exchangeRates.length);
         this.loadingRates = false;
+
+        // Force multiple change detection cycles
         this.cdr.detectChanges();
+        setTimeout(() => {
+          this.cdr.detectChanges();
+          console.log('Additional change detection triggered');
+        }, 10);
       },
       error: (error) => {
         console.error('Error loading exchange rates:', error);
@@ -272,7 +289,7 @@ export class Settings implements OnInit {
   }
 
   getUpdatedByName(rate: ExchangeRate): string {
-    if (typeof rate.updatedBy === 'object' && rate.updatedBy.name) {
+    if (rate.updatedBy && typeof rate.updatedBy === 'object' && rate.updatedBy.name) {
       return rate.updatedBy.name;
     }
     if (typeof rate.updatedBy === 'string' && rate.updatedBy) {
