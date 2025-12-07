@@ -23,19 +23,17 @@
       <h3>Selección de Cuenta</h3>
     </div>
     <div class="card-body">
-      <div class="form-group">
-        <label class="form-label">Cuenta</label>
-        <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="form-control">
-          <option value="">Seleccionar cuenta</option>
-          <option *ngFor="let account of accounts" [value]="account._id">{{ account.name }}</option>
-        </select>
-      </div>
-      
       <div *ngIf="getSelectedAccount()" class="balance-summary">
-        
-        <!-- Currency selector -->
-        <div style="display: flex; gap: var(--space-2); align-items: center;">
-          <button class="btn btn-sm" (click)="goToAccountDetail()" title="Ver detalles de la cuenta">
+        <div style="display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-3);">
+          <div class="form-group" style="margin: 0; flex: 1;">
+            <label class="form-label">Cuenta</label>
+            <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="form-control">
+              <option value="">Seleccionar cuenta</option>
+              <option *ngFor="let account of accounts" [value]="account._id">{{ account.name }}</option>
+            </select>
+          </div>
+
+          <button class="btn btn-sm" (click)="goToAccountDetail()" title="Ver detalles de la cuenta" style="margin-top: 1.5rem;">
             <i class="fas fa-eye"></i> Ver Detalles
           </button>
         </div>
