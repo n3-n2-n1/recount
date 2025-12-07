@@ -589,12 +589,15 @@ html.dark-mode .border-gray-300 {
   border-color: #1f1f1f !important;
 }
 
+/* Higher specificity for clickable cells in dark mode */
+html.dark-mode td .clickable-cell,
 html.dark-mode .clickable-cell {
   color: #ffffff !important; /* Blanco en modo oscuro */
 }
 
+html.dark-mode td .clickable-cell:hover,
 html.dark-mode .clickable-cell:hover {
-  color: #f3f4f6 !important; /* Gris claro en hover para modo oscuro */
+  color: #e5e7eb !important; /* Blanco grisáceo en hover para modo oscuro */
 }
 
 html.dark-mode .bg-yellow-50 {
