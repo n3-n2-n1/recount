@@ -31,6 +31,7 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease-out;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -50,11 +51,13 @@
   justify-content: space-between;
   padding: var(--space-4);
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: var(--font-lg);
+  transition: color 0.3s ease;
 }
 
 .btn-close {
@@ -70,7 +73,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--border-radius);
-  transition: all var(--transition);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-close:hover {
@@ -88,6 +91,7 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Utilities */

@@ -1,4 +1,5 @@
-import { Component, OnInit, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnChanges, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AccountsService } from '../../../services/accounts.service';
 import { AuthService } from '../../../services/auth.service';
@@ -18,6 +19,11 @@ export class UsersList implements OnInit, OnChanges {
   successMessage = '';
   errorMessage = '';
   columns: TableColumn<Account>[] = [];
+  
+  // Modal state
+  showAddModal = false;
+  creatingAccount = false;
+  newAccountName = '';
 
   roleOptions = [
     { value: 'super-admin', label: 'Super Admin' },
@@ -29,7 +35,8 @@ export class UsersList implements OnInit, OnChanges {
   constructor(
     private accountsService: AccountsService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +54,7 @@ export class UsersList implements OnInit, OnChanges {
     this.columns = [
       {
         key: 'name',
-        label: 'Account Name',
+        label: 'Nombre',
         type: 'text',
         editable: canEdit,
         required: true
@@ -62,13 +69,13 @@ export class UsersList implements OnInit, OnChanges {
       },
       {
         key: 'createdAt',
-        label: 'Created',
+        label: 'Creado',
         type: 'date',
         editable: false
       },
       {
         key: 'updatedAt',
-        label: 'Updated',
+        label: 'Actualizado',
         type: 'date',
         editable: false
       }
@@ -93,14 +100,28 @@ export class UsersList implements OnInit, OnChanges {
   }
 
   onAddUser(): void {
-    const accountName = prompt('Ingrese el nombre de la cuenta:', '');
+    this.openAddModal();
+  }
 
-    if (!accountName || !accountName.trim()) {
+  openAddModal(): void {
+    this.newAccountName = '';
+    this.showAddModal = true;
+    this.clearMessages();
+  }
+
+  closeAddModal(): void {
+    this.showAddModal = false;
+    this.newAccountName = '';
+    this.creatingAccount = false;
+  }
+
+  createAccount(): void {
+    if (!this.newAccountName || !this.newAccountName.trim()) {
       this.showError('El nombre de la cuenta es requerido');
       return;
     }
 
-    const trimmedName = accountName.trim();
+    const trimmedName = this.newAccountName.trim();
 
     // Check if account name already exists
     if (this.accounts.some(account => account.name.toLowerCase() === trimmedName.toLowerCase())) {
@@ -112,7 +133,7 @@ export class UsersList implements OnInit, OnChanges {
       name: trimmedName
     };
 
-    this.loading = true;
+    this.creatingAccount = true;
     this.clearMessages();
 
     this.accountsService.createAccount(newAccount).subscribe({
@@ -122,7 +143,8 @@ export class UsersList implements OnInit, OnChanges {
         this.accounts = [response, ...this.accounts];
         this.filterAccounts(); // Update filtered list
         this.showSuccess('Cuenta creada exitosamente!');
-        this.loading = false;
+        this.creatingAccount = false;
+        this.closeAddModal();
         this.cdr.detectChanges();
 
         // Additional force update for the table
@@ -134,10 +156,21 @@ export class UsersList implements OnInit, OnChanges {
         console.error('Error creating account:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
         this.showError('Error al crear la cuenta: ' + errorMessage);
-        this.loading = false;
+        this.creatingAccount = false;
         this.cdr.detectChanges();
       }
     });
+  }
+
+  isAddFormValid(): boolean {
+    return this.newAccountName.trim().length > 0;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showAddModal) {
+      this.closeAddModal();
+    }
   }
 
   onEditUser(event: { item: Account; index: number }): void {
@@ -188,8 +221,8 @@ export class UsersList implements OnInit, OnChanges {
 
         const deletedCount = (result as any)?.deletedTransactions || 0;
         const message = deletedCount > 0
-          ? `Account deleted successfully! (${deletedCount} transactions removed)`
-          : 'Account deleted successfully!';
+          ? `Cuenta eliminada exitosamente! (${deletedCount} transacciones eliminadas)`
+          : 'Cuenta eliminada exitosamente!';
 
         this.showSuccess(message);
         this.cdr.detectChanges();
@@ -202,7 +235,7 @@ export class UsersList implements OnInit, OnChanges {
         this.loading = false;
         console.error('Error deleting account:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
-        this.showError('Error deleting account: ' + errorMessage);
+        this.showError('Error al eliminar la cuenta: ' + errorMessage);
         this.cdr.detectChanges();
       }
     });
@@ -290,5 +323,9 @@ export class UsersList implements OnInit, OnChanges {
       .filter(balance => balance.amount > 0)
       .map(balance => `${balance.currency}: ${balance.amount}`)
       .join(', ');
+  }
+
+  viewAccountDetail(accountId: string): void {
+    this.router.navigate(['/account', accountId]);
   }
 }

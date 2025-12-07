@@ -1,5 +1,33 @@
 /* Simple History Page Styles */
 
+/* Alineación de filtros */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.form-label {
+  margin-bottom: var(--space-2);
+  min-height: 1.25em;
+}
+
+input.form-control,
+select.form-control {
+  height: 38px;
+  min-height: 38px;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+/* Transiciones para dark mode */
+.card,
+.table th,
+.table td {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 /* Override global styles for specific needs */
 .text-success {
   color: var(--color-success) !important;
@@ -50,9 +78,68 @@ th[style*="cursor: pointer"]:hover {
 }
 
 .dark-mode .text-muted {
-  color: var(--color-text-muted) !important;
+  color: #9ca3af !important;
 }
 
 .dark-mode th[style*="cursor: pointer"]:hover {
-  background: var(--color-bg-tertiary);
+  background: #1f1f1f !important;
+}
+
+.dark-mode .btn {
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .btn:hover:not(:disabled) {
+  background: #1f1f1f !important;
+  border-color: #2a2a2a !important;
+}
+
+.btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background-color: #e5e5e5 !important;
+  color: #313131 !important;
+  border-color: #ccc !important;
+}
+
+.dark-mode .btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background-color: #2a2a2a !important;
+  color: #666 !important;
+  border-color: #1a1a1a !important;
+}
+
+.dark-mode input[type="date"],
+.dark-mode input[type="number"] {
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.dark-mode input[type="date"] {
+  color-scheme: dark !important;
+}
+
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.dark-mode input.form-control,
+.dark-mode select.form-control {
+  height: 38px !important;
+  min-height: 38px !important;
 }

@@ -21,6 +21,11 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Initialize theme service (applies saved dark mode preference)
+    this.themeService.darkMode$.subscribe(() => {
+      // Theme service automatically applies dark-mode class to html/body
+    });
+
     // Check authentication status
     this.authService.currentUser$.subscribe(user => {
       this.isLoggedIn = !!user;

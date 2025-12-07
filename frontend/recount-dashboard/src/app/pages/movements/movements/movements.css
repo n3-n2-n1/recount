@@ -1,5 +1,101 @@
 /* Simple Movements Page Styles */
 
+/* Form spacing */
+.form-group {
+  margin-bottom: var(--space-3);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+form button[type="submit"] {
+  margin-top: var(--space-2);
+}
+
+/* Form controls consistency */
+.form-control {
+  height: 38px;
+  min-height: 38px;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 80px;
+}
+
+/* Balance summary section */
+.balance-summary {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--space-3);
+}
+
+.balance-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.balance-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.balance-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.balance-details {
+  margin-top: var(--space-2);
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) 0;
+}
+
+/* Currency swap grid */
+.currency-swap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.currency-swap-grid .form-group {
+  margin-bottom: 0;
+}
+
+/* Transiciones para dark mode */
+.card,
+.card-header,
+.card-body,
+.form-control,
+.btn {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 /* Override global styles for specific needs */
 .text-success {
   color: var(--color-success) !important;
@@ -43,7 +139,7 @@
   pointer-events: auto;
   opacity: 0;
   transform: translateX(100%);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .toast-show {
@@ -131,6 +227,19 @@
   div[style*="grid-template-columns"] {
     grid-template-columns: 1fr !important;
   }
+  
+  .currency-swap-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .currency-swap-grid .form-group {
+    margin-bottom: var(--space-3);
+  }
+  
+  .currency-swap-grid .form-group:last-child {
+    margin-bottom: 0;
+  }
 }
 
 /* ===== DARK MODE - MOVEMENTS PAGE ===== */
@@ -144,6 +253,23 @@
 
 .dark-mode .text-muted {
   color: var(--color-text-muted) !important;
+}
+
+.dark-mode .form-label {
+  color: #ffffff !important;
+}
+
+.dark-mode .balance-summary {
+  border-top-color: var(--border-color-dark);
+}
+
+.dark-mode .balance-label,
+.dark-mode .balance-value {
+  color: #ffffff;
+}
+
+.dark-mode .balance-item span {
+  color: #e5e5e5;
 }
 
 /* Toast Dark Mode específico para movements */
@@ -185,23 +311,143 @@
   color: var(--color-text-primary);
 }
 
-/* Button states dark mode */
-.dark-mode .btn-success {
-  background: #16a34a;
-  color: white;
-  border-color: #16a34a;
+/* ===== BUTTON STYLES ===== */
+
+/* Base button styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  cursor: pointer;
 }
 
-.dark-mode .btn-success:hover {
-  background: #15803d;
+.btn.w-full {
+  width: 100%;
+}
+
+/* Success button (Ingreso) */
+.btn-success {
+  background: #16a34a !important;
+  color: white !important;
+  border-color: #16a34a !important;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #15803d !important;
+  border-color: #15803d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(22, 163, 74, 0.25);
+}
+
+/* Danger button (Egreso) */
+.btn-danger {
+  background: #dc2626 !important;
+  color: white !important;
+  border-color: #dc2626 !important;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25);
+}
+
+/* Primary button (Swap) */
+.btn-primary {
+  background: linear-gradient(135deg, #141414 0%, #000000 100%) !important;
+  color: white !important;
+  border-color: #1f1f1f !important;
+  border-radius: 0.5rem !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%) !important;
+  border-color: #2a2a2a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Transfer button (Transferencia Interna) */
+.btn-transfer {
+  background: #9333ea !important;
+  color: white !important;
+  border-color: #9333ea !important;
+}
+
+.btn-transfer:hover:not(:disabled) {
+  background: #7e22ce !important;
+  border-color: #7e22ce !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(147, 51, 234, 0.25);
+}
+
+/* Disabled button state */
+.btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== DARK MODE - BUTTON STYLES ===== */
+
+.dark-mode .btn-success {
+  background: #16a34a !important;
+  color: white !important;
+  border-color: #16a34a !important;
+}
+
+.dark-mode .btn-success:hover:not(:disabled) {
+  background: #15803d !important;
+  border-color: #15803d !important;
+  box-shadow: 0 4px 6px rgba(22, 163, 74, 0.4);
 }
 
 .dark-mode .btn-danger {
-  background: #dc2626;
-  color: white;
-  border-color: #dc2626;
+  background: #dc2626 !important;
+  color: white !important;
+  border-color: #dc2626 !important;
 }
 
-.dark-mode .btn-danger:hover {
-  background: #b91c1c;
+.dark-mode .btn-danger:hover:not(:disabled) {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.4);
+}
+
+.dark-mode .btn-primary {
+  background: linear-gradient(135deg, #141414 0%, #000000 100%) !important;
+  color: white !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%) !important;
+  border-color: #2a2a2a !important;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .btn-transfer {
+  background: #9333ea !important;
+  color: white !important;
+  border-color: #9333ea !important;
+}
+
+.dark-mode .btn-transfer:hover:not(:disabled) {
+  background: #7e22ce !important;
+  border-color: #7e22ce !important;
+  box-shadow: 0 4px 6px rgba(147, 51, 234, 0.4);
+}
+
+.dark-mode .btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }

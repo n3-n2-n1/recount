@@ -11,6 +11,7 @@ import { DashboardLayout } from './components/dashboard/dashboard-layout/dashboa
 import { EditableTable } from './components/tables/editable-table/editable-table';
 import { Login } from './pages/auth/login/login';
 import { UsersList } from './pages/users/users-list/users-list';
+import { AccountDetail } from './pages/users/account-detail/account-detail';
 import { PlatformUsers } from './pages/users/platform-users/platform-users';
 import { Movements } from './pages/movements/movements/movements';
 import { HistoryList } from './pages/history/history-list/history-list';
@@ -22,6 +23,7 @@ import { HistoryList } from './pages/history/history-list/history-list';
     EditableTable,
     Login,
     UsersList,
+    AccountDetail,
     PlatformUsers,
     Movements,
     HistoryList

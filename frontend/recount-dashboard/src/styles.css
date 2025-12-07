@@ -51,35 +51,52 @@
   padding: 0;
 }
 
+html,
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   font-size: var(--font-sm);
   line-height: 1.4;
   color: var(--color-gray-900);
   background: var(--color-gray-50);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 /* Typography */
-h1 { font-size: var(--font-xl); font-weight: 600; margin-bottom: var(--space-2); }
-h2 { font-size: var(--font-lg); font-weight: 600; margin-bottom: var(--space-2); }
-h3 { font-size: var(--font-base); font-weight: 600; margin-bottom: var(--space-1); }
+h1 { font-size: var(--font-xl); font-weight: 600; margin-bottom: var(--space-2); transition: color 0.3s ease; }
+h2 { font-size: var(--font-lg); font-weight: 600; margin-bottom: var(--space-2); transition: color 0.3s ease; }
+h3 { font-size: var(--font-base); font-weight: 600; margin-bottom: var(--space-1); transition: color 0.3s ease; }
 
-p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
+p { color: var(--color-gray-600); margin-bottom: var(--space-2); transition: color 0.3s ease; }
 
 /* Simple Components */
 .card {
   background: white;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-header {
   padding: var(--space-4);
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-body {
   padding: var(--space-4);
+  transition: background-color 0.3s ease;
 }
 
 /* Simple Buttons */
@@ -90,18 +107,25 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
   font-size: var(--font-sm);
   font-weight: 500;
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 0.5rem;
   background: white;
   color: var(--color-gray-700);
   cursor: pointer;
   text-decoration: none;
   gap: var(--space-1);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .btn:hover { background: var(--color-gray-50); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); border-radius: 0.5rem; }
 .btn-primary:hover { background: #0f172a; }
 
 .btn-success { background: var(--color-success); color: white; border-color: var(--color-success); }
@@ -114,7 +138,9 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
 
 /* Simple Forms */
 .form-group {
-  margin-bottom: var(--space-3);
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-label {
@@ -122,21 +148,117 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
   font-size: var(--font-sm);
   font-weight: 500;
   color: var(--color-gray-700);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
+  min-height: 1.25em;
 }
 
 .form-control {
   width: 100%;
-  padding: var(--space-2);
-  font-size: var(--font-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  min-height: 38px;
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 0.375rem;
   background: white;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+input.form-control,
+select.form-control,
+textarea.form-control {
+  height: 38px;
+  padding: 0.5rem 0.75rem;
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 80px;
 }
 
 .form-control:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+/* Estilos profesionales para select */
+select.form-control {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+  padding-right: 2.5rem;
+  cursor: pointer;
+  height: 38px;
+  min-height: 38px;
+}
+
+/* Mejora del dropdown cuando está abierto */
+select.form-control[size],
+select.form-control[multiple] {
+  padding-right: var(--space-2);
+  background-image: none;
+}
+
+select.form-control:hover {
+  border-color: var(--color-gray-400);
+}
+
+select.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+/* Opciones del select - mejora visual */
+select.form-control option {
+  padding: var(--space-3) var(--space-4);
+  background: white;
+  color: var(--color-gray-900);
+  font-size: var(--font-sm);
+  line-height: 1.5;
+  min-height: 40px;
+  border-radius: 0;
+}
+
+select.form-control option:hover {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
+}
+
+select.form-control option:checked {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 500;
+}
+
+select.form-control option:disabled {
+  color: var(--color-gray-400);
+  background-color: var(--color-gray-100);
+}
+
+/* Texto de placeholder en selects */
+select.form-control option[value=""],
+select.form-control option[value=""]:first-child {
+  color: var(--color-gray-500);
+  font-style: italic;
+}
+
+/* Estados adicionales para inputs y selects */
+.form-control:disabled {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input.form-control:hover:not(:disabled),
+textarea.form-control:hover:not(:disabled) {
+  border-color: var(--color-gray-400);
 }
 
 /* Simple Alerts */
@@ -175,12 +297,17 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
   padding: var(--space-2);
   border-bottom: 1px solid var(--border-color);
   text-align: left;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .table th {
   font-weight: 600;
   background: var(--color-gray-50);
   color: var(--color-gray-700);
+}
+
+.table tbody tr {
+  transition: background-color 0.3s ease;
 }
 
 .table tbody tr:hover {
@@ -203,7 +330,8 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
 }
 
 /* ===== DARK MODE - EN NEGRO ===== */
-.dark-mode {
+html.dark-mode,
+body.dark-mode {
   /* Dark Mode Colors - EN NEGRO */
   --color-bg-primary: #000000;
   --color-bg-secondary: #0a0a0a;
@@ -212,28 +340,64 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
   --color-text-secondary: #e5e5e5;
   --color-text-muted: #a3a3a3;
   --border-color-dark: #1f1f1f;
+  
+  /* Aplicar fondo negro inmediatamente */
+  background-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
 }
 
-/* Body Dark Mode */
-.dark-mode,
-.dark-mode body {
-  background: var(--color-bg-primary) !important;
-  color: var(--color-text-primary) !important;
+/* Asegurar que body y html tengan altura completa */
+html.dark-mode,
+body.dark-mode {
+  min-height: 100vh !important;
+  height: 100% !important;
 }
 
-html.dark-mode {
-  background: var(--color-bg-primary) !important;
+/* App root también negro */
+html.dark-mode app-root,
+body.dark-mode app-root {
+  background: #000000 !important;
+  display: block;
+  min-height: 100vh;
+}
+
+/* Ensure all root elements are black in dark mode */
+.dark-mode * {
+  scrollbar-color: #333 #000;
+}
+
+.dark-mode ::-webkit-scrollbar {
+  width: 12px;
+  background: #000000;
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 6px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #444444;
 }
 
 /* Cards Dark Mode */
 .dark-mode .card {
-  background: var(--color-bg-secondary);
-  border-color: var(--border-color-dark);
+  background: #0a0a0a !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .card-header {
-  border-color: var(--border-color-dark);
-  background: var(--color-bg-tertiary);
+  border-color: #1f1f1f !important;
+  background: #141414 !important;
+}
+
+.dark-mode .card-body {
+  background: #0a0a0a !important;
 }
 
 /* Text Dark Mode */
@@ -249,74 +413,267 @@ html.dark-mode {
 
 /* Buttons Dark Mode */
 .dark-mode .btn {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--border-color-dark);
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .btn:hover {
-  background: #1f1f1f;
-  border-color: #2a2a2a;
+  background: #1f1f1f !important;
+  border-color: #2a2a2a !important;
 }
 
 .dark-mode .btn-primary {
-  background: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
+  background: #000000 !important;
+  color: white !important;
+  border-color: #000000 !important;
+  border-radius: 0.5rem !important;
 }
 
 .dark-mode .btn-primary:hover {
-  background: #0f172a;
+  background: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+}
+
+.dark-mode .btn {
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .btn:hover:not(:disabled) {
+  background: #1f1f1f !important;
+  border-color: #2a2a2a !important;
 }
 
 /* Forms Dark Mode */
 .dark-mode .form-label {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .form-control {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--border-color-dark);
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .form-control:focus {
-  border-color: var(--color-primary);
-  background: #1a1a1a;
+  border-color: #2a2a2a !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
 }
 
-.dark-mode .form-control::placeholder {
-  color: var(--color-text-muted);
-}
-
-/* Select Dark Mode */
+/* Select en dark mode */
 .dark-mode select.form-control {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-color: #141414 !important;
+}
+
+.dark-mode select.form-control:hover {
+  border-color: #2a2a2a !important;
+  background-color: #1a1a1a !important;
 }
 
 .dark-mode select.form-control option {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
+  padding: var(--space-3) var(--space-4) !important;
+  background: #141414 !important;
+  color: #ffffff !important;
+  font-size: var(--font-sm) !important;
+  line-height: 1.5 !important;
+  min-height: 40px !important;
+}
+
+.dark-mode select.form-control option:hover {
+  background-color: #1f1f1f !important;
+  color: #ffffff !important;
+}
+
+.dark-mode select.form-control option:checked {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.dark-mode select.form-control option:disabled {
+  color: #666666 !important;
+  background-color: #0a0a0a !important;
+}
+
+.dark-mode select.form-control option[value=""],
+.dark-mode select.form-control option[value=""]:first-child {
+  color: #9ca3af !important;
+  font-style: italic !important;
+}
+
+.dark-mode .form-control:focus {
+  border-color: #1e293b !important;
+  background: #1a1a1a !important;
+}
+
+.dark-mode .form-control::placeholder {
+  color: #a3a3a3 !important;
+}
+
+/* Form Controls States - Dark Mode */
+.dark-mode .form-control:disabled {
+  background-color: #0a0a0a !important;
+  color: #666666 !important;
+  border-color: #1a1a1a !important;
+  opacity: 0.5 !important;
+}
+
+.dark-mode input.form-control:hover:not(:disabled),
+.dark-mode textarea.form-control:hover:not(:disabled) {
+  border-color: #2a2a2a !important;
+  background-color: #1a1a1a !important;
+}
+
+/* Date inputs en dark mode */
+.dark-mode input[type="date"] {
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+  color-scheme: dark;
+}
+
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.dark-mode input[type="date"]:focus {
+  background: #141414 !important;
+  border-color: #2a2a2a !important;
 }
 
 /* Tables Dark Mode */
 .dark-mode .table {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .table th {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--border-color-dark);
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .table td {
-  border-color: var(--border-color-dark);
+  border-color: #1f1f1f !important;
+  color: #e5e5e5 !important;
 }
 
 .dark-mode .table tbody tr:hover {
-  background: var(--color-bg-tertiary);
+  background: #141414 !important;
+}
+
+/* Editable Table Dark Mode */
+.dark-mode app-editable-table,
+.dark-mode .editable-table-container {
+  background: #0a0a0a !important;
+}
+
+.dark-mode .editable-table-container table {
+  background: #0a0a0a !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .editable-table-container thead,
+.dark-mode .editable-table-container th {
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .editable-table-container td {
+  background: #0a0a0a !important;
+  color: #e5e5e5 !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .editable-table-container tbody tr:hover,
+.dark-mode .editable-table-container tbody tr:hover td {
+  background: #141414 !important;
+}
+
+/* Utility Classes - Dark Mode */
+.dark-mode .bg-white {
+  background: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+}
+
+.dark-mode .bg-gray-50 {
+  background: #141414 !important;
+  background-color: #141414 !important;
+}
+
+.dark-mode .divide-gray-200 > * + * {
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .text-gray-900 {
+  color: #ffffff !important;
+}
+
+.dark-mode .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+.dark-mode .text-gray-700 {
+  color: #e5e5e5 !important;
+}
+
+.dark-mode .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+.dark-mode .hover\:text-blue-900:hover {
+  color: #93c5fd !important;
+}
+
+.dark-mode .text-red-600 {
+  color: #f87171 !important;
+}
+
+.dark-mode .hover\:text-red-900:hover {
+  color: #fca5a5 !important;
+}
+
+.dark-mode .bg-yellow-50 {
+  background: #2a2000 !important;
+  background-color: #2a2000 !important;
+}
+
+.dark-mode .bg-yellow-50 td {
+  background: #2a2000 !important;
+  background-color: #2a2000 !important;
+}
+
+.dark-mode tr.bg-yellow-50:hover,
+.dark-mode tr.bg-yellow-50:hover td {
+  background: #3d3000 !important;
+  background-color: #3d3000 !important;
+}
+
+.dark-mode .text-green-600 {
+  color: #4ade80 !important;
+}
+
+.dark-mode .hover\:text-green-900:hover {
+  color: #86efac !important;
+}
+
+.dark-mode .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+.dark-mode .hover\:text-gray-900:hover {
+  color: #d1d5db !important;
 }
 
 /* Alerts Dark Mode */
@@ -330,6 +687,43 @@ html.dark-mode {
   background: #2f0a0a;
   border-color: #dc2626;
   color: #f87171;
+}
+
+/* Modal Dark Mode */
+.dark-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.dark-mode .modal-content {
+  background: #0a0a0a !important;
+  border-color: #1f1f1f !important;
+}
+
+.dark-mode .modal-header,
+.dark-mode .modal-body,
+.dark-mode .modal-footer {
+  background: #0a0a0a !important;
+}
+
+.dark-mode .modal-header {
+  border-bottom-color: #1f1f1f !important;
+}
+
+.dark-mode .modal-footer {
+  border-top-color: #1f1f1f !important;
+}
+
+.dark-mode .modal-header h3 {
+  color: #ffffff !important;
+}
+
+.dark-mode .btn-close {
+  color: #e5e5e5 !important;
+}
+
+.dark-mode .btn-close:hover {
+  background: #1f1f1f !important;
+  color: #ffffff !important;
 }
 
 /* Sidebar Dark Mode */
@@ -347,12 +741,12 @@ html.dark-mode {
 }
 
 .dark-mode .nav-link {
-  color: var(--color-text-secondary);
+  color: #ffffff !important;
 }
 
 .dark-mode .nav-link:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
+  background: #141414 !important;
+  color: #ffffff !important;
 }
 
 .dark-mode .sidebar-footer {
@@ -360,11 +754,11 @@ html.dark-mode {
 }
 
 .dark-mode .user-name {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .user-role {
-  color: var(--color-text-muted);
+  color: #e5e5e5 !important;
 }
 
 /* Theme Toggle Dark Mode */
@@ -416,6 +810,6 @@ html.dark-mode {
 
 /* Loading Spinner Dark Mode */
 .dark-mode .loading {
-  border-color: var(--border-color-dark);
-  border-top-color: var(--color-primary);
+  border-color: #1f1f1f !important;
+  border-top-color: #ffffff !important;
 }

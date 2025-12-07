@@ -20,6 +20,7 @@ export class EditableTable implements OnInit {
   @Output() add = new EventEmitter<void>();
   @Output() save = new EventEmitter<{ item: any; index: number }>();
   @Output() cancel = new EventEmitter<{ item: any; index: number }>();
+  @Output() cellClick = new EventEmitter<{ item: any; column: string; index: number }>();
 
   editingIndex: number | null = null;
   editedItem: any = null;
@@ -92,5 +93,11 @@ export class EditableTable implements OnInit {
 
   trackByFn(index: number, item: any): any {
     return index;
+  }
+
+  onCellClick(item: any, column: TableColumn, index: number): void {
+    if (!this.isEditing(index)) {
+      this.cellClick.emit({ item, column: String(column.key), index });
+    }
   }
 }

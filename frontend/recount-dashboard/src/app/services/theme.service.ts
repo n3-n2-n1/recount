@@ -26,9 +26,13 @@ export class ThemeService {
     if (isDark) {
       document.documentElement.classList.add('dark-mode');
       document.body.classList.add('dark-mode');
+      document.documentElement.style.backgroundColor = '#000000';
+      document.body.style.backgroundColor = '#000000';
     } else {
       document.documentElement.classList.remove('dark-mode');
       document.body.classList.remove('dark-mode');
+      document.documentElement.style.backgroundColor = '';
+      document.body.style.backgroundColor = '';
     }
 
     if (save) {

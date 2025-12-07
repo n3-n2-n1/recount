@@ -4,6 +4,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
 import { Login } from './pages/auth/login/login';
 import { UsersList } from './pages/users/users-list/users-list';
+import { AccountDetail } from './pages/users/account-detail/account-detail';
 import { PlatformUsers } from './pages/users/platform-users/platform-users';
 import { Movements } from './pages/movements/movements/movements';
 import { HistoryList } from './pages/history/history-list/history-list';
@@ -21,6 +22,12 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersList,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['super_admin', 'reviewer'] }
+  },
+  {
+    path: 'account/:id',
+    component: AccountDetail,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['super_admin', 'reviewer'] }
   },

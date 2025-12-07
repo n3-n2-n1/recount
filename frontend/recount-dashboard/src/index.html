@@ -7,8 +7,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    // Apply dark mode immediately before page loads
+    (function() {
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      if (isDark) {
+        document.documentElement.classList.add('dark-mode');
+        document.documentElement.style.backgroundColor = '#000000';
+        document.documentElement.style.color = '#ffffff';
+      }
+    })();
+  </script>
+  <style>
+    /* Inline critical dark mode styles to prevent white flash */
+    html.dark-mode,
+    html.dark-mode body {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+  <app-root style="display: block; min-height: 100vh;"></app-root>
 </body>
 </html>

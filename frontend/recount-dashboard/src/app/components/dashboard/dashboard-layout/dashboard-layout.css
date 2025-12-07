@@ -2,6 +2,9 @@
 .layout {
   display: flex;
   height: 100vh;
+  width: 100%;
+  background: var(--color-gray-50);
+  transition: background-color 0.3s ease;
 }
 
 /* Sidebar */
@@ -11,11 +14,15 @@
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 10;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-header {
   padding: var(--space-4);
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-header h1 {
@@ -23,12 +30,14 @@
   font-weight: 600;
   color: var(--color-gray-900);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 /* Navigation */
 .nav {
   flex: 1;
   padding: var(--space-2) 0;
+  transition: background-color 0.3s ease;
 }
 
 .nav-link {
@@ -43,6 +52,7 @@
   background: none;
   width: 100%;
   text-align: left;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-link:hover {
@@ -59,6 +69,7 @@
 .sidebar-footer {
   padding: var(--space-4);
   border-top: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* User Info Container */
@@ -113,12 +124,14 @@
   font-size: var(--font-sm);
   font-weight: 600;
   color: var(--color-gray-900);
+  transition: color 0.3s ease;
 }
 
 .user-role {
   font-size: var(--font-xs);
   color: var(--color-gray-500);
   text-transform: capitalize;
+  transition: color 0.3s ease;
 }
 
 .logout-btn {
@@ -132,6 +145,9 @@
   display: flex;
   flex-direction: column;
   background: var(--color-gray-50);
+  width: 100%;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 /* Header */
@@ -142,6 +158,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 5;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header h2 {
@@ -149,6 +168,7 @@
   font-size: var(--font-lg);
   font-weight: 600;
   color: var(--color-gray-900);
+  transition: color 0.3s ease;
 }
 
 .header-info {
@@ -162,6 +182,9 @@
   flex: 1;
   padding: var(--space-4);
   overflow-y: auto;
+  background: var(--color-gray-50);
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 /* Responsive */
@@ -185,33 +208,42 @@
 
 /* ===== DARK MODE ESPECÍFICO PARA LAYOUT ===== */
 .dark-mode .layout {
-  background: var(--color-bg-primary) !important;
+  background: #000000 !important;
+}
+
+.dark-mode app-dashboard-layout {
+  background: #000000 !important;
+}
+
+.dark-mode app-root {
+  background: #000000 !important;
 }
 
 .dark-mode .sidebar {
-  background: var(--color-bg-primary) !important;
-  border-right-color: var(--border-color-dark) !important;
+  background: #000000 !important;
+  border-right-color: #1f1f1f !important;
 }
 
 .dark-mode .sidebar-header {
-  border-bottom-color: var(--border-color-dark);
+  border-bottom-color: #1f1f1f !important;
+  background: #000000 !important;
 }
 
 .dark-mode .sidebar-header h1 {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .nav {
-  background: var(--color-bg-primary);
+  background: #000000 !important;
 }
 
 .dark-mode .nav-link {
-  color: var(--color-text-secondary);
+  color: #ffffff !important;
 }
 
 .dark-mode .nav-link:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
+  background: #141414 !important;
+  color: #ffffff !important;
 }
 
 .dark-mode .nav-link.active {
@@ -219,15 +251,11 @@
   color: white !important;
 }
 
-.dark-mode .sidebar-footer {
-  border-top-color: var(--border-color-dark);
-  background: var(--color-bg-primary);
-}
 
 .dark-mode .theme-toggle {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--border-color-dark);
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .theme-toggle:hover {
@@ -245,44 +273,49 @@
 }
 
 .dark-mode .user-name {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .user-role {
-  color: var(--color-text-muted);
+  color: #e5e5e5 !important;
 }
 
 .dark-mode .logout-btn {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--border-color-dark);
+  background: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
 }
 
 .dark-mode .logout-btn:hover {
-  background: #1f1f1f;
+  background: #1f1f1f !important;
 }
 
 .dark-mode .main {
-  background: var(--color-bg-primary) !important;
+  background: #000000 !important;
 }
 
 .dark-mode .header {
-  background: var(--color-bg-secondary) !important;
-  border-bottom-color: var(--border-color-dark) !important;
+  background: #0a0a0a !important;
+  border-bottom-color: #1f1f1f !important;
 }
 
 .dark-mode .header h2 {
-  color: var(--color-text-primary);
+  color: #ffffff !important;
 }
 
 .dark-mode .header-info {
-  color: var(--color-text-muted);
+  color: #a3a3a3 !important;
 }
 
 .dark-mode .content {
-  background: var(--color-bg-primary) !important;
+  background: #000000 !important;
 }
 
 .dark-mode .nav {
-  background: var(--color-bg-primary) !important;
+  background: #000000 !important;
+}
+
+.dark-mode .sidebar-footer {
+  border-top-color: #1f1f1f !important;
+  background: #000000 !important;
 }

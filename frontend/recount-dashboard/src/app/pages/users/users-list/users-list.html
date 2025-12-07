@@ -60,10 +60,49 @@
     [canDelete]="true"
     [canAdd]="false"
     (edit)="onEditUser($event)"
-    (delete)="onDeleteUser($event)">
+    (delete)="onDeleteUser($event)"
+    (cellClick)="$event.column === 'name' ? viewAccountDetail($event.item._id) : null">
   </app-editable-table>
       </div>
     </div>
 </div>
 
+</div>
+
+<!-- Modal para agregar cuenta -->
+<div *ngIf="showAddModal" class="modal-overlay" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Agregar Nueva Cuenta</h3>
+      <button class="btn-close" (click)="closeAddModal()" [disabled]="creatingAccount">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="accountName">Nombre de la cuenta *</label>
+        <input
+          type="text"
+          id="accountName"
+          class="form-control"
+          [(ngModel)]="newAccountName"
+          placeholder="Ej: Cuenta Personal, Banco XYZ..."
+          [disabled]="creatingAccount"
+          (keyup.enter)="isAddFormValid() && createAccount()"
+          autofocus>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn" (click)="closeAddModal()" [disabled]="creatingAccount">
+        Cancelar
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="createAccount()" 
+        [disabled]="!isAddFormValid() || creatingAccount">
+        <span *ngIf="creatingAccount" class="loading"></span>
+        {{ creatingAccount ? 'Creando...' : 'Crear Cuenta' }}
+      </button>
+    </div>
+  </div>
 </div>

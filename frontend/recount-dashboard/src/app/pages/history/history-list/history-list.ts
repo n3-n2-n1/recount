@@ -197,6 +197,19 @@ export class HistoryList implements OnInit, OnDestroy {
     this.totalItems = filtered.length;
   }
 
+  hasActiveFilters(): boolean {
+    return !!(
+      this.filters.accountId ||
+      this.filters.type ||
+      this.filters.currency ||
+      this.filters.dateFrom ||
+      this.filters.dateTo ||
+      (this.filters.amountMin !== null && this.filters.amountMin > 0) ||
+      (this.filters.amountMax !== null && this.filters.amountMax > 0) ||
+      this.searchTerm.trim()
+    );
+  }
+
   clearFilters(): void {
     this.filters = {
       accountId: '',

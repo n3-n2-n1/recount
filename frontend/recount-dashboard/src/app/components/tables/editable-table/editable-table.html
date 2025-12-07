@@ -18,7 +18,7 @@
           </th>
           <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
               *ngIf="canEdit || canDelete">
-            Actions
+            Acciones
           </th>
         </tr>
       </thead>
@@ -30,7 +30,9 @@
           <td *ngFor="let column of columns"
               class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
             <!-- View Mode -->
-            <span *ngIf="!isEditing(i)">
+            <span *ngIf="!isEditing(i)" 
+                  [class.clickable-cell]="column.key === 'name'"
+                  (click)="column.key === 'name' ? onCellClick(item, column, i) : null">
               {{ column.formatter ? column.formatter(getColumnValue(item, column), item) : formatValue(getColumnValue(item, column), column) }}
             </span>
 
