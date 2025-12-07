@@ -55,7 +55,7 @@
         </button>
       </div>
 
-      <div *ngIf="!loadingRates && hasExchangeRates && hasEditingRates" class="rates-grid">
+      <div *ngIf="!loadingRates && exchangeRates.length > 0" class="rates-grid">
         <div *ngFor="let rate of exchangeRates" class="rate-item" [class.rate-new]="!rate._id">
           <div class="rate-currency">
             <strong>{{ rate.currency }}</strong>
@@ -164,7 +164,7 @@
         </button>
       </div>
 
-      <div *ngIf="!loadingRates && hasExchangeRates" class="rates-display">
+      <div *ngIf="!loadingRates && exchangeRates.length > 0" class="rates-display">
         <p class="help-text" style="margin-bottom: var(--space-3);">
           Tasas de cambio actuales utilizadas en el sistema:
         </p>

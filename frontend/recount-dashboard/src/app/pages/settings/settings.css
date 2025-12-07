@@ -27,24 +27,22 @@
 
 .rate-item {
   padding: var(--space-3);
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  background: transparent;
   display: grid;
   grid-template-columns: 1fr 200px auto;
   gap: var(--space-3);
   align-items: center;
-  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-color-light);
+  transition: background-color 0.2s ease;
 }
 
 .rate-item:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-hover);
 }
 
 .rate-new {
   border-color: #f59e0b !important;
-  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, rgba(245, 158, 11, 0.05) 100%) !important;
+  background: rgba(245, 158, 11, 0.05) !important;
 }
 
 .rate-new:hover {
@@ -317,13 +315,16 @@
 }
 
 .dark-mode .rate-item {
-  background: #1a1a1a;
-  border-color: #2a2a2a;
+  border-color: #374151;
+}
+
+.dark-mode .rate-item:hover {
+  background: #1f2937;
 }
 
 .dark-mode .rate-new {
   border-color: #f59e0b !important;
-  background: linear-gradient(135deg, #1a1a1a 0%, rgba(245, 158, 11, 0.1) 100%) !important;
+  background: rgba(245, 158, 11, 0.1) !important;
 }
 
 .dark-mode .rate-status {
@@ -346,8 +347,7 @@
 }
 
 .dark-mode .rate-display-item {
-  background: #1a1a1a;
-  border-color: #2a2a2a;
+  border-color: #374151;
 }
 
 .dark-mode .rate-currency-name,

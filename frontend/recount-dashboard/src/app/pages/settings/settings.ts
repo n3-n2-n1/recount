@@ -58,7 +58,7 @@ export class Settings implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     console.log('Settings component initializing...');
 
     // Load user preferences first (synchronous)
@@ -67,10 +67,8 @@ export class Settings implements OnInit {
     // Check permissions
     this.checkPermissions();
 
-    // Load exchange rates with a small delay to ensure component is fully initialized
-    setTimeout(() => {
-      this.loadExchangeRates();
-    }, 100);
+    // Load exchange rates immediately
+    this.loadExchangeRates();
   }
 
   private checkPermissions(): void {
