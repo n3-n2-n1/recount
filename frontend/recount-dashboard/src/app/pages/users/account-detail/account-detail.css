@@ -242,7 +242,7 @@
 }
 
 .dark-mode .balance-item {
-  background: var(--color-bg-secondary);
+  background: transparent !important;
 }
 
 .dark-mode .currency-label {
