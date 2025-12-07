@@ -92,11 +92,11 @@
 }
 
 .bg-blue-600 {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
 }
 
 .hover\:bg-blue-700:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
 .focus\:outline-none:focus {
@@ -105,15 +105,15 @@
 }
 
 .focus\:ring-2:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.3);
 }
 
 .focus\:ring-offset-2:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
 .focus\:ring-blue-500:focus {
-  --tw-ring-color: #3b82f6;
+  --tw-ring-color: #1e293b;
 }
 
 .mr-2 {
@@ -239,19 +239,19 @@
 }
 
 .focus\:ring-blue-500:focus {
-  --tw-ring-color: #3b82f6;
+  --tw-ring-color: #1e293b;
 }
 
 .focus\:border-blue-500:focus {
-  border-color: #3b82f6;
+  border-color: #1e293b;
 }
 
 .text-blue-600 {
-  color: #2563eb;
+  color: #1e293b;
 }
 
 .hover\:text-blue-900:hover {
-  color: #1e3a8a;
+  color: #0f172a;
 }
 
 .p-1 {

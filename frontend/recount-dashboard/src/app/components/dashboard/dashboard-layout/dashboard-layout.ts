@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { ThemeService } from '../../../services/theme.service';
 import { User } from '../../../models';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -14,10 +15,15 @@ import { filter } from 'rxjs/operators';
 export class DashboardLayout implements OnInit, OnDestroy {
   currentUser: User | null = null;
   currentRoute = '';
+  isDarkMode = false;
   
   private subscriptions = new Subscription();
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -32,6 +38,12 @@ export class DashboardLayout implements OnInit, OnDestroy {
         .subscribe((event: NavigationEnd) => {
           this.currentRoute = event.url;
         })
+    );
+
+    this.subscriptions.add(
+      this.themeService.darkMode$.subscribe(isDark => {
+        this.isDarkMode = isDark;
+      })
     );
 
     this.currentRoute = this.router.url;
@@ -75,5 +87,9 @@ export class DashboardLayout implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  toggleDarkMode(): void {
+    this.themeService.toggleDarkMode();
   }
 }

@@ -1,9 +1,21 @@
 <!-- Simple Movements Page -->
 <div page-content>
 
-  <!-- Alerts -->
-  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+  <!-- Toast Notifications -->
+  <div class="toast-container">
+    <div *ngFor="let toast of toasts" 
+         [class]="'toast toast-' + toast.type + ' ' + (toast.show ? 'toast-show' : '')">
+      <div class="toast-icon">
+        <i [class]="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-message">{{ toast.message }}</div>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- Account Selection -->
   <div class="card" style="margin-bottom: var(--space-4);">
@@ -24,15 +36,15 @@
           <strong style="font-size: 1.1rem;">Saldo Total:</strong>
           <span [class]="getTotalBalance() > 0 ? 'text-success' : getTotalBalance() < 0 ? 'text-error' : ''" 
                 style="font-size: 1.2rem; font-weight: 600;">
-            {{ formatCurrency(getTotalBalance()) }}
+          {{ formatCurrency(getTotalBalance()) }}
+        </span>
+      </div>
+      <div style="margin-top: var(--space-2);">
+        <div *ngFor="let balance of getSortedBalances()" class="flex-between" style="margin-bottom: var(--space-1);">
+          <span>{{ balance.currency }}:</span>
+          <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''">
+            {{ formatCurrency(balance.amount) }}
           </span>
-        </div>
-        <div style="margin-top: var(--space-2);">
-          <div *ngFor="let balance of getSortedBalances()" class="flex-between" style="margin-bottom: var(--space-1);">
-            <span>{{ balance.currency }}:</span>
-            <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''">
-              {{ formatCurrency(balance.amount) }}
-            </span>
           </div>
         </div>
       </div>

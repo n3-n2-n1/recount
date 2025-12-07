@@ -201,3 +201,216 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ===== DARK MODE - EN NEGRO ===== */
+.dark-mode {
+  /* Dark Mode Colors - EN NEGRO */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #141414;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e5;
+  --color-text-muted: #a3a3a3;
+  --border-color-dark: #1f1f1f;
+}
+
+/* Body Dark Mode */
+.dark-mode body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+/* Cards Dark Mode */
+.dark-mode .card {
+  background: var(--color-bg-secondary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .card-header {
+  border-color: var(--border-color-dark);
+  background: var(--color-bg-tertiary);
+}
+
+/* Text Dark Mode */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3 {
+  color: var(--color-text-primary);
+}
+
+.dark-mode p {
+  color: var(--color-text-secondary);
+}
+
+/* Buttons Dark Mode */
+.dark-mode .btn {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .btn:hover {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+}
+
+.dark-mode .btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.dark-mode .btn-primary:hover {
+  background: #0f172a;
+}
+
+/* Forms Dark Mode */
+.dark-mode .form-label {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .form-control {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .form-control:focus {
+  border-color: var(--color-primary);
+  background: #1a1a1a;
+}
+
+.dark-mode .form-control::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Select Dark Mode */
+.dark-mode select.form-control {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.dark-mode select.form-control option {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* Tables Dark Mode */
+.dark-mode .table {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .table th {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .table td {
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .table tbody tr:hover {
+  background: var(--color-bg-tertiary);
+}
+
+/* Alerts Dark Mode */
+.dark-mode .alert-success {
+  background: #0a2f0a;
+  border-color: #16a34a;
+  color: #4ade80;
+}
+
+.dark-mode .alert-error {
+  background: #2f0a0a;
+  border-color: #dc2626;
+  color: #f87171;
+}
+
+/* Sidebar Dark Mode */
+.dark-mode .sidebar {
+  background: var(--color-bg-primary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .sidebar-header {
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .sidebar-header h1 {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .nav-link {
+  color: var(--color-text-secondary);
+}
+
+.dark-mode .nav-link:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.dark-mode .sidebar-footer {
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .user-name {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .user-role {
+  color: var(--color-text-muted);
+}
+
+/* Theme Toggle Dark Mode */
+.dark-mode .theme-toggle {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .theme-toggle:hover {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+}
+
+/* Header Dark Mode */
+.dark-mode .header {
+  background: var(--color-bg-secondary);
+  border-color: var(--border-color-dark);
+}
+
+.dark-mode .header h2 {
+  color: var(--color-text-primary);
+}
+
+/* Main Content Dark Mode */
+.dark-mode .main {
+  background: var(--color-bg-primary);
+}
+
+/* Toast Dark Mode */
+.dark-mode .toast {
+  background: var(--color-bg-secondary);
+  border-left-width: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-color-dark);
+}
+
+.dark-mode .toast-message {
+  color: var(--color-text-primary);
+}
+
+.dark-mode .toast-close {
+  color: var(--color-text-muted);
+}
+
+.dark-mode .toast-close:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* Loading Spinner Dark Mode */
+.dark-mode .loading {
+  border-color: var(--border-color-dark);
+  border-top-color: var(--color-primary);
+}

@@ -4,11 +4,18 @@ import { AccountsService } from '../../../services/accounts.service';
 import { TransactionsService } from '../../../services/transactions.service';
 import { Account, CreateTransactionRequest, Transaction } from '../../../models';
 
+interface Toast {
+  id: number;
+  message: string;
+  type: 'success' | 'error';
+  show: boolean;
+}
+
 @Component({
   selector: 'app-movements',
   standalone: false,
   templateUrl: './movements.html',
-  styleUrl: './movements.css',
+  styleUrl: './movements.css'
 })
 export class Movements implements OnInit {
   accounts: Account[] = [];
@@ -16,8 +23,8 @@ export class Movements implements OnInit {
   loadingOutflow = false;
   loadingSwap = false;
   loadingTransfer = false;
-  successMessage = '';
-  errorMessage = '';
+  toasts: Toast[] = [];
+  private toastIdCounter = 0;
   recentTransactions: Transaction[] = [];
 
   // Movement form data
@@ -548,7 +555,7 @@ export class Movements implements OnInit {
               this.transferForm.description.trim() &&
               this.transferForm.targetAccountId &&
               this.selectedAccountId !== this.transferForm.targetAccountId);
-  }
+      }
 
   getAvailableTargetAccounts(): Account[] {
     return this.accounts.filter(acc => acc._id !== this.selectedAccountId);
@@ -556,24 +563,52 @@ export class Movements implements OnInit {
 
 
   private showSuccess(message: string): void {
-    this.successMessage = message;
-    this.errorMessage = '';
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 5000);
+    this.addToast(message, 'success');
   }
 
   private showError(message: string): void {
-    this.errorMessage = message;
-    this.successMessage = '';
-    setTimeout(() => {
-      this.errorMessage = '';
-    }, 5000);
+    this.addToast(message, 'error');
   }
 
   private clearMessages(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
+    // No longer needed for toasts, but keeping for compatibility
+  }
+
+  private addToast(message: string, type: 'success' | 'error'): void {
+    const id = this.toastIdCounter++;
+    const toast: Toast = {
+      id,
+      message,
+      type,
+      show: false
+    };
+
+    this.toasts.push(toast);
+
+    // Trigger animation
+    setTimeout(() => {
+      const toastIndex = this.toasts.findIndex(t => t.id === id);
+      if (toastIndex !== -1) {
+        this.toasts[toastIndex].show = true;
+        this.cdr.detectChanges();
+      }
+    }, 10);
+
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+      this.removeToast(id);
+    }, 4000);
+  }
+
+  removeToast(id: number): void {
+    const index = this.toasts.findIndex(t => t.id === id);
+    if (index !== -1) {
+      this.toasts[index].show = false;
+      setTimeout(() => {
+        this.toasts = this.toasts.filter(t => t.id !== id);
+        this.cdr.detectChanges();
+      }, 300); // Wait for animation to complete
+    }
   }
 
   goToFullHistory(): void {

@@ -32,6 +32,11 @@
     </nav>
 
     <div class="sidebar-footer">
+      <button (click)="toggleDarkMode()" class="theme-toggle" [class.dark]="isDarkMode">
+        <i [class]="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+        <span>{{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}</span>
+      </button>
+      
       <div class="user-info">
         <div class="user-name">{{ currentUser?.name }}</div>
         <div class="user-role">{{ currentUser?.role?.replace('_', ' ') }}</div>
