@@ -13,6 +13,26 @@
   flex: 1;
 }
 
+/* Balance header - inline layout */
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.balance-header .form-label {
+  margin: 0;
+}
+
+.currency-selector {
+  min-width: 180px;
+}
+
+.currency-selector .form-control {
+  max-width: 180px;
+}
+
 /* Transitions */
 .card,
 .card-header,

@@ -34,15 +34,17 @@
 
           <!-- Left Column: Balances -->
           <div>
-            <label class="form-label">Balances por Moneda</label>
+            <div class="balance-header">
+              <label class="form-label">Balances</label>
 
-            <!-- Currency selector -->
-            <div *ngIf="!loadingRates && exchangeRates.length > 0" style="margin-bottom: var(--space-3);">
-              <select [(ngModel)]="preferredCurrency" (change)="onPreferredCurrencyChange()" class="form-control" style="max-width: 180px;">
-                <option *ngFor="let currency of currencies" [value]="currency">
-                  Ver en {{ currency }}
-                </option>
-              </select>
+              <!-- Currency selector -->
+              <div *ngIf="!loadingRates && exchangeRates.length > 0" class="currency-selector">
+                <select [(ngModel)]="preferredCurrency" (change)="onPreferredCurrencyChange()" class="form-control">
+                  <option *ngFor="let currency of currencies" [value]="currency">
+                  {{ currency }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <div *ngIf="getAccountBalances().length > 0" class="balance-list">
