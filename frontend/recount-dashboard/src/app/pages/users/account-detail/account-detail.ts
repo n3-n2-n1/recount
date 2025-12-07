@@ -90,7 +90,9 @@ export class AccountDetail implements OnInit {
     this.accountsService.getAccountById(this.accountId).subscribe({
       next: (account: Account) => {
         console.log('Account loaded successfully:', account);
+        console.log('Account balances:', account.balances);
         this.account = account;
+        this.cdr.detectChanges(); // Force change detection
         this.loadTransactions();
       },
       error: (error: any) => {
@@ -117,6 +119,11 @@ export class AccountDetail implements OnInit {
           console.log('Setting loading to false');
           this.loading = false;
           this.cdr.detectChanges();
+          // Force another change detection after a small delay
+          setTimeout(() => {
+            this.cdr.detectChanges();
+            console.log('Forced change detection after loading');
+          }, 100);
         } else {
           console.warn('Account not loaded yet, keeping loading true');
         }
@@ -133,6 +140,12 @@ export class AccountDetail implements OnInit {
   getTotalBalance(): number {
     if (!this.account?.balances) return 0;
     return this.account.balances.reduce((sum, b) => sum + b.amount, 0);
+  }
+
+  getAccountBalances() {
+    const balances = this.account?.balances || [];
+    console.log('getAccountBalances returning:', balances.length, 'balances:', balances);
+    return balances;
   }
 
   getTotalBalanceConverted(): number {
@@ -181,5 +194,9 @@ export class AccountDetail implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/users']);
+  }
+
+  trackByBalance(index: number, balance: any): string {
+    return balance._id || index.toString();
   }
 }

@@ -51,7 +51,7 @@
               </small>
             </div>
 
-            <div *ngIf="account.balances && account.balances.length > 0">
+            <div *ngIf="getAccountBalances().length > 0">
               <!-- When exchange rates are available -->
               <ng-container *ngIf="exchangeRates.length > 0">
                 <div *ngFor="let balance of getBalancesWithConversion()"
@@ -66,13 +66,15 @@
 
               <!-- When no exchange rates are available -->
               <ng-container *ngIf="exchangeRates.length === 0">
-                <div *ngFor="let balance of account.balances"
+                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance"
                      style="padding: var(--space-2); margin-bottom: var(--space-1); background: var(--color-gray-50); border-radius: var(--border-radius);">
                   <div><strong>{{ balance.currency }}:</strong> {{ balance.amount | number:'1.2-2' }}</div>
+                  <!-- Debug info -->
+                  <div style="font-size: 10px; color: red;">DEBUG: {{ balance.amount }}</div>
                 </div>
               </ng-container>
             </div>
-            <div *ngIf="!account.balances || account.balances.length === 0" class="text-muted">
+            <div *ngIf="getAccountBalances().length === 0" class="text-muted">
               Sin balances
             </div>
           </div>
@@ -94,7 +96,7 @@
                 {{ getTotalBalanceConverted() | number:'1.2-2' }}
               </div>
             </div>
-            <div *ngIf="!loadingRates && exchangeRates.length === 0 && account.balances" style="margin-top: var(--space-2);">
+            <div *ngIf="!loadingRates && exchangeRates.length === 0 && getAccountBalances().length > 0" style="margin-top: var(--space-2);">
               <label class="form-label">Total sin conversión</label>
               <div style="font-size: var(--font-lg); font-weight: 600;"
                    [class.text-success]="getTotalBalance() > 0"
