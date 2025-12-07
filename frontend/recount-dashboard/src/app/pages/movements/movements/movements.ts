@@ -87,8 +87,7 @@ export class Movements implements OnInit {
   }
 
   private checkPermissions(): void {
-    const user = this.authService.currentUser;
-    this.canEditRates = user?.role === 'super_admin' || user?.role === 'reviewer';
+    // No longer needed since we removed the balance display
   }
 
   loadExchangeRates(): void {
@@ -659,9 +658,6 @@ export class Movements implements OnInit {
 
 
   formatCurrencyDisplay(amount: number, currency?: CurrencyType): string {
-    if (currency) {
-      return formatCurrencyWithSymbol(amount, currency);
-    }
     return this.formatCurrency(amount);
   }
 
