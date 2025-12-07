@@ -88,9 +88,12 @@ export class AccountDetail implements OnInit {
 
     // Cargar información de la cuenta directamente por ID
     this.accountsService.getAccountById(this.accountId).subscribe({
-      next: (account: Account) => {
-        console.log('Account loaded successfully:', account);
-        console.log('Account balances:', account.balances);
+      next: (response: any) => {
+        console.log('Account response:', response);
+        // Handle both response formats: direct Account or {account: Account}
+        const account = response.account || response;
+        console.log('Account extracted:', account);
+        console.log('Account balances:', account?.balances);
         this.account = account;
         this.cdr.detectChanges(); // Force change detection
         this.loadTransactions();
@@ -138,13 +141,15 @@ export class AccountDetail implements OnInit {
   }
 
   getTotalBalance(): number {
-    if (!this.account?.balances) return 0;
-    return this.account.balances.reduce((sum, b) => sum + b.amount, 0);
+    const balances = this.getAccountBalances();
+    if (!balances.length) return 0;
+    const total = balances.reduce((sum, b) => sum + b.amount, 0);
+    console.log('getTotalBalance calculated:', total, 'from balances:', balances);
+    return total;
   }
 
   getAccountBalances() {
     const balances = this.account?.balances || [];
-    console.log('getAccountBalances returning:', balances.length, 'balances:', balances);
     return balances;
   }
 
