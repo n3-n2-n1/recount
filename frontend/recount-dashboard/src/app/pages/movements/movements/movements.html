@@ -35,17 +35,6 @@
         
         <!-- Currency selector -->
         <div style="display: flex; gap: var(--space-2); align-items: center;">
-          <div class="currency-selector" *ngIf="!loadingRates && exchangeRates.length > 0">
-            <select [(ngModel)]="preferredCurrency"
-                    (change)="onPreferredCurrencyChange()"
-                    class="form-control"
-                    style="max-width: 150px;">
-              <option *ngFor="let currency of currencies" [value]="currency">
-                Total en {{ currency }}
-              </option>
-            </select>
-          </div>
-
           <button class="btn btn-sm" (click)="goToAccountDetail()" title="Ver detalles de la cuenta">
             <i class="fas fa-eye"></i> Ver Detalles
           </button>
