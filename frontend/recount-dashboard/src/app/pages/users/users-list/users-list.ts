@@ -139,18 +139,13 @@ export class UsersList implements OnInit, OnChanges {
     this.accountsService.createAccount(newAccount).subscribe({
       next: (response) => {
         console.log('Account created:', response);
-        // Create new array to force change detection
-        this.accounts = [response, ...this.accounts];
-        this.filterAccounts(); // Update filtered list
         this.showSuccess('Cuenta creada exitosamente!');
+
+        // Reload the complete accounts list to ensure all data is properly loaded
+        this.loadUsers();
+
         this.creatingAccount = false;
         this.closeAddModal();
-        this.cdr.detectChanges();
-
-        // Additional force update for the table
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 50);
       },
       error: (error) => {
         console.error('Error creating account:', error);
@@ -182,8 +177,9 @@ export class UsersList implements OnInit, OnChanges {
     this.loading = true;
     this.accountsService.updateAccount(account._id, updateRequest).subscribe({
       next: (response) => {
-        this.accounts[index] = response;
-        this.loading = false;
+        console.log('Account updated:', response);
+        // Reload the complete accounts list to ensure all data is properly updated
+        this.loadUsers();
       },
       error: (error) => {
         console.error('Error updating account:', error);
@@ -216,8 +212,6 @@ export class UsersList implements OnInit, OnChanges {
       next: (result) => {
         clearTimeout(timeout);
         this.loading = false;
-        this.accounts.splice(index, 1);
-        this.filterAccounts(); // Update filtered list
 
         const deletedCount = (result as any)?.deletedTransactions || 0;
         const message = deletedCount > 0
@@ -225,10 +219,9 @@ export class UsersList implements OnInit, OnChanges {
           : 'Cuenta eliminada exitosamente!';
 
         this.showSuccess(message);
-        this.cdr.detectChanges();
 
-        // Trigger change detection for stats update
-        setTimeout(() => this.cdr.detectChanges(), 100);
+        // Reload the complete accounts list to ensure all data is properly updated
+        this.loadUsers();
       },
       error: (error) => {
         clearTimeout(timeout);
