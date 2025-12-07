@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { ThemeService } from '../../../services/theme.service';
 import { LoginRequest } from '../../../models';
 
 @Component({
@@ -9,16 +10,29 @@ import { LoginRequest } from '../../../models';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   email = '';
   password = '';
   loading = false;
   error = '';
+  isDarkMode = false;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) {}
+
+  ngOnInit(): void {
+    // Subscribe to dark mode changes
+    this.themeService.darkMode$.subscribe(isDark => {
+      this.isDarkMode = isDark;
+    });
+  }
+
+  toggleDarkMode(): void {
+    this.themeService.toggleDarkMode();
+  }
 
   onSubmit(): void {
     if (!this.email || !this.password) {

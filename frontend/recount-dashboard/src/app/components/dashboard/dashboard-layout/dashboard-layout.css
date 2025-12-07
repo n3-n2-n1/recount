@@ -61,19 +61,34 @@
   border-top: 1px solid var(--border-color);
 }
 
+/* User Info Container */
+.user-info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  gap: var(--space-2);
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Theme Toggle */
 .theme-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: var(--space-3);
-  margin-bottom: var(--space-3);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  flex-shrink: 0;
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 50%;
   background: white;
   color: var(--color-gray-700);
-  font-size: 18px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -81,7 +96,7 @@
 .theme-toggle:hover {
   background: var(--color-gray-50);
   border-color: var(--color-gray-300);
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .theme-toggle i {
@@ -92,10 +107,6 @@
 .theme-toggle.dark i {
   color: #fbbf24;
   transform: rotate(180deg);
-}
-
-.user-info {
-  margin-bottom: var(--space-3);
 }
 
 .user-name {
@@ -174,12 +185,12 @@
 
 /* ===== DARK MODE ESPECÍFICO PARA LAYOUT ===== */
 .dark-mode .layout {
-  background: var(--color-bg-primary);
+  background: var(--color-bg-primary) !important;
 }
 
 .dark-mode .sidebar {
-  background: var(--color-bg-primary);
-  border-right-color: var(--border-color-dark);
+  background: var(--color-bg-primary) !important;
+  border-right-color: var(--border-color-dark) !important;
 }
 
 .dark-mode .sidebar-header {
@@ -204,8 +215,8 @@
 }
 
 .dark-mode .nav-link.active {
-  background: var(--color-primary);
-  color: white;
+  background: var(--color-primary) !important;
+  color: white !important;
 }
 
 .dark-mode .sidebar-footer {
@@ -222,11 +233,15 @@
 .dark-mode .theme-toggle:hover {
   background: #1f1f1f;
   border-color: #2a2a2a;
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .dark-mode .theme-toggle i {
   color: #fbbf24;
+}
+
+.dark-mode .user-info-container {
+  background: transparent;
 }
 
 .dark-mode .user-name {
@@ -248,12 +263,12 @@
 }
 
 .dark-mode .main {
-  background: var(--color-bg-primary);
+  background: var(--color-bg-primary) !important;
 }
 
 .dark-mode .header {
-  background: var(--color-bg-secondary);
-  border-bottom-color: var(--border-color-dark);
+  background: var(--color-bg-secondary) !important;
+  border-bottom-color: var(--border-color-dark) !important;
 }
 
 .dark-mode .header h2 {
@@ -265,5 +280,9 @@
 }
 
 .dark-mode .content {
-  background: var(--color-bg-primary);
+  background: var(--color-bg-primary) !important;
+}
+
+.dark-mode .nav {
+  background: var(--color-bg-primary) !important;
 }

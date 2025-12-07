@@ -5,6 +5,7 @@
   justify-content: center;
   background: var(--color-gray-50);
   padding: var(--space-4);
+  position: relative;
 }
 
 .login-card {
@@ -50,6 +51,44 @@
   margin-bottom: var(--space-2);
 }
 
+/* Theme Toggle Login */
+.theme-toggle-login {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: white;
+  color: var(--color-gray-700);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.theme-toggle-login:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-login i {
+  color: #f59e0b;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-login.dark i {
+  color: #fbbf24;
+  transform: rotate(180deg);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .login-card {
@@ -77,4 +116,20 @@
 
 .dark-mode .form-group label {
   color: var(--color-text-primary);
+}
+
+.dark-mode .theme-toggle-login {
+  background: var(--color-bg-tertiary);
+  border-color: var(--border-color-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .theme-toggle-login:hover {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode .theme-toggle-login i {
+  color: #fbbf24;
 }

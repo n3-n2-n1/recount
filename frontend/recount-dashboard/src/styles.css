@@ -215,9 +215,14 @@ p { color: var(--color-gray-600); margin-bottom: var(--space-2); }
 }
 
 /* Body Dark Mode */
+.dark-mode,
 .dark-mode body {
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+html.dark-mode {
+  background: var(--color-bg-primary) !important;
 }
 
 /* Cards Dark Mode */

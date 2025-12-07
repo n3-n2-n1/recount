@@ -1,4 +1,8 @@
 <div class="login-page">
+  <button (click)="toggleDarkMode()" class="theme-toggle-login" [class.dark]="isDarkMode" [title]="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+    <i [class]="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+  </button>
+  
   <div class="login-card">
     <div class="login-header">
       <h1>Recount</h1>
