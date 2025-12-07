@@ -127,9 +127,11 @@
                 </td>
                 <td>{{ getAccountName(item.data.accountId) }}</td>
                 <td>
-                  <span class="transaction-type">{{ item.data.type }}</span>
+                  <span class="transaction-type" [class]="getTransactionTypeClass(item.data.type)">
+                    {{ item.data.type }}
+                  </span>
                 </td>
-                <td class="text-right" [class]="getTransactionAmountColor(item.data)">
+                <td class="text-right" [class]="getTransactionTypeClass(item.data.type)">
                   {{ getTransactionAmountDisplay(item.data) }}
                 </td>
                 <td>{{ item.data.currency }}</td>

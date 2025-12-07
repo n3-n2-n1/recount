@@ -46,21 +46,15 @@
         </div>
 
         <!-- Balance details with conversion -->
-        <div class="balance-details">
-          <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item-detailed">
-            <div class="balance-item-main">
-              <span class="balance-currency">{{ balance.currency }}:</span>
-              <span [class]="balance.amount > 0 ? 'text-success' : balance.amount < 0 ? 'text-error' : ''"
-                    class="balance-amount">
-                {{ formatCurrency(balance.amount) }}
-              </span>
-            </div>
-            <div class="balance-item-converted" *ngIf="balance.currency !== preferredCurrency && exchangeRates.length > 0">
-              <span class="converted-label">≈</span>
-              <span class="converted-amount">
-                {{ formatCurrency(balance.convertedAmount) }} {{ preferredCurrency }}
-              </span>
-            </div>
+        <div class="balance-simple-list">
+          <div *ngFor="let balance of getBalancesWithConversion()" class="balance-simple-item">
+            <span class="balance-currency-simple">{{ balance.currency }}:</span>
+            <span class="balance-amount-simple" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
+              {{ formatCurrency(balance.amount) }}
+            </span>
+            <span *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined" class="balance-converted-simple">
+              (≈ {{ formatCurrency(balance.convertedAmount) }} {{ preferredCurrency }})
+            </span>
           </div>
         </div>
 

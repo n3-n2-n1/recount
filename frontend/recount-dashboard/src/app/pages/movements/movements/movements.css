@@ -61,53 +61,46 @@ textarea.form-control {
   color: var(--color-gray-600);
 }
 
-/* Balance details with conversion */
-.balance-details {
+/* Balance simple list */
+.balance-simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   margin-top: var(--space-1);
-  margin-bottom: var(--space-2);
 }
 
-.balance-item-detailed {
+.balance-simple-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-1) var(--space-2);
-  margin-bottom: var(--space-1);
-  border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
-  background: var(--color-bg-secondary);
 }
 
-.balance-item-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.balance-currency {
+.balance-currency-simple {
   font-weight: 500;
-  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  min-width: 60px;
 }
 
-.balance-amount {
-  font-size: 0.95rem;
-  font-weight: 500;
+.balance-amount-simple {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
-.balance-item-converted {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: 0.75rem;
+.balance-amount-simple.positive {
+  color: var(--color-success);
+}
+
+.balance-amount-simple.negative {
+  color: var(--color-error);
+}
+
+.balance-converted-simple {
+  font-size: 0.8rem;
   color: var(--color-gray-600);
   font-style: italic;
-}
-
-.converted-label {
-  opacity: 0.7;
-}
-
-.converted-amount {
-  font-family: monospace;
-  font-size: 0.75rem;
+  margin-left: auto;
 }
 
 /* Balance total */
@@ -345,17 +338,24 @@ textarea.form-control {
   color: #9ca3af;
 }
 
-.dark-mode .balance-item-detailed {
-  background: #1a1a1a;
-  border-color: #2a2a2a;
+.dark-mode .balance-simple-item {
+  background: var(--color-bg-secondary);
 }
 
-.dark-mode .balance-currency {
-  color: #ffffff;
+.dark-mode .balance-currency-simple {
+  color: var(--color-text-primary);
 }
 
-.dark-mode .balance-item-converted {
+.dark-mode .balance-converted-simple {
   color: #9ca3af;
+}
+
+.dark-mode .balance-amount-simple.positive {
+  color: #4ade80;
+}
+
+.dark-mode .balance-amount-simple.negative {
+  color: #f87171;
 }
 
 .dark-mode .balance-total {

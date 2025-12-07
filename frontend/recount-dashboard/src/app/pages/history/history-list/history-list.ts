@@ -474,6 +474,16 @@ export class HistoryList implements OnInit, OnDestroy {
     return 'System';
   }
 
+  getTransactionTypeClass(type: string): string {
+    switch (type) {
+      case 'Entrada': return 'text-success';
+      case 'Salida': return 'text-error';
+      case 'Swap': return 'text-warning';
+      case 'Transferencia Interna': return 'text-info';
+      default: return '';
+    }
+  }
+
   getChangedByName(change: ExchangeRateHistory): string {
     return change.changedBy?.name || 'Sistema';
   }

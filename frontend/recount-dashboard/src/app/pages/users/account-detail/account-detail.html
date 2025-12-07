@@ -45,31 +45,27 @@
               </select>
             </div>
 
-            <div *ngIf="getAccountBalances().length > 0">
+            <div *ngIf="getAccountBalances().length > 0" class="balance-list">
               <!-- With exchange rates -->
               <ng-container *ngIf="exchangeRates.length > 0">
-                <div *ngFor="let balance of getBalancesWithConversion()" class="balance-row">
-                  <div class="balance-info">
-                    <span class="currency-name">{{ balance.currency }}</span>
-                    <span class="balance-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
-                      {{ balance.amount | number:'1.2-2' }}
-                    </span>
-                  </div>
-                  <div *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined" class="converted-info">
-                    ≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }}
-                  </div>
+                <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item">
+                  <span class="currency-label">{{ balance.currency }}:</span>
+                  <span class="amount-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
+                    {{ balance.amount | number:'1.2-2' }}
+                  </span>
+                  <span *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined" class="converted-text">
+                    (≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }})
+                  </span>
                 </div>
               </ng-container>
 
               <!-- Without exchange rates -->
               <ng-container *ngIf="exchangeRates.length === 0">
-                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance" class="balance-row">
-                  <div class="balance-info">
-                    <span class="currency-name">{{ balance.currency }}</span>
-                    <span class="balance-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
-                      {{ balance.amount | number:'1.2-2' }}
-                    </span>
-                  </div>
+                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance" class="balance-item">
+                  <span class="currency-label">{{ balance.currency }}:</span>
+                  <span class="amount-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
+                    {{ balance.amount | number:'1.2-2' }}
+                  </span>
                 </div>
               </ng-container>
             </div>

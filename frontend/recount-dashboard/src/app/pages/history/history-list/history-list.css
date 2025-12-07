@@ -210,6 +210,84 @@ th[style*="cursor: pointer"]:hover {
   color: #9ca3af;
 }
 
+/* Transaction type colors - same as account-detail */
+.transaction-type {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.transaction-type.text-success {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--color-success);
+}
+
+.transaction-type.text-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+.transaction-type.text-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.transaction-type.text-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* Amount colors - same classes as account-detail */
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-error {
+  color: var(--color-error) !important;
+}
+
+.text-warning {
+  color: var(--color-warning) !important;
+}
+
+.text-info {
+  color: #3b82f6 !important;
+}
+
+/* Dark mode for transaction colors */
+.dark-mode .transaction-type.text-success {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.dark-mode .transaction-type.text-error {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.dark-mode .transaction-type.text-warning {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.dark-mode .transaction-type.text-info {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+.dark-mode .text-success {
+  color: #4ade80 !important;
+}
+
+.dark-mode .text-error {
+  color: #f87171 !important;
+}
+
+.dark-mode .text-warning {
+  color: #fbbf24 !important;
+}
+
+.dark-mode .text-info {
+  color: #60a5fa !important;
+}
+
 /* Dark mode styles for exchange rate changes */
 .dark-mode .exchange-rate-indicator {
   color: #fbbf24;
@@ -231,4 +309,82 @@ th[style*="cursor: pointer"]:hover {
 
 .dark-mode .exchange-rate-description {
   color: #9ca3af;
+}
+
+/* Transaction type colors - same as account-detail */
+.transaction-type {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.transaction-type.text-success {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--color-success);
+}
+
+.transaction-type.text-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+.transaction-type.text-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.transaction-type.text-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* Amount colors - same classes as account-detail */
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-error {
+  color: var(--color-error) !important;
+}
+
+.text-warning {
+  color: var(--color-warning) !important;
+}
+
+.text-info {
+  color: #3b82f6 !important;
+}
+
+/* Dark mode for transaction colors */
+.dark-mode .transaction-type.text-success {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.dark-mode .transaction-type.text-error {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.dark-mode .transaction-type.text-warning {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.dark-mode .transaction-type.text-info {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+.dark-mode .text-success {
+  color: #4ade80 !important;
+}
+
+.dark-mode .text-error {
+  color: #f87171 !important;
+}
+
+.dark-mode .text-warning {
+  color: #fbbf24 !important;
+}
+
+.dark-mode .text-info {
+  color: #60a5fa !important;
 }
