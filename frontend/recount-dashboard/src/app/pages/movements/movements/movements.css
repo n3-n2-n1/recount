@@ -43,7 +43,6 @@ textarea.form-control {
 /* Balance summary section */
 .balance-summary {
   padding-top: var(--space-2);
-  border-top: 1px solid var(--border-color);
   margin-top: var(--space-2);
 }
 
@@ -323,10 +322,6 @@ textarea.form-control {
 
 .dark-mode .form-label {
   color: #ffffff !important;
-}
-
-.dark-mode .balance-summary {
-  border-top-color: var(--border-color-dark);
 }
 
 /* Currency selector dark mode styles removed */
