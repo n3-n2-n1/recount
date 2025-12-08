@@ -81,13 +81,12 @@ export class Login implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.loading = false;
-        console.log('✅ Login successful, redirecting to /movements');
 
         // Clear form after successful login
         this.email = '';
         this.password = '';
 
-        this.router.navigate(['/movements']);
+        this.router.navigate(['/users']);
       },
       error: (error) => {
         this.loading = false;

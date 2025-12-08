@@ -43,7 +43,7 @@ export class SettingsService {
    * Validate if a string is a valid currency type
    */
   private isValidCurrency(currency: string): boolean {
-    const validCurrencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+    const validCurrencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
     return validCurrencies.includes(currency as CurrencyType);
   }
 
@@ -51,6 +51,6 @@ export class SettingsService {
    * Get all available currencies
    */
   getAvailableCurrencies(): CurrencyType[] {
-    return ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+    return ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
   }
 }

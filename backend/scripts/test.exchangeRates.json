@@ -66,7 +66,7 @@
   "_id": {
     "$oid": "6934e4ea08700ae7ca87b1a6"
   },
-  "currency": "CABLE BROKER",
+  "currency": "DOLAR INTERNACIONAL",
   "rateToUSD": 1.005,
   "updatedBy": {
     "$oid": "6933b46203e7803c847956cd"

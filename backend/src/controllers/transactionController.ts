@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import mongoose from 'mongoose';
 import Transaction from '../models/Transaction.js';
 import Account, { type Currency } from '../models/Account.js';
+import Fee from '../models/Fee.js';
 
 type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
 
@@ -98,8 +99,15 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
       exchangeRate,
       targetAccountId,
       reference,
-      notes
+      notes,
+      applyFee,
+      feeType,
+      feeValue,
+      originalAmount
     } = req.body;
+
+    // Map applyFee to feeApplied for backward compatibility
+    const feeApplied = applyFee || false;
 
     if (!accountId || !type || !description || !currency || !amount) {
       res.status(400).json({ message: 'Required fields missing' });
@@ -111,12 +119,16 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
       type,
       description,
       currency,
-      amount,
+      amount, // This is already the final amount after fee
       targetCurrency,
       exchangeRate,
       targetAccountId,
       reference,
       notes,
+      feeApplied,
+      feeType,
+      feeValue,
+      originalAmount: feeApplied ? originalAmount : undefined, // Store original amount before fee
       createdBy: user._id
     });
 
@@ -139,14 +151,27 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
       }
     }
 
+    let finalAmount = amount;
+
+    // Apply manual fee if provided
+    if (applyFee && feeValue && feeValue > 0) {
+      let feeAmount = 0;
+      if (feeType === 'percentage') {
+        feeAmount = (amount * feeValue) / 100;
+      } else {
+        feeAmount = feeValue;
+      }
+      finalAmount = type === 'Entrada' ? amount - feeAmount : amount + feeAmount;
+    }
+
     // Apply transaction logic based on type
     switch (type) {
       case 'Entrada':
-        await updateAccountBalance(accountId, currency as Currency, amount, 'add');
+        await updateAccountBalance(accountId, currency as Currency, finalAmount, 'add');
         break;
 
       case 'Salida':
-        await updateAccountBalance(accountId, currency as Currency, amount, 'subtract');
+        await updateAccountBalance(accountId, currency as Currency, finalAmount, 'subtract');
         break;
 
       case 'Swap':

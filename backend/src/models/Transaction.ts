@@ -17,6 +17,11 @@ export interface ITransaction extends Document {
   // For all transactions
   reference?: string;
   notes?: string;
+  // Fee information
+  feeApplied?: boolean;
+  feeType?: 'percentage' | 'fixed';
+  feeValue?: number;
+  originalAmount?: number; // Amount before fee deduction/addition
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -40,7 +45,7 @@ const TransactionSchema: Schema = new Schema({
   },
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
     required: true
   },
   amount: {
@@ -50,7 +55,7 @@ const TransactionSchema: Schema = new Schema({
   // For Swap transactions
   targetCurrency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER']
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL']
   },
   exchangeRate: {
     type: Number
@@ -68,6 +73,23 @@ const TransactionSchema: Schema = new Schema({
   notes: {
     type: String,
     trim: true
+  },
+  // Fee information
+  feeApplied: {
+    type: Boolean,
+    default: false
+  },
+  feeType: {
+    type: String,
+    enum: ['percentage', 'fixed']
+  },
+  feeValue: {
+    type: Number,
+    min: 0
+  },
+  originalAmount: {
+    type: Number,
+    min: 0
   },
   createdBy: {
     type: Schema.Types.ObjectId,

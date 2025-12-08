@@ -49,7 +49,7 @@ export class HistoryList implements OnInit, OnDestroy {
   
   // Available options
   transactionTypes = ['Entrada', 'Salida', 'Swap', 'Transferencia Interna'];
-  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
   
   // View options
   viewMode: 'table' | 'cards' = 'table';
@@ -380,15 +380,34 @@ export class HistoryList implements OnInit, OnDestroy {
   }
 
   private generateCSV(): string {
-    const headers = ['Date', 'Account', 'Type', 'Amount', 'Currency', 'Description', 'Created By'];
+    const headers = [
+      'Fecha',
+      'ID Trans.',
+      'Descripción',
+      'Estado',
+      'Cuenta origen',
+      'Cuenta Destino',
+      'Moneda Origen',
+      'Monto Origen',
+      'Moneda Destino',
+      'Monto Destino',
+      'Saldo',
+      'Observaciones'
+    ];
+
     const rows = this.filteredTransactions.map(transaction => [
-      this.formatDate(transaction.createdAt),
-      this.getAccountName(transaction.accountId),
-      transaction.type,
-      transaction.amount.toString(),
-      transaction.currency,
-      this.getTransactionDescription(transaction),
-      this.getUserName(transaction)
+      this.formatDate(transaction.createdAt), // Fecha
+      transaction._id, // ID Trans.
+      this.getTransactionDescription(transaction), // Descripción
+      'procesado', // Estado (todas las transacciones visibles están procesadas)
+      this.getAccountName(transaction.accountId), // Cuenta origen
+      this.getTargetAccountName(transaction), // Cuenta Destino
+      transaction.currency, // Moneda Origen
+      this.getOriginalAmount(transaction).toString(), // Monto Origen
+      this.getTargetCurrency(transaction), // Moneda Destino
+      this.getTargetAmount(transaction).toString(), // Monto Destino
+      this.calculateBalanceAfterTransaction(transaction), // Saldo
+      transaction.notes || '' // Observaciones
     ]);
 
     const csvContent = [headers, ...rows]
@@ -403,9 +422,98 @@ export class HistoryList implements OnInit, OnDestroy {
     if (typeof accountId === 'object' && accountId?.name) {
       return accountId.name;
     }
-    
+
     const account = this.accounts.find(a => a._id === accountId);
     return account?.name || 'Unknown Account';
+  }
+
+  getTargetAccountName(transaction: Transaction): string {
+    if (transaction.type === 'Transferencia Interna' && transaction.targetAccountId) {
+      return this.getAccountName(transaction.targetAccountId);
+    }
+    return ''; // No aplica para otros tipos de transacción
+  }
+
+  getTargetCurrency(transaction: Transaction): string {
+    if (transaction.type === 'Swap' && transaction.targetCurrency) {
+      return transaction.targetCurrency;
+    }
+    return ''; // No aplica para otros tipos de transacción
+  }
+
+  getTargetAmount(transaction: Transaction): number {
+    if (transaction.type === 'Swap' && transaction.exchangeRate) {
+      // Para swaps, el monto destino es el original amount convertido
+      const originalAmount = transaction.originalAmount || transaction.amount;
+      return originalAmount * transaction.exchangeRate;
+    }
+    return 0; // No aplica para otros tipos de transacción
+  }
+
+  getOriginalAmount(transaction: Transaction): number {
+    // Si hay fee aplicado, devolver el original amount, sino el amount normal
+    return transaction.originalAmount || transaction.amount;
+  }
+
+  calculateBalanceAfterTransaction(transaction: Transaction): string {
+    // Calcular el balance histórico acumulado para esta cuenta
+    // Necesitamos procesar todas las transacciones en orden cronológico
+
+    const accountId = typeof transaction.accountId === 'object' && transaction.accountId
+      ? (transaction.accountId as any)._id || transaction.accountId
+      : transaction.accountId;
+
+    // Filtrar transacciones de esta cuenta y ordenar por fecha
+    const accountTransactions = this.filteredTransactions
+      .filter(t => {
+        const tAccountId = typeof t.accountId === 'object' && t.accountId
+          ? (t.accountId as any)._id || t.accountId
+          : t.accountId;
+        return tAccountId === accountId;
+      })
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    // Calcular balance running hasta esta transacción
+    let runningBalance = 0;
+
+    for (const t of accountTransactions) {
+      switch (t.type) {
+        case 'Entrada':
+          runningBalance += t.amount;
+          break;
+        case 'Salida':
+          runningBalance -= t.amount;
+          break;
+        case 'Swap':
+          // Para swaps, el balance final es el amount (que ya incluye la conversión)
+          runningBalance = t.amount;
+          break;
+        case 'Transferencia Interna':
+          // Las transferencias pueden afectar el balance dependiendo de si es origen o destino
+          const targetAccountId = typeof t.targetAccountId === 'object' && t.targetAccountId
+            ? (t.targetAccountId as any)._id || t.targetAccountId
+            : t.targetAccountId;
+          const sourceAccountId = typeof t.accountId === 'object' && t.accountId
+            ? (t.accountId as any)._id || t.accountId
+            : t.accountId;
+
+          if (targetAccountId === accountId) {
+            // Esta cuenta recibió la transferencia
+            runningBalance += t.amount;
+          } else if (sourceAccountId === accountId) {
+            // Esta cuenta envió la transferencia
+            runningBalance -= t.amount;
+          }
+          break;
+      }
+
+      // Si encontramos la transacción actual, devolver el balance hasta este punto
+      if (t._id === transaction._id) {
+        return runningBalance.toFixed(2);
+      }
+    }
+
+    return '0.00';
   }
 
   formatDate(dateString: string): string {
@@ -503,28 +611,6 @@ export class HistoryList implements OnInit, OnDestroy {
     }
   }
 
-  getTargetAccountName(transaction: any): string {
-    if (transaction.type === 'Transferencia Interna' && transaction.targetAccountId) {
-      // Handle populated targetAccountId (object with _id and name)
-      if (typeof transaction.targetAccountId === 'object' && transaction.targetAccountId !== null) {
-        if (transaction.targetAccountId.name) {
-          return transaction.targetAccountId.name;
-        }
-        // If it's an object but doesn't have name, it might be incomplete population
-        return 'Cargando...';
-      }
-
-      // Handle targetAccountId as string (ID), search in local accounts array
-      if (typeof transaction.targetAccountId === 'string') {
-        if (this.accounts.length === 0) {
-          return 'Cargando...';
-        }
-        const targetAccount = this.accounts.find(account => account._id === transaction.targetAccountId);
-        return targetAccount ? targetAccount.name : 'Cuenta desconocida';
-      }
-    }
-    return '';
-  }
 
   getChangedByName(change: ExchangeRateHistory): string {
     return change.changedBy?.name || 'Sistema';

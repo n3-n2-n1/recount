@@ -8,11 +8,6 @@
     </div>
 
     <nav class="nav">
-      <a (click)="goToMovements()" 
-         class="nav-link" 
-         [class.active]="isActiveRoute('/movements')">
-        Movimientos
-      </a>
       <a (click)="goToUsers()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/users')">
@@ -28,11 +23,6 @@
          class="nav-link" 
          [class.active]="isActiveRoute('/team')">
         Equipo
-      </a>
-      <a (click)="goToSettings()" 
-         class="nav-link" 
-         [class.active]="isActiveRoute('/settings')">
-        Configuración
       </a>
     </nav>
 

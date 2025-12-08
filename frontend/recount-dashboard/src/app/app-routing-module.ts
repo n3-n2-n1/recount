@@ -60,14 +60,14 @@ const routes: Routes = [
   // Default redirect
   {
     path: '',
-    redirectTo: '/movements',
+    redirectTo: '/users',
     pathMatch: 'full'
   },
 
   // Wildcard route
   {
     path: '**',
-    redirectTo: '/movements'
+    redirectTo: '/users'
   }
 ];
 

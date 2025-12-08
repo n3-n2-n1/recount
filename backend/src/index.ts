@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.js';
 import accountRoutes from './routes/accounts.js';
 import transactionRoutes from './routes/transactions.js';
 import exchangeRateRoutes from './routes/exchangeRates.js';
+import feeRoutes from './routes/fees.js';
 
 // Load environment variables
 
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/exchange-rates', exchangeRateRoutes);
+app.use('/api/fees', feeRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

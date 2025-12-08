@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'CABLE BROKER';
+export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR INTERNACIONAL';
 
 export interface IExchangeRate extends Document {
   currency: Currency;
@@ -13,7 +13,7 @@ export interface IExchangeRate extends Document {
 const ExchangeRateSchema: Schema = new Schema({
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
     required: true,
     unique: true
   },

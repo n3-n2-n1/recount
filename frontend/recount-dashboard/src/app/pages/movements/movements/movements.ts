@@ -67,7 +67,7 @@ export class Movements implements OnInit {
     targetAccountId: ''
   };
 
-  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
 
   constructor(
     private accountsService: AccountsService,

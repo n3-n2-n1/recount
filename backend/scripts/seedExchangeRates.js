@@ -25,7 +25,7 @@ const defaultRates = [
   { currency: 'CABLE', rateToUSD: 1.0100, description: 'Cable dollar' },
   { currency: 'PESOS', rateToUSD: 0.0010, description: 'Argentine Peso (1 USD = 1000 ARS)' },
   { currency: 'CHEQUE', rateToUSD: 0.9500, description: 'Check dollar' },
-  { currency: 'CABLE BROKER', rateToUSD: 1.0050, description: 'Cable broker dollar' }
+  { currency: 'DOLAR INTERNACIONAL', rateToUSD: 1.0050, description: 'Cable broker dollar' }
 ];
 
 async function seedExchangeRates() {

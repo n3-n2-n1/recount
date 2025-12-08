@@ -52,7 +52,7 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
     }
 
     // Create account with initial balances for all currencies
-    const currencies: string[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+    const currencies: string[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
     const initialBalances = currencies.map(currency => ({
       currency,
       amount: 0

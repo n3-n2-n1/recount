@@ -24,7 +24,7 @@ export class Settings implements OnInit {
   availableCurrencies: CurrencyType[] = [];
 
   // Exchange rates
-  allCurrencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'];
+  allCurrencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
   exchangeRates: ExchangeRate[] = [];
   rateHistory: ExchangeRateHistory[] = [];
   editingRates: { [key: string]: number } = {};

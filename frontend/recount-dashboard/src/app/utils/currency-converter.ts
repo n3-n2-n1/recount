@@ -115,7 +115,7 @@ export function formatCurrencyWithSymbol(
     case 'PESOS':
       return `${formatted} ARS`;
     case 'CABLE':
-    case 'CABLE BROKER':
+    case 'DOLAR INTERNACIONAL':
     case 'CHEQUE':
       return `${formatted} ${currency}`;
     default:

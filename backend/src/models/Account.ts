@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'CABLE BROKER';
+export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR INTERNACIONAL';
 
 export interface IBalance {
   currency: Currency;
@@ -17,7 +17,7 @@ export interface IAccount extends Document {
 const BalanceSchema: Schema = new Schema({
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'CABLE BROKER'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
     required: true
   },
   amount: {

@@ -1,6 +1,22 @@
 <!-- Account Detail Page -->
 <div page-content>
 
+  <!-- Toast Notifications -->
+  <div class="toast-container">
+    <div *ngFor="let toast of toasts"
+         [class]="'toast toast-' + toast.type + ' ' + (toast.show ? 'toast-show' : '')">
+      <div class="toast-icon">
+        <i [class]="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-message">{{ toast.message }}</div>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- Header -->
   <div class="account-header">
     <button class="btn" (click)="goBack()">
@@ -24,98 +40,76 @@
   <!-- Account Information -->
   <div *ngIf="!loading && account">
 
-    <!-- Account Summary Card -->
-    <div class="card">
-      <div class="card-header">
-        <h3>Resumen de la Cuenta</h3>
-      </div>
-      <div class="card-body">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
-
-          <!-- Left Column: Balances -->
-          <div>
-            <div class="balance-header">
-              <label class="form-label">Balances</label>
-
-              <!-- Currency selector -->
-              <div *ngIf="!loadingRates && exchangeRates.length > 0" class="currency-selector">
-                <select [(ngModel)]="preferredCurrency" (change)="onPreferredCurrencyChange()" class="form-control">
-                  <option *ngFor="let currency of currencies" [value]="currency">
-                  {{ currency }}
-                  </option>
-                </select>
+        <!-- Summary Cards -->
+        <div class="summary-cards-grid" style="margin-top: var(--space-3);">
+    
+          <div class="summary-card">
+            <div class="summary-card-body">
+              <div class="flex-between">
+                <span>Transacciones</span>
+                <strong>{{ transactions.length }}</strong>
               </div>
-            </div>
-
-            <div *ngIf="getAccountBalances().length > 0" class="balance-list">
-              <!-- With exchange rates -->
-              <ng-container *ngIf="exchangeRates.length > 0">
-                <div *ngFor="let balance of getBalancesWithConversion()" class="balance-item">
-                  <span class="currency-label">{{ balance.currency }}:</span>
-                  <span class="amount-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
-                    {{ balance.amount | number:'1.2-2' }}
-                  </span>
-                  <span *ngIf="balance.currency !== preferredCurrency && balance.convertedAmount !== undefined" class="converted-text">
-                    (≈ {{ balance.convertedAmount | number:'1.2-2' }} {{ preferredCurrency }})
-                  </span>
-                </div>
-              </ng-container>
-
-              <!-- Without exchange rates -->
-              <ng-container *ngIf="exchangeRates.length === 0">
-                <div *ngFor="let balance of getAccountBalances(); trackBy: trackByBalance" class="balance-item">
-                  <span class="currency-label">{{ balance.currency }}:</span>
-                  <span class="amount-value" [class]="balance.amount > 0 ? 'positive' : balance.amount < 0 ? 'negative' : ''">
-                    {{ balance.amount | number:'1.2-2' }}
-                  </span>
-                </div>
-              </ng-container>
-            </div>
-
-            <div *ngIf="getAccountBalances().length === 0" class="text-muted" style="padding: var(--space-2); text-align: center; font-style: italic;">
-              Sin balances
             </div>
           </div>
-
-          <!-- Right Column: Summary -->
-          <div>
-
-            <!-- Total Balance Card -->
-            <div style="margin-bottom: var(--space-4);">
-              <label class="form-label">Balance Total</label>
-              <div class="total-amount" [class]="getTotalBalance() > 0 ? 'positive' : getTotalBalance() < 0 ? 'negative' : ''">
-                {{ getTotalBalance() | number:'1.2-2' }}
-              </div>
-
-              <div *ngIf="!loadingRates && exchangeRates.length > 0" class="converted-summary">
-                <span class="converted-label">En {{ preferredCurrency }}:</span>
-                <span class="converted-amount" [class]="getTotalBalanceConverted() > 0 ? 'positive' : getTotalBalanceConverted() < 0 ? 'negative' : ''">
-                  {{ getTotalBalanceConverted() | number:'1.2-2' }}
-                </span>
+    
+          <div class="summary-card">
+            <div class="summary-card-body">
+              <div class="flex-between">
+                <span>Monedas Activas</span>
+                <strong>{{ getAccountBalances().length }}</strong>
               </div>
             </div>
-
-            <!-- Account Info -->
-            <div>
-              <label class="form-label">Información</label>
-              <div class="info-grid">
-                <div class="info-row">
-                  <span class="info-label">Creada:</span>
-                  <span class="info-value">{{ formatDate(account.createdAt) }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Actualizada:</span>
-                  <span class="info-value">{{ formatDate(account.updatedAt) }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Transacciones:</span>
-                  <span class="info-value">{{ transactions.length }}</span>
-                </div>
-              </div>
-            </div>
-
           </div>
+    
+          <div class="summary-card">
+            <div class="summary-card-body">
+              <div class="flex-between">
+                <span>Última Actividad</span>
+                <strong>{{ transactions.length > 0 ? formatDate(transactions[0].createdAt) : 'Nunca' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+    
 
+    <!-- Currency Cards -->
+    <div class="currency-cards-grid">
+      <div *ngFor="let currency of mainCurrencies" class="currency-card">
+        <div class="currency-card-header">
+          <div class="currency-icon" [class]="getCurrencyColor(currency)">
+            <i [class]="getCurrencyIcon(currency)"></i>
+          </div>
+          <h3 class="currency-title">{{ currency }}</h3>
+        </div>
+
+        <div class="currency-balance">
+          <div class="balance-amount" [class]="getBalanceForCurrency(currency) >= 0 ? 'positive' : 'negative'">
+            {{ formatCurrencyLatin(getBalanceForCurrency(currency)) }}
+          </div>
+          <!-- Fee information -->
+          <div class="fee-info" *ngIf="getFeeForTransaction(currency, 'Entrada') || getFeeForTransaction(currency, 'Salida')">
+            <div class="fee-item" *ngIf="getFeeForTransaction(currency, 'Entrada') as fee">
+              <small class="fee-text">Ingreso: {{ fee.percentage }}% fee</small>
+            </div>
+            <div class="fee-item" *ngIf="getFeeForTransaction(currency, 'Salida') as fee">
+              <small class="fee-text">Egreso: {{ fee.percentage }}% fee</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="currency-actions">
+          <button class="btn btn-success btn-sm action-btn" (click)="openTransactionModal(currency, 'Entrada')" title="Nuevo Ingreso">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button class="btn btn-error btn-sm action-btn" (click)="openTransactionModal(currency, 'Salida')" title="Nuevo Egreso">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button class="btn btn-warning btn-sm action-btn" (click)="openSwapModal(currency)" title="Intercambiar">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+          <button class="btn btn-info btn-sm action-btn" (click)="openTransferModal(currency)" title="Transferir">
+            <i class="fas fa-arrow-right"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -142,7 +136,9 @@
                 <th>Tipo</th>
                 <th>Descripción</th>
                 <th>Moneda</th>
-                <th class="text-right">Monto</th>
+                <th class="text-right">Monto Total</th>
+                <th class="text-right">Fee</th>
+                <th class="text-right">Monto Real</th>
               </tr>
             </thead>
             <tbody>
@@ -156,8 +152,30 @@
                 <td>{{ getTransactionDescription(transaction) }}</td>
                 <td>{{ transaction.currency }}</td>
                 <td class="text-right">
+                  <!-- Monto Total (siempre se muestra) -->
                   <span class="amount" [class]="getTransactionTypeClass(transaction.type)">
-                    {{ getTransactionSignAndType(transaction).sign }}{{ transaction.amount | number:'1.2-2' }}
+                    <ng-container *ngIf="transaction.feeApplied && transaction.originalAmount">
+                      {{ getTransactionSignAndType(transaction).sign }}{{ formatCurrencyLatin(transaction.originalAmount!) }}
+                    </ng-container>
+                    <ng-container *ngIf="!transaction.feeApplied || !transaction.originalAmount">
+                      {{ getTransactionSignAndType(transaction).sign }}{{ formatCurrencyLatin(transaction.amount) }}
+                    </ng-container>
+                  </span>
+                </td>
+                <td class="text-right">
+                  <!-- Fee (solo si se aplicó fee) -->
+                  <span *ngIf="transaction.feeApplied && transaction.feeValue" class="fee-amount-display">
+                    {{ transaction.feeType === 'percentage' ? transaction.feeValue + '%' : '$' + transaction.feeValue }}
+                    (-{{ formatCurrencyLatin(calculateFeeAmountFromTransaction(transaction)) }})
+                  </span>
+                  <span *ngIf="!transaction.feeApplied" class="no-fee">
+                    Sin fee
+                  </span>
+                </td>
+                <td class="text-right">
+                  <!-- Monto Real (siempre se muestra) -->
+                  <span class="amount final-amount-display" [class]="getTransactionTypeClass(transaction.type)">
+                    {{ getTransactionSignAndType(transaction).sign }}{{ formatCurrencyLatin(transaction.amount) }}
                   </span>
                 </td>
               </tr>
@@ -170,4 +188,346 @@
 
   </div>
 
+</div>
+
+<!-- Swap Modal -->
+<div *ngIf="showSwapModal" class="modal-overlay" (click)="closeSwapModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fas fa-exchange-alt"></i> Swap {{ selectedCurrency }}</h3>
+      <button class="modal-close" (click)="closeSwapModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="createSwap()" #swapFormElement="ngForm">
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label class="form-label">Monto a intercambiar *</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            class="form-control"
+            [(ngModel)]="swapForm.amount"
+            name="swapAmount"
+            required
+            placeholder="0.00">
+        </div>
+
+        <!-- Target Currency -->
+        <div class="form-group">
+          <label class="form-label">Moneda destino *</label>
+          <select
+            class="form-control"
+            [(ngModel)]="swapForm.targetCurrency"
+            name="targetCurrency"
+            required>
+            <option *ngFor="let currency of mainCurrencies" [value]="currency" [disabled]="currency === selectedCurrency">
+              {{ currency }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Exchange Rate -->
+        <div class="form-group">
+          <label class="form-label">Tasa de cambio *</label>
+          <input
+            type="number"
+            step="0.0001"
+            min="0.0001"
+            class="form-control"
+            [(ngModel)]="swapForm.exchangeRate"
+            name="exchangeRate"
+            required
+            placeholder="1.0000">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Descripción *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="swapForm.description"
+            name="swapDescription"
+            required
+            placeholder="Descripción del intercambio"
+            maxlength="255">
+        </div>
+
+        <!-- Summary -->
+        <div class="transaction-summary" *ngIf="swapForm.amount && swapForm.amount > 0 && swapForm.exchangeRate > 0">
+          <div class="summary-item">
+            <span class="summary-label">Monto a intercambiar:</span>
+            <span class="summary-value">{{ formatCurrency(swapForm.amount) }} {{ selectedCurrency }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Monto recibido:</span>
+            <span class="summary-value">{{ formatCurrency(swapForm.amount * swapForm.exchangeRate) }} {{ swapForm.targetCurrency }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Tasa de cambio:</span>
+            <span class="summary-value">{{ swapForm.exchangeRate }}</span>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeSwapModal()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-warning"
+        [disabled]="!swapForm.amount || swapForm.amount <= 0 || !swapForm.description || !swapForm.targetCurrency || swapForm.targetCurrency === selectedCurrency || creatingTransaction"
+        (click)="createSwap()">
+        <span *ngIf="creatingTransaction" class="loading"></span>
+        {{ creatingTransaction ? 'Creando...' : 'Ejecutar Intercambio' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div *ngIf="showTransferModal" class="modal-overlay" (click)="closeTransferModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fas fa-arrow-right"></i> {{ selectedCurrency }}</h3>
+      <button class="modal-close" (click)="closeTransferModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="createTransfer()" #transferFormElement="ngForm">
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label class="form-label">Monto a transferir *</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            class="form-control"
+            [(ngModel)]="transferForm.amount"
+            name="transferAmount"
+            required
+            placeholder="0.00">
+        </div>
+
+        <!-- Target Account -->
+        <div class="form-group">
+          <label class="form-label">Cuenta destino *</label>
+          <select
+            class="form-control"
+            [(ngModel)]="transferForm.targetAccountId"
+            name="targetAccountId"
+            required
+            (change)="onTargetAccountChange()">
+            <option value="">Seleccionar cuenta destino</option>
+            <option *ngFor="let account of getAvailableTargetAccounts()" [value]="account._id">
+              {{ account.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Descripción *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="transferForm.description"
+            name="transferDescription"
+            required
+            placeholder="Descripción de la transferencia"
+            maxlength="255">
+        </div>
+
+        <!-- Summary -->
+        <div class="transaction-summary" *ngIf="transferForm.amount && transferForm.amount > 0 && transferForm.targetAccount">
+          <div class="summary-item">
+            <span class="summary-label">Monto a transferir:</span>
+            <span class="summary-value">{{ formatCurrency(transferForm.amount) }} {{ selectedCurrency }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Cuenta destino:</span>
+            <span class="summary-value">{{ transferForm.targetAccount.name }}</span>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-info"
+        [disabled]="!transferForm.amount || transferForm.amount <= 0 || !transferForm.description || !transferForm.targetAccountId || transferForm.targetAccountId === accountId || creatingTransaction"
+        (click)="createTransfer()">
+        <span *ngIf="creatingTransaction" class="loading"></span>
+        {{ creatingTransaction ? 'Creando...' : 'Ejecutar Transferencia' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction Modal -->
+<div *ngIf="showTransactionModal" class="modal-overlay" (click)="closeTransactionModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i [class]="transactionType === 'Entrada' ? 'fas fa-plus' : 'fas fa-minus'"></i>
+        {{ transactionType === 'Entrada' ? 'Nuevo Ingreso' : 'Nuevo Egreso' }} - {{ selectedCurrency }}
+      </h3>
+      <button class="modal-close" (click)="closeTransactionModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="createTransaction()" #transactionFormElement="ngForm">
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label class="form-label">Monto *</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            class="form-control"
+            [(ngModel)]="transactionForm.amount"
+            name="amount"
+            required
+            placeholder="0.00"
+            #amountInput="ngModel">
+          <div *ngIf="amountInput.invalid && amountInput.touched" class="form-error">
+            El monto es requerido y debe ser mayor a cero
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Descripción *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="transactionForm.description"
+            name="description"
+            required
+            placeholder="Descripción de la transacción"
+            maxlength="255"
+            #descriptionInput="ngModel">
+          <div *ngIf="descriptionInput.invalid && descriptionInput.touched" class="form-error">
+            La descripción es requerida
+          </div>
+        </div>
+
+        <!-- Fee Configuration -->
+        <div class="fee-section">
+          <div class="fee-toggle">
+            <label class="toggle-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="transactionForm.applyFee"
+                name="applyFee"
+                class="toggle-input">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">Aplicar Fee</span>
+            </label>
+          </div>
+
+          <!-- Fee Details -->
+          <div *ngIf="transactionForm.applyFee" class="fee-details-card">
+            <div class="fee-inputs-grid">
+              <div class="fee-input-group">
+                <label class="fee-input-label">Tipo de Fee</label>
+                <div class="fee-select-wrapper">
+                  <select
+                    class="fee-select"
+                    [(ngModel)]="transactionForm.feeType"
+                    name="feeType">
+                    <option value="percentage">Porcentaje (%)</option>
+                    <option value="fixed">Monto Fijo</option>
+                  </select>
+                  <i class="fas fa-chevron-down select-icon"></i>
+                </div>
+              </div>
+
+              <div class="fee-input-group">
+                <label class="fee-input-label">
+                  Valor del Fee
+                  <span class="fee-unit">{{ transactionForm.feeType === 'percentage' ? '(%)' : '(' + selectedCurrency + ')' }}</span>
+                </label>
+                <div class="fee-input-wrapper">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    [max]="transactionForm.feeType === 'percentage' ? '100' : null"
+                    class="fee-input"
+                    [(ngModel)]="transactionForm.feeValue"
+                    name="feeValue"
+                    placeholder="0.00">
+                  <span class="fee-currency-indicator" *ngIf="transactionForm.feeType === 'percentage'">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="transaction-summary" *ngIf="transactionForm.amount && transactionForm.amount > 0">
+          <div class="summary-item">
+            <span class="summary-label">Tipo:</span>
+            <span class="summary-value">{{ transactionType }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Moneda:</span>
+            <span class="summary-value">{{ selectedCurrency }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Monto Ingresado:</span>
+            <span class="summary-value">{{ formatCurrency(transactionForm.amount) }}</span>
+          </div>
+          <div class="summary-item" *ngIf="transactionForm.applyFee && transactionForm.feeValue && transactionForm.feeValue > 0">
+            <span class="summary-label">
+              Fee {{ transactionForm.feeType === 'percentage' ? '(' + transactionForm.feeValue + '%)' : '(fijo)' }}:
+            </span>
+            <span class="summary-value fee-amount">
+              -{{ formatCurrency(calculateFeeAmount(transactionForm.amount)) }}
+            </span>
+          </div>
+          <div class="summary-item total-item" *ngIf="transactionForm.applyFee && transactionForm.feeValue && transactionForm.feeValue > 0">
+            <span class="summary-label total-label">Monto Final:</span>
+            <span class="summary-value total-value">{{ formatCurrency(calculateFinalAmount(transactionForm.amount, selectedCurrency!, transactionType!)) }}</span>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class]="transactionType === 'Entrada' ? 'btn-success' : 'btn-error'"
+        [disabled]="!transactionForm.amount || transactionForm.amount <= 0 || !transactionForm.description.trim() || (transactionForm.applyFee && (!transactionForm.feeValue || transactionForm.feeValue <= 0)) || creatingTransaction"
+        (click)="createTransaction()">
+        <span *ngIf="creatingTransaction" class="loading"></span>
+        {{ creatingTransaction ? 'Creando...' : (transactionType === 'Entrada' ? 'Crear Ingreso' : 'Crear Egreso') }}
+      </button>
+    </div>
+  </div>
 </div>
