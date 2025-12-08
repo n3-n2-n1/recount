@@ -338,126 +338,23 @@
 }
 
 /* Fee Details Card */
-.fee-details-card {
-  background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-white) 100%);
-  border: 1px solid var(--color-gray-200);
-  border-radius: var(--border-radius);
-  padding: var(--space-4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  animation: slideDown 0.3s ease;
-}
+.fee-details-card { background: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--border-radius); padding: var(--space-4); animation: slideDown 0.3s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.fee-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.fee-input-group { display: flex; flex-direction: column; }
+.fee-input-label { font-size: 0.9rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: var(--space-2); display: flex; align-items: center; justify-content: space-between; }
+.fee-unit { font-size: 0.8rem; font-weight: 400; color: var(--color-gray-500); background: var(--color-gray-100); padding: 0.125rem var(--space-2); border-radius: 12px; }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+.fee-select-wrapper { position: relative; }
+.fee-select { width: 100%; padding: var(--space-3); border: 1px solid var(--color-gray-300); border-radius: var(--border-radius); background: var(--color-white); color: var(--color-text-primary); font-size: 0.95rem; cursor: pointer; appearance: none; transition: all 0.3s ease; }
+.fee-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
+.select-icon { position: absolute; right: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--color-gray-500); pointer-events: none; }
 
-/* Fee Inputs Grid */
-.fee-inputs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-.fee-input-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.fee-input-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.fee-unit {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--color-gray-500);
-  background: var(--color-gray-100);
-  padding: 0.125rem var(--space-2);
-  border-radius: 12px;
-}
-
-/* Fee Select */
-.fee-select-wrapper {
-  position: relative;
-}
-
-.fee-select {
-  width: 100%;
-  padding: var(--space-3);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius);
-  background: var(--color-white);
-  color: var(--color-text-primary);
-  font-size: 0.95rem;
-  cursor: pointer;
-  appearance: none;
-  transition: all 0.3s ease;
-}
-
-.fee-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
-}
-
-.select-icon {
-  position: absolute;
-  right: var(--space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-gray-500);
-  pointer-events: none;
-}
-
-/* Fee Input */
-.fee-input-wrapper {
-  position: relative;
-}
-
-.fee-input {
-  width: 100%;
-  padding: var(--space-3);
-  padding-right: 3rem;
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius);
-  background: var(--color-white);
-  color: var(--color-text-primary);
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-}
-
-.fee-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
-}
-
-.fee-input::placeholder {
-  color: var(--color-gray-400);
-}
-
-.fee-currency-indicator {
-  position: absolute;
-  right: var(--space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-gray-500);
-  font-weight: 600;
-  pointer-events: none;
-}
+.fee-input-wrapper { position: relative; }
+.fee-input { width: 100%; padding: var(--space-3); padding-right: 3rem; border: 1px solid var(--color-gray-300); border-radius: var(--border-radius); background: var(--color-white); color: var(--color-text-primary); font-size: 0.95rem; transition: all 0.3s ease; }
+.fee-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
+.fee-input::placeholder { color: var(--color-gray-400); }
+.fee-currency-indicator { position: absolute; right: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--color-gray-500); font-weight: 600; pointer-events: none; }
 
 /* Dark Mode Support */
 .dark-mode .currency-card {
