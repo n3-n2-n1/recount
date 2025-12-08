@@ -366,88 +366,23 @@
   color: var(--color-text-primary);
 }
 
-.dark-mode .summary-card {
-  background: var(--color-bg-primary) !important;
-  border-color: var(--color-gray-700) !important;
-}
+.dark-mode .summary-card, .dark-mode .summary-card-body { background: var(--color-bg-primary) !important; border-color: var(--color-gray-700) !important; }
+.dark-mode .summary-card-body, .dark-mode .flex-between span, .dark-mode .flex-between strong { color: var(--color-text-primary) !important; }
 
-.dark-mode .summary-card-body {
-  background: var(--color-bg-primary) !important;
-  color: var(--color-text-primary) !important;
-}
+.dark-mode .fee-details-card { background: var(--color-bg-secondary); border-color: var(--color-gray-700); }
+.dark-mode .fee-select, .dark-mode .fee-input { background: var(--color-bg-secondary); border-color: var(--color-gray-700); color: var(--color-text-primary); }
+.dark-mode .fee-select:focus, .dark-mode .fee-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.dark-mode .fee-input::placeholder { color: var(--color-gray-400); }
+.dark-mode .fee-unit { background: var(--color-gray-700); color: var(--color-gray-300); }
+.dark-mode .toggle-text, .dark-mode .fee-input-label { color: var(--color-text-primary); }
+.dark-mode .select-icon, .dark-mode .fee-currency-indicator { color: var(--color-gray-400); }
 
-.dark-mode .summary-card-body,
-.dark-mode .summary-card-body span,
-.dark-mode .summary-card-body strong {
-  color: var(--color-text-primary) !important;
-}
-
-/* Ensure all text in summary cards is white in dark mode */
-.dark-mode .flex-between span,
-.dark-mode .flex-between strong {
-  color: var(--color-text-primary) !important;
-}
-
-.dark-mode .fee-details-card {
-  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
-  border-color: var(--color-gray-700);
-}
-
-.dark-mode .fee-select,
-.dark-mode .fee-input {
-  background: var(--color-bg-secondary);
-  border-color: var(--color-gray-700);
-  color: var(--color-text-primary);
-}
-
-.dark-mode .fee-select:focus,
-.dark-mode .fee-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.dark-mode .fee-input::placeholder {
-  color: var(--color-gray-400);
-}
-
-.dark-mode .fee-unit {
-  background: var(--color-gray-700);
-  color: var(--color-gray-300);
-}
-
-.dark-mode .toggle-text {
-  color: var(--color-text-primary);
-}
-
-.dark-mode .fee-input-label {
-  color: var(--color-text-primary);
-}
-
-.dark-mode .select-icon,
-.dark-mode .fee-currency-indicator {
-  color: var(--color-gray-400);
-}
-
-/* Dark mode button styles - mantener colores vibrantes */
-.dark-mode .currency-actions .btn-success {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-}
-
-.dark-mode .currency-actions .btn-error {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-}
-
-.dark-mode .currency-actions .btn-warning {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-}
-
-.dark-mode .currency-actions .btn-info {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-}
+/* Dark mode buttons */
+.dark-mode .currency-actions .btn-success { background: linear-gradient(135deg, #10b981, #059669); }
+.dark-mode .currency-actions .btn-error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.dark-mode .currency-actions .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.dark-mode .currency-actions .btn-info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.dark-mode .currency-actions .btn { color: white; }
 
 /* Fee Management */
 .fee-list {
