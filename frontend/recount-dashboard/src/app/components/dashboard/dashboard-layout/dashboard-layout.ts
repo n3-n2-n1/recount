@@ -63,6 +63,8 @@ export class DashboardLayout implements OnInit, OnDestroy {
     if (this.currentRoute.includes('/history')) return 'Historial';
     if (this.currentRoute.includes('/team')) return 'Equipo';
     if (this.currentRoute.includes('/settings')) return 'Configuración';
+    if (this.currentRoute.includes('/auth/login')) return 'Iniciar sesión';
+    if (this.currentRoute.includes('/account')) return 'Detalle de cuenta';
     return 'Dashboard';
   }
 

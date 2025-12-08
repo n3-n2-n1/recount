@@ -318,10 +318,12 @@ html.dark-mode app-editable-table td {
 /* Nombres de cuentas clickables - blanco en dark mode (debe ir DESPUÉS de la regla general) */
 html.dark-mode app-editable-table td .clickable-cell {
   color: #ffffff !important; /* Blanco para nombres de cuentas */
+  text-decoration: underline;
 }
 
 html.dark-mode app-editable-table td .clickable-cell:hover {
   color: #e5e7eb !important; /* Blanco grisáceo en hover */
+  text-decoration: underline;
 }
 
 html.dark-mode .editable-table-container tbody tr {

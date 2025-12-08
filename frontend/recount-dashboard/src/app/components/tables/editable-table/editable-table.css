@@ -11,6 +11,7 @@
 
 .clickable-cell:hover {
   color: #374151; /* Gris oscuro en hover para modo claro */
+  text-decoration: underline;
 }
 
 /* Transiciones globales para dark mode */
@@ -594,12 +595,14 @@ html.dark-mode app-editable-table td .clickable-cell,
 html.dark-mode app-editable-table .clickable-cell,
 html.dark-mode td .clickable-cell {
   color: #ffffff !important; /* Blanco en modo oscuro */
+  text-decoration: underline;
 }
 
 html.dark-mode app-editable-table td .clickable-cell:hover,
 html.dark-mode app-editable-table .clickable-cell:hover,
 html.dark-mode td .clickable-cell:hover {
   color: #e5e7eb !important; /* Blanco grisáceo en hover para modo oscuro */
+  text-decoration: underline;
 }
 
 html.dark-mode .bg-yellow-50 {
