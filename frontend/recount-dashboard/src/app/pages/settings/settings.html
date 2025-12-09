@@ -64,7 +64,7 @@
               <span>No configurado</span>
             </div>
             <span class="rate-updated" *ngIf="rate._id">
-              Actualizado: {{ formatDate(rate.updatedAt) }}
+              Última vez: {{ formatDate(rate.updatedAt) }}
             </span>
             <span class="rate-updatedby" *ngIf="rate._id">
               Por: {{ getUpdatedByName(rate) }}

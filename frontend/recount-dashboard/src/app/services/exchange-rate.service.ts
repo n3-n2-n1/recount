@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { 
-  ExchangeRate, 
-  ExchangeRateHistory, 
+import {
+  ExchangeRate,
+  ExchangeRateHistory,
   ExchangeRatesResponse,
   ExchangeRateHistoryResponse,
   UpdateExchangeRateRequest,
-  UpdateExchangeRateResponse
+  UpdateExchangeRateResponse,
+  BridgeRatesResponse
 } from '../models';
 import { CurrencyType } from '../models/transaction.model';
 
@@ -43,5 +44,12 @@ export class ExchangeRateService {
       params.currency = currency;
     }
     return this.apiService.get<ExchangeRateHistoryResponse>(`${this.endpoint}/history`, params);
+  }
+
+  /**
+   * Get Bridge EUR/USD rates
+   */
+  getBridgeRates(): Observable<BridgeRatesResponse> {
+    return this.apiService.get<BridgeRatesResponse>(`${this.endpoint}/bridge`);
   }
 }

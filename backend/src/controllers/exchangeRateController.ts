@@ -2,6 +2,106 @@ import { Request, Response } from 'express';
 import ExchangeRate from '../models/ExchangeRate.js';
 import ExchangeRateHistory from '../models/ExchangeRateHistory.js';
 
+// Cache for Bridge rates
+interface BridgeRates {
+  eur_usd: {
+    buy: string;
+    sell: string;
+    mid: string;
+    lastUpdate: Date;
+  };
+}
+
+let bridgeRatesCache: BridgeRates | null = null;
+let cacheExpiry: Date | null = null;
+const CACHE_DURATION = 30 * 1000; // 30 seconds as suggested by Bridge
+
+// Get Bridge EUR/USD rates with caching
+export const getBridgeRates = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const now = new Date();
+
+    // Check if cache is still valid
+    if (bridgeRatesCache && cacheExpiry && now < cacheExpiry) {
+      res.json({
+        success: true,
+        rates: bridgeRatesCache,
+        cached: true
+      });
+      return;
+    }
+
+    // Fetch fresh rates from Bridge API
+    const bridgeApiKey = process.env.BRIDGE_API_KEY || process.env.BRIDGE_SANDBOX_API_KEY;
+    if (!bridgeApiKey) {
+      res.status(500).json({
+        success: false,
+        message: 'Bridge API key not configured'
+      });
+      return;
+    }
+
+    const response = await fetch('https://api.bridge.xyz/v0/exchange_rates?from=eur&to=usd', {
+      method: 'GET',
+      headers: {
+        'Api-Key': bridgeApiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Bridge API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json() as {
+      buy_rate: string;
+      sell_rate: string;
+      midmarket_rate: string;
+    };
+
+    // Update cache
+    bridgeRatesCache = {
+      eur_usd: {
+        buy: data.buy_rate,
+        sell: data.sell_rate,
+        mid: data.midmarket_rate,
+        lastUpdate: now
+      }
+    };
+
+    cacheExpiry = new Date(now.getTime() + CACHE_DURATION);
+
+    res.json({
+      success: true,
+      rates: bridgeRatesCache,
+      cached: false
+    });
+
+  } catch (error) {
+    console.error('Error fetching Bridge rates:', error);
+
+    // Return cached data if available and recent (within 5 minutes)
+    if (bridgeRatesCache && cacheExpiry) {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      if (bridgeRatesCache.eur_usd.lastUpdate > fiveMinutesAgo) {
+        res.json({
+          success: true,
+          rates: bridgeRatesCache,
+          cached: true,
+          fallback: true
+        });
+        return;
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching Bridge rates',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
 // Get all current exchange rates
 export const getExchangeRates = async (req: Request, res: Response): Promise<void> => {
   try {

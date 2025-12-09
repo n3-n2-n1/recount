@@ -1,0 +1,28 @@
+<!-- Bridge EUR/USD Rates Footer -->
+<footer class="bridge-footer" *ngIf="bridgeRates">
+  <div class="footer-content">
+    <div class="rates-info">
+      <div class="rate-item">
+        <span class="rate-label">EUR/USD - Buy:</span>
+        <span class="rate-value">{{ formatRate(bridgeRates.eur_usd.buy) }}</span>
+      </div>
+      <div class="rate-item">
+        <span class="rate-label">Sell:</span>
+        <span class="rate-value sell-rate">{{ formatRate(bridgeRates.eur_usd.sell) }}</span>
+      </div>
+      <div class="rate-item">
+        <span class="rate-label">Rate:</span>
+        <span class="rate-value mid-rate">{{ formatRate(bridgeRates.eur_usd.mid) }}</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <span class="last-update" *ngIf="bridgeRates.eur_usd.lastUpdate">
+        Última vez: {{ formatLastUpdate(bridgeRates.eur_usd.lastUpdate) }}
+      </span>
+      <span class="cache-indicator" *ngIf="isCached" title="Datos en caché">
+        <i class="fas fa-clock"></i>
+      </span>
+    </div>
+  </div>
+</footer>

@@ -4,3 +4,4 @@ export * from './account.model';
 export * from './api.model';
 export * from './exchange-rate.model';
 export * from './fee.model';
+export * from './bridge-rates.model';

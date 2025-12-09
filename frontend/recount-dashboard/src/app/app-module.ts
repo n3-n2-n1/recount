@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { DashboardLayout } from './components/dashboard/dashboard-layout/dashboard-layout';
+import { Footer } from './components/footer/footer';
 import { EditableTable } from './components/tables/editable-table/editable-table';
 import { Login } from './pages/auth/login/login';
 import { UsersList } from './pages/users/users-list/users-list';
@@ -21,6 +22,7 @@ import { Settings } from './pages/settings/settings';
   declarations: [
     App,
     DashboardLayout,
+    Footer,
     EditableTable,
     Login,
     UsersList,
