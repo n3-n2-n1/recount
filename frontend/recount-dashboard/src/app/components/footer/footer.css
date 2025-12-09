@@ -1,12 +1,14 @@
 /* Bridge Footer Styles */
 .bridge-footer {
-  background: #000000;
-  border-top: none;
-  color: white;
+  background: white;
+  margin-left: 14px;
+  margin-right: 14px;
+  border: 0.5px solid #e5e7eb;
+  border-bottom: none;
+  color: #000000;
   padding: var(--space-2) 0;
   position: relative;
   z-index: 5;
-  border-radius: 12px 12px 0 0;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -34,7 +36,7 @@
 }
 
 .rate-label {
-  color: var(--color-gray-300);
+  color: #000000;
   font-weight: 500;
 }
 
@@ -42,9 +44,9 @@
   color: var(--color-success);
   font-weight: 600;
   font-family: monospace;
-  background: rgba(255, 255, 255, 0.1);
   padding: 0.125rem var(--space-2);
-  border-radius: var(--border-radius);
+  border-radius: 0.2px;
+  border: 0.5px solid #e5e7eb;
 }
 
 .rate-value.sell-rate {
@@ -68,11 +70,12 @@
   align-items: center;
   gap: var(--space-4);
   font-size: 0.8rem;
-  color: var(--color-gray-400);
+  color: #000000;
 }
 
 .last-update {
-  color: var(--color-gray-300);
+  color: #000000;
+  font-weight: 500;
 }
 
 .powered-by a {
@@ -95,24 +98,48 @@
   margin-right: var(--space-1);
 }
 
-/* Dark Mode */
+/* Dark Mode - Inverso del light mode */
 .dark-mode .bridge-footer {
-  background: #000000;
-  color: #ffffff;
+  background: #ffffff;
+  border-color: #000000;
+  color: #000000;
+}
+
+.dark-mode .rate-label {
+  color: #000000;
+}
+
+.dark-mode .rate-value {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #000000;
+}
+
+.dark-mode .footer-meta,
+.dark-mode .last-update {
+  color: #000000;
 }
 
 .dark-mode .rate-label,
 .dark-mode .footer-meta,
 .dark-mode .last-update {
-  color: #e5e5e5;
+  color: #000000;
 }
 
 .dark-mode .powered-by a {
-  color: #60a5fa;
+  color: var(--color-primary);
 }
 
 .dark-mode .powered-by a:hover {
-  color: #93c5fd;
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+.dark-mode .rate-value.sell-rate {
+  color: var(--color-error);
+}
+
+.dark-mode .rate-value.mid-rate {
+  color: #3b82f6;
 }
 
 /* Responsive */

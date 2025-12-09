@@ -422,7 +422,7 @@ export class HistoryList implements OnInit, OnDestroy {
     if (typeof accountId === 'object' && accountId?.name) {
       return accountId.name;
     }
-
+    
     const account = this.accounts.find(a => a._id === accountId);
     return account?.name || 'Unknown Account';
   }

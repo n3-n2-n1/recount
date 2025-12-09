@@ -10,7 +10,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      console.log('❌ LOGIN: Missing email or password');
+      console.log('LOGIN: Missing email or password');
       res.status(400).json({ message: 'Email and password are required' });
       return;
     }
@@ -24,7 +24,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    console.log('✅ LOGIN: User found, checking password');
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
@@ -33,7 +32,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    console.log('✅ LOGIN: Password valid, generating token');
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'secret',
