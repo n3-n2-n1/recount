@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -21,7 +21,8 @@ export class Login implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -53,19 +54,19 @@ export class Login implements OnInit {
 
     // Validate input
     if (!this.email?.trim()) {
-      this.error = 'Please enter your email address';
+      this.error = 'Por favor ingresa tu email';
       return;
     }
 
     if (!this.password?.trim()) {
-      this.error = 'Please enter your password';
+      this.error = 'Por favor ingresa tu contraseña';
       return;
     }
 
     // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.email.trim())) {
-      this.error = 'Please enter a valid email address';
+      this.error = 'Por favor ingresa un email válido';
       return;
     }
 
@@ -88,28 +89,31 @@ export class Login implements OnInit {
 
         this.router.navigate(['/users']);
       },
-      error: (error) => {
+      error: (error: any) => {
         this.loading = false;
 
         // Handle different error types
         if (error.name === 'AuthError') {
-          this.error = error.message;
+          this.error = error.message || 'Error al iniciar sesión. Por favor intenta nuevamente.';
         } else if (error.status === 401) {
-          this.error = 'Invalid email or password. Please check your credentials.';
+          this.error = 'Email o contraseña incorrectos. Por favor verifica tus credenciales.';
         } else if (error.status === 429) {
-          this.error = 'Too many login attempts. Please wait a few minutes before trying again.';
+          this.error = 'Demasiados intentos de inicio de sesión. Por favor espera unos minutos antes de intentar nuevamente.';
         } else if (error.status >= 500) {
-          this.error = 'Server error. Please try again later.';
+          this.error = 'Error del servidor. Por favor intenta más tarde.';
         } else if (!navigator.onLine) {
-          this.error = 'No internet connection. Please check your connection and try again.';
+          this.error = 'Sin conexión a internet. Por favor verifica tu conexión y intenta nuevamente.';
         } else {
-          this.error = error.message || 'Login failed. Please try again.';
+          this.error = error.message || 'Error al iniciar sesión. Por favor intenta nuevamente.';
         }
 
         console.error('❌ Login error:', error);
 
         // Clear password on error for security
         this.password = '';
+        
+        // Force change detection to ensure error message is displayed
+        this.cdr.detectChanges();
       }
     });
   }

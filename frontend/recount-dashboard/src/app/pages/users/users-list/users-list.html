@@ -33,7 +33,7 @@
         <div style="display: flex; gap: var(--space-2); align-items: center;">
           <input type="text" placeholder="Buscar cuentas..." class="form-control" 
                  style="width: 200px;" [(ngModel)]="searchTerm" (input)="onSearchChange()">
-          <button class="btn btn-primary" (click)="onAddUser()">Agregar cuenta</button>
+          <button *ngIf="authService.canEdit()" class="btn btn-primary" (click)="onAddUser()">Agregar cuenta</button>
       </div>
       </div>
     </div>
@@ -56,8 +56,8 @@
     [data]="filteredAccounts"
     [columns]="columns"
     [loading]="loading"
-    [canEdit]="true"
-    [canDelete]="true"
+    [canEdit]="authService.canEdit()"
+    [canDelete]="authService.canEdit()"
     [canAdd]="false"
     (edit)="onEditUser($event)"
     (delete)="onDeleteUser($event)"

@@ -95,7 +95,7 @@ export class AccountDetail implements OnInit {
     private transactionsService: TransactionsService,
     private exchangeRateService: ExchangeRateService,
     private settingsService: SettingsService,
-    private authService: AuthService,
+    public authService: AuthService, // Make public for template access
     private feeService: FeeService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -195,7 +195,7 @@ export class AccountDetail implements OnInit {
     });
   }
 
-  loadTransactions(): void {
+  loadTransactions(setLoading: boolean = true): void {
     console.log('Loading transactions for account:', this.accountId);
     // Cargar transacciones filtradas por esta cuenta incluyendo transferencias internas
     this.transactionsService.getAllTransactions({
@@ -206,8 +206,8 @@ export class AccountDetail implements OnInit {
         console.log('Transactions loaded successfully:', response);
         this.transactions = (response.transactions || [])
           .sort((a: Transaction, b: Transaction) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        // Solo cambiar loading a false si la cuenta ya está cargada
-        if (this.account) {
+        // Solo cambiar loading a false si la cuenta ya está cargada y se debe setear
+        if (this.account && setLoading) {
           console.log('Setting loading to false');
           this.loading = false;
           this.cdr.detectChanges();
@@ -216,6 +216,9 @@ export class AccountDetail implements OnInit {
             this.cdr.detectChanges();
             console.log('Forced change detection after loading');
           }, 100);
+        } else if (this.account && !setLoading) {
+          // Just update the view without changing loading state
+          this.cdr.detectChanges();
         } else {
           console.warn('Account not loaded yet, keeping loading true');
         }
@@ -223,8 +226,31 @@ export class AccountDetail implements OnInit {
       error: (error: any) => {
         console.error('Error loading transactions:', error);
         this.error = 'Error al cargar las transacciones';
-        this.loading = false;
+        if (setLoading) {
+          this.loading = false;
+        }
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Optimized refresh: only reload account balances and transactions without showing loading
+  refreshAccountData(): void {
+    // Reload account to get updated balances
+    this.accountsService.getAccountById(this.accountId).subscribe({
+      next: (accountResponse: any) => {
+        const account = accountResponse.account || accountResponse;
+        if (account) {
+          this.account = account;
+          this.cdr.detectChanges();
+        }
+        // Reload transactions to include the new one (without changing loading state)
+        this.loadTransactions(false);
+      },
+      error: (error: any) => {
+        console.error('Error refreshing account:', error);
+        // If refresh fails, fall back to full reload
+        this.loadAccountData();
       }
     });
   }
@@ -364,6 +390,11 @@ export class AccountDetail implements OnInit {
 
   // Modal functions
   openTransactionModal(currency: CurrencyType, type: 'Entrada' | 'Salida'): void {
+    // Prevent viewers from opening transaction modals
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     this.selectedCurrency = currency;
     this.transactionType = type;
 
@@ -382,18 +413,75 @@ export class AccountDetail implements OnInit {
   }
 
   openSwapModal(currency: CurrencyType): void {
+    // Prevent viewers from opening swap modals
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     this.selectedCurrency = currency;
+    const defaultTarget = currency === 'DÓLAR' ? 'CABLE' : 'DÓLAR';
     this.swapForm = {
-      amount: 0,
+      amount: null,
       description: '',
-      targetCurrency: currency === 'DÓLAR' ? 'CABLE' : 'DÓLAR',
-      exchangeRate: 1
+      targetCurrency: defaultTarget,
+      exchangeRate: this.calculateExchangeRate(currency, defaultTarget)
     };
     this.showSwapModal = true;
     this.cdr.detectChanges();
   }
 
+  // Calculate exchange rate between two currencies
+  // Returns: how many units of toCurrency you get for 1 unit of fromCurrency
+  // Example: If 1 DÓLAR = 1500 PESOS, then rate from PESOS to DÓLAR = 1/1500 = 0.000667
+  // But we want to show it as: 1 PESOS = 0.000667 DÓLAR, so the calculation is correct
+  calculateExchangeRate(fromCurrency: CurrencyType, toCurrency: CurrencyType): number {
+    if (fromCurrency === toCurrency) {
+      return 1;
+    }
+
+    if (!this.exchangeRates || this.exchangeRates.length === 0) {
+      console.warn('Exchange rates not loaded, using default rate of 1');
+      return 1;
+    }
+
+    const fromRate = this.exchangeRates.find(r => r.currency === fromCurrency);
+    const toRate = this.exchangeRates.find(r => r.currency === toCurrency);
+
+    if (!fromRate || !toRate) {
+      console.warn(`Exchange rate not found for ${fromCurrency} or ${toCurrency}, using default rate of 1`);
+      return 1;
+    }
+
+    // Calculate direct exchange rate: fromCurrency -> USD -> toCurrency
+    // All rates are stored as rateToUSD (how many USD = 1 unit of currency)
+    // To convert fromCurrency to toCurrency:
+    // 1. Convert fromCurrency to USD: 1 * fromRate.rateToUSD
+    // 2. Convert USD to toCurrency: (1 * fromRate.rateToUSD) / toRate.rateToUSD
+    // Result: how many toCurrency units = 1 fromCurrency unit
+    // Example: If PESOS rateToUSD = 0.001 and DÓLAR rateToUSD = 1
+    // Then: 1 PESOS = 0.001 / 1 = 0.001 DÓLAR
+    // Or: 1 DÓLAR = 1 / 0.001 = 1000 PESOS
+    const rate = fromRate.rateToUSD / toRate.rateToUSD;
+    return rate;
+  }
+
+  // Update exchange rate when target currency changes
+  onTargetCurrencyChange(): void {
+    if (this.selectedCurrency && this.swapForm.targetCurrency) {
+      this.swapForm.exchangeRate = this.calculateExchangeRate(
+        this.selectedCurrency,
+        this.swapForm.targetCurrency
+      );
+      this.cdr.detectChanges();
+    }
+  }
+
   openTransferModal(currency: CurrencyType): void {
+    // Prevent viewers from opening transfer modals
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     this.selectedCurrency = currency;
     this.transferForm = {
       amount: null,
@@ -445,6 +533,11 @@ export class AccountDetail implements OnInit {
 
   // Transaction creation
   createTransaction(): void {
+    // Prevent viewers from creating transactions
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     if (!this.selectedCurrency || !this.transactionType || !this.accountId) {
       this.showError('Datos de transacción inválidos');
       return;
@@ -506,8 +599,8 @@ export class AccountDetail implements OnInit {
         const action = this.transactionType === 'Entrada' ? 'Ingreso' : 'Egreso';
         this.showSuccess(`${action} creado exitosamente!`);
         this.closeTransactionModal();
-        // Refresh account data and transactions
-        this.loadAccountData();
+        // Refresh account data and transactions without full page reload
+        this.refreshAccountData();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -522,6 +615,11 @@ export class AccountDetail implements OnInit {
 
   // Swap creation
   createSwap(): void {
+    // Prevent viewers from creating swaps
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     if (!this.selectedCurrency || !this.swapForm.amount || this.swapForm.amount <= 0 || !this.swapForm.description) {
       this.showError('Por favor, complete todos los campos requeridos');
       return;
@@ -563,7 +661,8 @@ export class AccountDetail implements OnInit {
         this.creatingTransaction = false;
         this.showSuccess('Intercambio ejecutado exitosamente!');
         this.closeSwapModal();
-        this.loadAccountData();
+        // Refresh account data and transactions without full page reload
+        this.refreshAccountData();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -578,6 +677,11 @@ export class AccountDetail implements OnInit {
 
   // Transfer creation
   createTransfer(): void {
+    // Prevent viewers from creating transfers
+    if (!this.authService.canEdit()) {
+      this.showError('No tienes permisos para realizar esta acción');
+      return;
+    }
     if (!this.selectedCurrency || !this.transferForm.amount || this.transferForm.amount <= 0 || !this.transferForm.description || !this.transferForm.targetAccountId) {
       this.showError('Por favor, complete todos los campos requeridos');
       return;
@@ -618,7 +722,8 @@ export class AccountDetail implements OnInit {
         this.creatingTransaction = false;
         this.showSuccess('Transferencia ejecutada exitosamente!');
         this.closeTransferModal();
-        this.loadAccountData();
+        // Refresh account data and transactions without full page reload
+        this.refreshAccountData();
         this.cdr.detectChanges();
       },
       error: (error) => {

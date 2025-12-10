@@ -20,7 +20,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (!user) {
       console.log('❌ LOGIN: User not found in database');
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Credenciales incorrectas. Intentelo nuevamente.' });
       return;
     }
 
@@ -28,7 +28,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (!isValidPassword) {
       console.log('❌ LOGIN: Invalid password');
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Credenciales incorrectas. Intenta nuevamente.' });
       return;
     }
 

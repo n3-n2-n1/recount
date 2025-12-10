@@ -32,9 +32,8 @@
   </div>
 
   <!-- Loading -->
-  <div *ngIf="loading" class="loading-container">
-    <span class="loading"></span>
-    <p>Cargando información...</p>
+  <div *ngIf="loading" class="text-center" style="padding: var(--space-4);">
+    <span class="loading"></span> Cargando información...
   </div>
 
   <!-- Account Information -->
@@ -97,7 +96,7 @@
           </div>
         </div>
 
-        <div class="currency-actions">
+        <div class="currency-actions" *ngIf="authService.canEdit()">
           <button class="btn btn-success btn-sm action-btn" (click)="openTransactionModal(currency, 'Entrada')" title="Nuevo Ingreso">
             <i class="fas fa-plus"></i>
           </button>
@@ -224,6 +223,7 @@
             class="form-control"
             [(ngModel)]="swapForm.targetCurrency"
             name="targetCurrency"
+            (change)="onTargetCurrencyChange()"
             required>
             <option *ngFor="let currency of mainCurrencies" [value]="currency" [disabled]="currency === selectedCurrency">
               {{ currency }}
@@ -243,6 +243,12 @@
             name="exchangeRate"
             required
             placeholder="1.0000">
+          <small class="form-text text-muted" style="margin-top: var(--space-1); display: block;">
+            Tasa automática: 1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}
+            <button type="button" class="btn btn-sm" (click)="onTargetCurrencyChange()" style="margin-left: var(--space-2); padding: 0.125rem 0.5rem;">
+              <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+          </small>
         </div>
 
         <!-- Description -->
@@ -262,15 +268,17 @@
         <div class="transaction-summary" *ngIf="swapForm.amount && swapForm.amount > 0 && swapForm.exchangeRate > 0">
           <div class="summary-item">
             <span class="summary-label">Monto a intercambiar:</span>
-            <span class="summary-value">{{ formatCurrency(swapForm.amount) }} {{ selectedCurrency }}</span>
+            <span class="summary-value">{{ formatCurrencyLatin(swapForm.amount) }} {{ selectedCurrency }}</span>
           </div>
           <div class="summary-item">
-            <span class="summary-label">Monto recibido:</span>
-            <span class="summary-value">{{ formatCurrency(swapForm.amount * swapForm.exchangeRate) }} {{ swapForm.targetCurrency }}</span>
+            <span class="summary-label">Monto recibido (calculado):</span>
+            <span class="summary-value" style="font-weight: 700; color: var(--color-success);">
+              {{ formatCurrencyLatin(swapForm.amount * swapForm.exchangeRate) }} {{ swapForm.targetCurrency }}
+            </span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Tasa de cambio:</span>
-            <span class="summary-value">{{ swapForm.exchangeRate }}</span>
+            <span class="summary-value">1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}</span>
           </div>
         </div>
 

@@ -144,7 +144,7 @@ export class PlatformUsers implements OnInit {
         this.clearForm();
         
         // Show success message
-        this.successMessage = `User ${userName} created successfully!`;
+        this.successMessage = `Usuario ${userName} creado exitosamente!`;
         
         // Reload users list (this will set loading = true)
         this.loadUsers();

@@ -84,8 +84,12 @@ export class ApiService {
       }
     }
 
-    const errorObj = new Error(errorMessage);
+    const errorObj: any = new Error(errorMessage);
     errorObj.name = 'ApiError';
+    // Preserve status and original error for proper error handling
+    errorObj.status = error.status;
+    errorObj.error = error.error;
+    errorObj.originalError = error;
     return throwError(() => errorObj);
   }
 

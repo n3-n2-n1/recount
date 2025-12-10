@@ -24,25 +24,25 @@ const routes: Routes = [
     path: 'users',
     component: UsersList,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['super_admin', 'reviewer'] }
+    data: { roles: ['super_admin', 'reviewer', 'viewer'] }
   },
   {
     path: 'account/:id',
     component: AccountDetail,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['super_admin', 'reviewer'] }
+    data: { roles: ['super_admin', 'reviewer', 'viewer'] }
   },
   {
     path: 'movements',
     component: Movements,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['super_admin', 'reviewer'] }
+    data: { roles: ['super_admin', 'reviewer', 'viewer'] }
   },
   {
     path: 'history',
     component: HistoryList,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['super_admin', 'reviewer'] }
+    data: { roles: ['super_admin', 'reviewer', 'viewer'] }
   },
   {
     path: 'team',

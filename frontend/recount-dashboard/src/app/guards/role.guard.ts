@@ -25,6 +25,8 @@ export class RoleGuard implements CanActivate {
 
     // Redirect based on user role
     if (this.authService.isLoggedIn) {
+      const userRole = this.authService.userRole;
+      // All logged-in users can access users list (viewers can view but not edit)
       this.router.navigate(['/users']);
     } else {
       this.router.navigate(['/auth/login']);

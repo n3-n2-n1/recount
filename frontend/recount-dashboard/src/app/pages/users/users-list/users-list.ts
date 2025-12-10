@@ -34,7 +34,7 @@ export class UsersList implements OnInit, OnChanges {
 
   constructor(
     private accountsService: AccountsService,
-    private authService: AuthService,
+    public authService: AuthService, // Make public for template access
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
