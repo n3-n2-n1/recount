@@ -360,7 +360,7 @@ export class UsersList implements OnInit, OnChanges {
 
   getTotalBalanceFormatted(): string {
     const total = this.getTotalBalance();
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total);
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD' }).format(total);
   }
 
   getTotalBalancesByCurrency(): { [key: string]: number } {
@@ -672,7 +672,7 @@ export class UsersList implements OnInit, OnChanges {
   }
 
   private formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,

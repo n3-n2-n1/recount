@@ -42,6 +42,7 @@ export class Movements implements OnInit {
   // Separate form data for each movement type
   inflowForm = {
     amount: 0,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA', // Default to first predefined description
     customDescription: '',
@@ -52,6 +53,7 @@ export class Movements implements OnInit {
 
   outflowForm = {
     amount: 0,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
@@ -62,18 +64,21 @@ export class Movements implements OnInit {
 
   swapForm = {
     amount: 0,
+    amountDisplay: '',
+    exchangeRate: 1,
+    exchangeRateDisplay: '1',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
     currency: 'DÓLAR',
     targetCurrency: 'CABLE',
-    exchangeRate: 1,
     bancoWallet: '',
     titularOriginante: ''
   };
 
   transferForm = {
     amount: 0,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
@@ -261,12 +266,51 @@ export class Movements implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount);
+  }
+
+  // Parse Latin American number format (1.500,25) to number (1500.25)
+  parseLatinNumber(value: string): number {
+    if (!value || value.trim() === '') return 0;
+    // Remove all dots (thousands separators) and replace comma with dot (decimal separator)
+    const cleaned = value.trim().replace(/\./g, '').replace(',', '.');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  // Format number to Latin American format (1500.25 -> 1.500,25)
+  formatLatinNumber(value: number | string): string {
+    if (value === null || value === undefined || value === '') return '';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) return '';
+    
+    // Format with Latin American locale
+    const formatted = new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(num);
+    
+    return formatted;
+  }
+
+  // Handle input change for amount fields
+  onAmountInput(form: any, field: 'amount' | 'exchangeRate'): void {
+    const displayField = field === 'amount' ? 'amountDisplay' : 'exchangeRateDisplay';
+    const value = form[displayField] || '';
+    form[field] = this.parseLatinNumber(value);
+  }
+
+  // Handle blur to format the display value
+  onAmountBlur(form: any, field: 'amount' | 'exchangeRate'): void {
+    const displayField = field === 'amount' ? 'amountDisplay' : 'exchangeRateDisplay';
+    if (form[field] !== null && form[field] !== undefined) {
+      form[displayField] = this.formatLatinNumber(form[field]);
+    }
   }
 
   formatDate(date: string | Date): string {
@@ -636,6 +680,7 @@ export class Movements implements OnInit {
   resetInflowForm(): void {
     this.inflowForm = {
       amount: 0,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -648,6 +693,7 @@ export class Movements implements OnInit {
   resetOutflowForm(): void {
     this.outflowForm = {
       amount: 0,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -660,12 +706,14 @@ export class Movements implements OnInit {
   resetSwapForm(): void {
     this.swapForm = {
       amount: 0,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
       currency: 'DÓLAR',
       targetCurrency: 'CABLE',
       exchangeRate: 1,
+      exchangeRateDisplay: '1',
       bancoWallet: '',
       titularOriginante: ''
     };
@@ -674,6 +722,7 @@ export class Movements implements OnInit {
   resetTransferForm(): void {
     this.transferForm = {
       amount: 0,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',

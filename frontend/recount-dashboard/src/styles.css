@@ -186,14 +186,16 @@ select.form-control {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3.5 5.25L7 8.75L10.5 5.25' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
-  background-size: 12px;
-  padding-right: 2.5rem;
+  background-size: 14px;
+  padding-right: 2.75rem;
   cursor: pointer;
   height: 38px;
   min-height: 38px;
+  transition: all 0.2s ease;
+  font-weight: 400;
 }
 
 /* Mejora del dropdown cuando está abierto */
@@ -203,14 +205,20 @@ select.form-control[multiple] {
   background-image: none;
 }
 
-select.form-control:hover {
+select.form-control:hover:not(:disabled) {
   border-color: var(--color-gray-400);
+  background-color: var(--color-gray-50);
 }
 
 select.form-control:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+  background-color: white;
+}
+
+select.form-control:active {
+  border-color: var(--color-primary);
 }
 
 /* Opciones del select - mejora visual */
@@ -238,6 +246,7 @@ select.form-control option:checked {
 select.form-control option:disabled {
   color: var(--color-gray-400);
   background-color: var(--color-gray-100);
+  cursor: not-allowed;
 }
 
 /* Texto de placeholder en selects */
@@ -462,13 +471,22 @@ body.dark-mode app-root {
 
 /* Select en dark mode */
 .dark-mode select.form-control {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3.5 5.25L7 8.75L10.5 5.25' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
   background-color: #141414 !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+  transition: all 0.2s ease !important;
 }
 
-.dark-mode select.form-control:hover {
+.dark-mode select.form-control:hover:not(:disabled) {
   border-color: #2a2a2a !important;
   background-color: #1a1a1a !important;
+}
+
+.dark-mode select.form-control:focus {
+  border-color: #2a2a2a !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
+  background-color: #141414 !important;
 }
 
 .dark-mode select.form-control option {
@@ -489,6 +507,12 @@ body.dark-mode app-root {
   background-color: #1e293b !important;
   color: #ffffff !important;
   font-weight: 500 !important;
+}
+
+.dark-mode select.form-control option:disabled {
+  color: #666666 !important;
+  background-color: #0a0a0a !important;
+  cursor: not-allowed !important;
 }
 
 .dark-mode select.form-control option:disabled {

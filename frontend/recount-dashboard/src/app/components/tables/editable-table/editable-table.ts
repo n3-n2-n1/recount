@@ -75,7 +75,7 @@ export class EditableTable implements OnInit {
 
     switch (column.type) {
       case 'currency':
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('es-AR', {
           style: 'currency',
           currency: 'USD'
         }).format(Number(value));

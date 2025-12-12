@@ -12,17 +12,20 @@
       <a (click)="goToUsers()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/users')">
+          <i class="fas fa-wallet" style="font-size: 0.875rem; margin-right: 0.5rem;"></i>
           Cuentas
       </a>
       <a (click)="goToHistory()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/history')">
+        <i class="fas fa-history" style="font-size: 0.875rem; margin-right: 0.5rem;"></i>
         Historial
       </a>
       <a *ngIf="isSuperAdmin()" 
          (click)="goToTeam()" 
          class="nav-link" 
          [class.active]="isActiveRoute('/team')">
+        <i class="fas fa-users" style="font-size: 0.875rem; margin-right: 0.5rem;"></i>
         Usuarios
       </a>
     </nav>
@@ -38,6 +41,7 @@
         </button>
       </div>
       <button (click)="logout()" class="btn btn-sm logout-btn">
+        <i class="fas fa-sign-out-alt" style="font-size: 0.875rem; margin-right: 0.5rem;"></i>
         Salir
       </button>
     </div>

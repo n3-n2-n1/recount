@@ -59,8 +59,11 @@
         <form (ngSubmit)="createInflow()" style="display: flex; flex-direction: column; gap: var(--space-4);">
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Monto</label>
-            <input type="number" [(ngModel)]="inflowForm.amount" name="inflowAmount" 
-                   class="form-control" step="0.01" required>
+            <input type="text" [(ngModel)]="inflowForm.amountDisplay" name="inflowAmount" 
+                   class="form-control" 
+                   (input)="onAmountInput(inflowForm, 'amount')"
+                   (blur)="onAmountBlur(inflowForm, 'amount')"
+                   placeholder="0,00" required>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Moneda</label>
@@ -107,8 +110,11 @@
         <form (ngSubmit)="createOutflow()">
           <div class="form-group">
             <label class="form-label">Monto</label>
-            <input type="number" [(ngModel)]="outflowForm.amount" name="outflowAmount" 
-                   class="form-control" step="0.01" required>
+            <input type="text" [(ngModel)]="outflowForm.amountDisplay" name="outflowAmount" 
+                   class="form-control" 
+                   (input)="onAmountInput(outflowForm, 'amount')"
+                   (blur)="onAmountBlur(outflowForm, 'amount')"
+                   placeholder="0,00" required>
           </div>
           <div class="form-group">
             <label class="form-label">Moneda</label>
@@ -155,8 +161,11 @@
         <form (ngSubmit)="createCompraDivisa()">
           <div class="form-group">
             <label class="form-label">Monto</label>
-            <input type="number" [(ngModel)]="swapForm.amount" name="swapAmount" 
-                   class="form-control" step="0.01" required>
+            <input type="text" [(ngModel)]="swapForm.amountDisplay" name="swapAmount" 
+                   class="form-control" 
+                   (input)="onAmountInput(swapForm, 'amount')"
+                   (blur)="onAmountBlur(swapForm, 'amount')"
+                   placeholder="0,00" required>
           </div>
           <div class="currency-swap-grid">
             <div class="form-group">
@@ -174,8 +183,11 @@
           </div>
           <div class="form-group">
             <label class="form-label">Tasa de cambio</label>
-            <input type="number" [(ngModel)]="swapForm.exchangeRate" name="swapExchangeRate" 
-                   class="form-control" step="0.0001">
+            <input type="text" [(ngModel)]="swapForm.exchangeRateDisplay" name="swapExchangeRate" 
+                   class="form-control" 
+                   (input)="onAmountInput(swapForm, 'exchangeRate')"
+                   (blur)="onAmountBlur(swapForm, 'exchangeRate')"
+                   placeholder="1,00">
           </div>
           <div class="form-group">
             <label class="form-label">Descripción</label>
@@ -216,8 +228,11 @@
         <form (ngSubmit)="createTransfer()">
           <div class="form-group">
             <label class="form-label">Monto</label>
-            <input type="number" [(ngModel)]="transferForm.amount" name="transferAmount" 
-                   class="form-control" step="0.01" required>
+            <input type="text" [(ngModel)]="transferForm.amountDisplay" name="transferAmount" 
+                   class="form-control" 
+                   (input)="onAmountInput(transferForm, 'amount')"
+                   (blur)="onAmountBlur(transferForm, 'amount')"
+                   placeholder="0,00" required>
           </div>
           <div class="form-group">
             <label class="form-label">Moneda</label>

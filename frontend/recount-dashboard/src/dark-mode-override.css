@@ -106,21 +106,29 @@ html.dark-mode .form-control:focus {
 /* Select personalizado en dark mode */
 html.dark-mode select,
 html.dark-mode select.form-control {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3.5 5.25L7 8.75L10.5 5.25' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   background-repeat: no-repeat !important;
   background-position: right 0.75rem center !important;
-  background-size: 12px !important;
-  padding-right: 2.5rem !important;
+  background-size: 14px !important;
+  padding-right: 2.75rem !important;
   cursor: pointer !important;
+  transition: all 0.2s ease !important;
 }
 
 html.dark-mode select:hover,
 html.dark-mode select.form-control:hover {
   background-color: #1a1a1a !important;
   border-color: #2a2a2a !important;
+}
+
+html.dark-mode select:focus,
+html.dark-mode select.form-control:focus {
+  background-color: #141414 !important;
+  border-color: #2a2a2a !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
 }
 
 html.dark-mode select option,
@@ -153,6 +161,7 @@ html.dark-mode select option:disabled,
 html.dark-mode select.form-control option:disabled {
   color: #666666 !important;
   background-color: #0a0a0a !important;
+  cursor: not-allowed !important;
 }
 
 /* Login Page */

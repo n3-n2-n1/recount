@@ -121,6 +121,7 @@ export class AccountDetail implements OnInit {
   // Transaction form
   transactionForm = {
     amount: null as number | null,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
@@ -134,11 +135,13 @@ export class AccountDetail implements OnInit {
   // Swap form
   swapForm = {
     amount: null as number | null,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
     targetCurrency: 'DÓLAR' as CurrencyType,
     exchangeRate: 1,
+    exchangeRateDisplay: '1',
     bancoWallet: '',
     titularOriginante: ''
   };
@@ -146,6 +149,7 @@ export class AccountDetail implements OnInit {
   // Transfer form
   transferForm = {
     amount: null as number | null,
+    amountDisplay: '',
     description: '',
     descriptionType: 'ESMERALDA',
     customDescription: '',
@@ -514,6 +518,7 @@ export class AccountDetail implements OnInit {
 
     this.transactionForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -537,11 +542,13 @@ export class AccountDetail implements OnInit {
     const defaultTarget = currency === 'DÓLAR' ? 'CABLE' : 'DÓLAR';
     this.swapForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
       targetCurrency: defaultTarget,
       exchangeRate: 1, // Start with manual rate of 1, user can calculate automatic if needed
+      exchangeRateDisplay: '1',
       bancoWallet: '',
       titularOriginante: ''
     };
@@ -588,6 +595,7 @@ export class AccountDetail implements OnInit {
       }
 
       this.swapForm.exchangeRate = rate;
+      this.swapForm.exchangeRateDisplay = this.formatLatinNumber(rate);
       this.cdr.detectChanges();
     }
   }
@@ -601,6 +609,7 @@ export class AccountDetail implements OnInit {
     this.selectedCurrency = currency;
     this.transferForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -619,6 +628,7 @@ export class AccountDetail implements OnInit {
     this.transactionType = null;
     this.transactionForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -636,11 +646,13 @@ export class AccountDetail implements OnInit {
     this.selectedCurrency = null;
     this.swapForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
       targetCurrency: 'DÓLAR',
       exchangeRate: 1,
+      exchangeRateDisplay: '1',
       bancoWallet: '',
       titularOriginante: ''
     };
@@ -652,6 +664,7 @@ export class AccountDetail implements OnInit {
     this.selectedCurrency = null;
     this.transferForm = {
       amount: null,
+      amountDisplay: '',
       description: '',
       descriptionType: 'ESMERALDA',
       customDescription: '',
@@ -909,7 +922,7 @@ export class AccountDetail implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
@@ -924,6 +937,48 @@ export class AccountDetail implements OnInit {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+  }
+
+  // Parse Latin American number format (1.500,25) to number (1500.25)
+  parseLatinNumber(value: string): number {
+    if (!value || value.trim() === '') return 0;
+    // Remove all dots (thousands separators) and replace comma with dot (decimal separator)
+    const cleaned = value.trim().replace(/\./g, '').replace(',', '.');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  // Format number to Latin American format (1500.25 -> 1.500,25)
+  formatLatinNumber(value: number | string | null): string {
+    if (value === null || value === undefined || value === '') return '';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) return '';
+    
+    // Format with Latin American locale
+    const formatted = new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(num);
+    
+    return formatted;
+  }
+
+  // Handle input change for amount fields
+  onAmountInput(form: any, field: 'amount' | 'exchangeRate'): void {
+    const displayField = field === 'amount' ? 'amountDisplay' : 'exchangeRateDisplay';
+    const value = form[displayField] || '';
+    const parsed = this.parseLatinNumber(value);
+    form[field] = parsed === 0 && value.trim() !== '' ? null : parsed;
+  }
+
+  // Handle blur to format the display value
+  onAmountBlur(form: any, field: 'amount' | 'exchangeRate'): void {
+    const displayField = field === 'amount' ? 'amountDisplay' : 'exchangeRateDisplay';
+    if (form[field] !== null && form[field] !== undefined) {
+      form[displayField] = this.formatLatinNumber(form[field]);
+    } else if (form[displayField] === '') {
+      form[displayField] = '';
+    }
   }
 
   getCurrencyIcon(currency: CurrencyType): string {

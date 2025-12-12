@@ -99,7 +99,7 @@ export function formatCurrencyWithSymbol(
   amount: number,
   currency: CurrencyType
 ): string {
-  const formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('es-AR', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,

@@ -656,7 +656,7 @@ export class HistoryList implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'USD'
     }).format(Math.abs(amount));
