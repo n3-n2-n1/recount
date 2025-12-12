@@ -122,7 +122,6 @@
 
         <!-- Empty State -->
         <div *ngIf="transactions.length === 0" class="empty-state">
-          <i class="fas fa-inbox"></i>
           <p>No hay transacciones para esta cuenta</p>
         </div>
 
@@ -272,7 +271,7 @@
             placeholder="1,00">
           <small class="form-text text-muted" style="margin-top: var(--space-1); display: block;">
             <ng-container *ngIf="selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS'">
-              Conversión especial: 1 CHEQUE = 1/{{ swapForm.exchangeRate }} PESOS
+              Conversión especial: 1 PESO = {{ swapForm.exchangeRate | number:'1.0-2' }} CHEQUE
             </ng-container>
             <ng-container *ngIf="!(selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS')">
               Tasa estándar: 1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}
@@ -340,7 +339,7 @@
             <span class="summary-label">Tasa aplicada:</span>
             <span class="summary-value">
               <ng-container *ngIf="selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS'">
-                Conversión especial: 1 CHEQUE = 1/{{ swapForm.exchangeRate }} PESOS
+                Conversión especial: 1 PESO = {{ swapForm.exchangeRate | number:'1.0-2' }} CHEQUE
               </ng-container>
               <ng-container *ngIf="!(selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS')">
                 1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}

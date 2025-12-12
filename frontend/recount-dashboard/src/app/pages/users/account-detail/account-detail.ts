@@ -394,7 +394,7 @@ export class AccountDetail implements OnInit {
 
   /**
    * Get the transaction sign and display type for this account
-   * For internal transfers, show as positive if this account received the transfer
+   * For internal transfers, show destination account in type column
    */
   getTransactionSignAndType(transaction: any): { sign: string, type: string } {
     if (transaction.type === 'Transferencia Interna') {
@@ -406,11 +406,17 @@ export class AccountDetail implements OnInit {
       const isTargetAccount = targetAccountId === this.accountId;
 
       if (isTargetAccount) {
-        // This account received the transfer (Entrada)
-        return { sign: '+', type: 'Transferencia Interna (Recibida)' };
+        // This account received the transfer - show source account in type
+        const sourceAccountName = typeof transaction.accountId === 'object'
+          ? transaction.accountId?.name
+          : 'Cuenta origen';
+        return { sign: '+', type: `Desde: ${sourceAccountName}` };
       } else {
-        // This account sent the transfer (Salida)
-        return { sign: '-', type: 'Transferencia Interna (Enviada)' };
+        // This account sent the transfer - show target account in type
+        const targetAccountName = typeof transaction.targetAccountId === 'object'
+          ? transaction.targetAccountId?.name
+          : 'Cuenta destino';
+        return { sign: '-', type: `A: ${targetAccountName}` };
       }
     }
 
@@ -422,32 +428,11 @@ export class AccountDetail implements OnInit {
   }
 
   /**
-   * Get the transaction description with account information for internal transfers
+   * Get the transaction description
+   * For internal transfers, show the selected description (e.g., "ESMERALDA")
    */
   getTransactionDescription(transaction: any): string {
-    if (transaction.type === 'Transferencia Interna') {
-      // Check if this account is the target (received the transfer)
-      const targetAccountId = typeof transaction.targetAccountId === 'object'
-        ? transaction.targetAccountId?._id
-        : transaction.targetAccountId;
-
-      const isTargetAccount = targetAccountId === this.accountId;
-
-      if (isTargetAccount) {
-        // This account received the transfer - show source account
-        const sourceAccountName = typeof transaction.accountId === 'object'
-          ? transaction.accountId?.name
-          : 'Cuenta origen';
-        return `Recibido desde: ${sourceAccountName}`;
-      } else {
-        // This account sent the transfer - show target account
-        const targetAccountName = typeof transaction.targetAccountId === 'object'
-          ? transaction.targetAccountId?.name
-          : 'Cuenta destino';
-        return `Enviado a: ${targetAccountName}`;
-      }
-    }
-
+    // For all transactions, including internal transfers, show the description
     return transaction.description || '-';
   }
 
@@ -463,7 +448,7 @@ export class AccountDetail implements OnInit {
     if (transaction.type === 'Compra Divisa' && transaction.exchangeRate) {
       // Show exchange rate with appropriate formatting
       if (transaction.currency === 'CHEQUE' && transaction.targetCurrency === 'PESOS') {
-        return `1 CHEQUE = 1/${transaction.exchangeRate.toFixed(4)} PESOS`;
+        return `1 PESO = ${transaction.exchangeRate.toFixed(2)} CHEQUE`;
       } else if (transaction.currency === 'PESOS' && transaction.targetCurrency === 'DÓLAR') {
         return `1 DÓLAR = ${transaction.exchangeRate.toFixed(4)} PESOS`;
       } else {
