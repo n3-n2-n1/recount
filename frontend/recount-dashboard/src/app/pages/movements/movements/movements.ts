@@ -432,6 +432,14 @@ export class Movements implements OnInit {
       return;
     }
 
+    // Validate CABLE fields if currency is CABLE
+    if (this.inflowForm.currency === 'CABLE') {
+      if (!this.inflowForm.bancoWallet?.trim() || !this.inflowForm.titularOriginante?.trim()) {
+        this.showError('CABLE transactions require bancoWallet and titularOriginante fields');
+        return;
+      }
+    }
+
     // Verify selected account still exists
     const selectedAccount = this.accounts.find(acc => acc._id === this.selectedAccountId);
     if (!selectedAccount) {
@@ -487,6 +495,14 @@ export class Movements implements OnInit {
     if (!this.selectedAccountId || !this.outflowForm.amount || !description) {
       this.showError('Please fill all required fields');
       return;
+    }
+
+    // Validate CABLE fields if currency is CABLE
+    if (this.outflowForm.currency === 'CABLE') {
+      if (!this.outflowForm.bancoWallet?.trim() || !this.outflowForm.titularOriginante?.trim()) {
+        this.showError('CABLE transactions require bancoWallet and titularOriginante fields');
+        return;
+      }
     }
 
     // Verify selected account still exists
@@ -610,6 +626,14 @@ export class Movements implements OnInit {
     if (!this.selectedAccountId || !this.transferForm.amount || !description || !this.transferForm.targetAccountId) {
       this.showError('Please fill all required fields');
       return;
+    }
+
+    // Validate CABLE fields if currency is CABLE
+    if (this.transferForm.currency === 'CABLE') {
+      if (!this.transferForm.bancoWallet?.trim() || !this.transferForm.titularOriginante?.trim()) {
+        this.showError('CABLE transactions require bancoWallet and titularOriginante fields');
+        return;
+      }
     }
 
     // Verify selected account still exists

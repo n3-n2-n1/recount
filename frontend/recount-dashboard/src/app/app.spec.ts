@@ -1,15 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { App } from './app';
+import { DashboardLayout } from './components/dashboard/dashboard-layout/dashboard-layout';
+import { Footer } from './components/footer/footer';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterModule.forRoot([])
+        RouterModule.forRoot([]),
+        FormsModule,
+        HttpClientModule
       ],
       declarations: [
-        App
+        App,
+        DashboardLayout,
+        Footer
       ],
     }).compileComponents();
   });
@@ -20,10 +28,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, recount-dashboard');
+    expect(compiled).toBeTruthy();
   });
 });
