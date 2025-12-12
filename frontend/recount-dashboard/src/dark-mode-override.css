@@ -315,6 +315,52 @@ html.dark-mode app-editable-table td {
   border-color: #1f1f1f !important;
 }
 
+/* Editable Table - Specific classes */
+html.dark-mode .table-header,
+html.dark-mode .editable-table-wrapper .table-header,
+html.dark-mode app-editable-table .table-header {
+  background: #141414 !important;
+  background-color: #141414 !important;
+  color: #ffffff !important;
+  border-bottom-color: #141414 !important;
+}
+
+html.dark-mode .table-cell,
+html.dark-mode .editable-table-wrapper .table-cell,
+html.dark-mode app-editable-table .table-cell {
+  background: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+  border-color: #1f1f1f !important;
+}
+
+html.dark-mode .cell-text,
+html.dark-mode .editable-table-wrapper .cell-text,
+html.dark-mode app-editable-table .cell-text {
+  color: #ffffff !important;
+}
+
+html.dark-mode .editable-table-wrapper,
+html.dark-mode app-editable-table .editable-table-wrapper {
+  background: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+}
+
+/* Force white text in editable table cells */
+html.dark-mode app-editable-table td,
+html.dark-mode app-editable-table .table-cell,
+html.dark-mode .editable-table-wrapper td,
+html.dark-mode .editable-table-wrapper .table-cell {
+  color: #ffffff !important;
+}
+
+html.dark-mode app-editable-table td *:not(.clickable-cell):not(.balance-chip):not(i),
+html.dark-mode app-editable-table .table-cell *:not(.clickable-cell):not(.balance-chip):not(i),
+html.dark-mode .editable-table-wrapper td *:not(.clickable-cell):not(.balance-chip):not(i),
+html.dark-mode .editable-table-wrapper .table-cell *:not(.clickable-cell):not(.balance-chip):not(i) {
+  color: #ffffff !important;
+}
+
 /* Nombres de cuentas clickables - blanco en dark mode (debe ir DESPUÉS de la regla general) */
 html.dark-mode app-editable-table td .clickable-cell {
   color: #ffffff !important; /* Blanco para nombres de cuentas */
@@ -324,6 +370,15 @@ html.dark-mode app-editable-table td .clickable-cell {
 html.dark-mode app-editable-table td .clickable-cell:hover {
   color: #e5e7eb !important; /* Blanco grisáceo en hover */
   text-decoration: underline;
+}
+
+/* History List - Clickable account names in dark mode */
+html.dark-mode app-history-list .table tbody td:nth-child(2) span {
+  color: #60a5fa !important;
+}
+
+html.dark-mode app-history-list .table tbody td:nth-child(2) span:hover {
+  color: #93c5fd !important;
 }
 
 html.dark-mode .editable-table-container tbody tr {
@@ -345,10 +400,79 @@ html.dark-mode .editable-table-container select {
   border-color: #1f1f1f !important;
 }
 
-html.dark-mode .editable-table-container button {
-  background: #1e293b !important;
+html.dark-mode .editable-table-container button:not(.action-btn):not(.action-btn-edit):not(.action-btn-save):not(.action-btn-cancel):not(.action-btn-delete) {
+  background: #141414 !important;
   color: #ffffff !important;
-  border-color: #1e293b !important;
+  border-color: #141414 !important;
+}
+
+/* Action buttons specific styles - must override general button styles */
+html.dark-mode .editable-table-container .action-btn-edit,
+html.dark-mode app-editable-table .action-btn-edit,
+html.dark-mode .editable-table-wrapper .action-btn-edit {
+  background: #1e3a8a !important;
+  background-color: #1e3a8a !important;
+  color: #93c5fd !important;
+  border: none !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-edit:hover,
+html.dark-mode app-editable-table .action-btn-edit:hover,
+html.dark-mode .editable-table-wrapper .action-btn-edit:hover {
+  background: #1e40af !important;
+  background-color: #1e40af !important;
+  color: #bfdbfe !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-delete,
+html.dark-mode app-editable-table .action-btn-delete,
+html.dark-mode .editable-table-wrapper .action-btn-delete {
+  background: #991b1b !important;
+  background-color: #991b1b !important;
+  color: #fca5a5 !important;
+  border: none !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-delete:hover,
+html.dark-mode app-editable-table .action-btn-delete:hover,
+html.dark-mode .editable-table-wrapper .action-btn-delete:hover {
+  background: #7f1d1d !important;
+  background-color: #7f1d1d !important;
+  color: #fecaca !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-save,
+html.dark-mode app-editable-table .action-btn-save,
+html.dark-mode .editable-table-wrapper .action-btn-save {
+  background: #065f46 !important;
+  background-color: #065f46 !important;
+  color: #6ee7b7 !important;
+  border: none !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-save:hover,
+html.dark-mode app-editable-table .action-btn-save:hover,
+html.dark-mode .editable-table-wrapper .action-btn-save:hover {
+  background: #047857 !important;
+  background-color: #047857 !important;
+  color: #a7f3d0 !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-cancel,
+html.dark-mode app-editable-table .action-btn-cancel,
+html.dark-mode .editable-table-wrapper .action-btn-cancel {
+  background: #374151 !important;
+  background-color: #374151 !important;
+  color: #d1d5db !important;
+  border: none !important;
+}
+
+html.dark-mode .editable-table-container .action-btn-cancel:hover,
+html.dark-mode app-editable-table .action-btn-cancel:hover,
+html.dark-mode .editable-table-wrapper .action-btn-cancel:hover {
+  background: #4b5563 !important;
+  background-color: #4b5563 !important;
+  color: #e5e7eb !important;
 }
 
 /* Utility classes - Dark Mode overrides */
@@ -441,4 +565,57 @@ html.dark-mode ::-webkit-scrollbar-track {
 
 html.dark-mode ::-webkit-scrollbar-thumb {
   background: #333333 !important;
+}
+
+/* Bridge Footer - Dark Mode */
+html.dark-mode .bridge-footer {
+  background: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+  border-color: #1f1f1f !important;
+  color: #ffffff !important;
+}
+
+html.dark-mode .bridge-footer .footer-content {
+  color: #ffffff !important;
+}
+
+html.dark-mode .bridge-footer .rate-label {
+  color: #ffffff !important;
+}
+
+html.dark-mode .bridge-footer .rate-value {
+  background: #141414 !important;
+  background-color: #141414 !important;
+  border-color: #1f1f1f !important;
+  color: #4ade80 !important;
+}
+
+html.dark-mode .bridge-footer .rate-value.sell-rate {
+  color: #f87171 !important;
+}
+
+html.dark-mode .bridge-footer .rate-value.mid-rate {
+  color: #60a5fa !important;
+}
+
+html.dark-mode .bridge-footer .footer-meta {
+  color: #9ca3af !important;
+}
+
+html.dark-mode .bridge-footer .last-update {
+  color: #9ca3af !important;
+}
+
+html.dark-mode .bridge-footer .cache-indicator {
+  color: #fbbf24 !important;
+  opacity: 0.8 !important;
+}
+
+html.dark-mode .bridge-footer .cache-indicator i {
+  color: #fbbf24 !important;
+}
+
+/* Users List - "Mostrar:" label in dark mode */
+html.dark-mode app-users-list .card-header span[style*="color: var(--color-gray-600)"] {
+  color: #9ca3af !important;
 }

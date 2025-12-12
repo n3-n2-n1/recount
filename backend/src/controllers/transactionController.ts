@@ -4,7 +4,7 @@ import Transaction from '../models/Transaction.js';
 import Account, { type Currency } from '../models/Account.js';
 import Fee from '../models/Fee.js';
 
-type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
+type TransactionType = 'Entrada' | 'Salida' | 'Compra Divisa' | 'Transferencia Interna';
 
 // Optimized balance update using in-memory operations
 const updateAccountBalance = async (
@@ -100,6 +100,8 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
       targetAccountId,
       reference,
       notes,
+      bancoWallet,
+      titularOriginante,
       applyFee,
       feeType,
       feeValue,
@@ -125,6 +127,8 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
       targetAccountId,
       reference,
       notes,
+      bancoWallet,
+      titularOriginante,
       feeApplied,
       feeType,
       feeValue,
@@ -133,13 +137,13 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
     });
 
     // Validate transaction based on type
-    if (type === 'Swap') {
+    if (type === 'Compra Divisa') {
       if (!targetCurrency || !exchangeRate) {
-        res.status(400).json({ message: 'Swap transactions require targetCurrency and exchangeRate' });
+        res.status(400).json({ message: 'Compra Divisa transactions require targetCurrency and exchangeRate' });
         return;
       }
       if (currency === targetCurrency) {
-        res.status(400).json({ message: 'Cannot swap same currency' });
+        res.status(400).json({ message: 'No se puede comprar la misma moneda' });
         return;
       }
     }
@@ -147,6 +151,23 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
     if (type === 'Transferencia Interna') {
       if (!targetAccountId) {
         res.status(400).json({ message: 'Internal transfer requires targetAccountId' });
+        return;
+      }
+    }
+
+    // Validate CHEQUE balance for Salida transactions
+    if (type === 'Salida' && currency === 'CHEQUE') {
+      const account = await Account.findById(accountId);
+      if (!account) {
+        res.status(404).json({ message: 'Account not found' });
+        return;
+      }
+      
+      const chequeBalance = account.balances.find(b => b.currency === 'CHEQUE');
+      const currentBalance = chequeBalance ? chequeBalance.amount : 0;
+      
+      if (currentBalance < amount) {
+        res.status(400).json({ message: 'El balance no puede ser negativo para los cheques' });
         return;
       }
     }
@@ -174,9 +195,21 @@ export const createTransaction = async (req: Request, res: Response): Promise<vo
         await updateAccountBalance(accountId, currency as Currency, finalAmount, 'subtract');
         break;
 
-      case 'Swap':
+      case 'Compra Divisa':
         // Validation already done above
-        const convertedAmount = amount * exchangeRate;
+        let convertedAmount: number;
+
+        // Special logic: use division when converting FROM PESOS or FROM CHEQUE to PESOS
+        // Exchange rate interpretation: 1 unit of target currency = exchangeRate units of origin currency
+        // Example: PESOS → DÓLAR with rate 1000 means "1 dólar = 1000 pesos", so divide
+        // Example: CHEQUE → PESOS with rate 1500 means "1 peso = 1500 cheques", so divide
+        // Otherwise: 1 unit of origin currency = exchangeRate units of target currency (multiply)
+        if ((currency === 'PESOS' && targetCurrency === 'DÓLAR') || 
+            (currency === 'CHEQUE' && targetCurrency === 'PESOS')) {
+          convertedAmount = amount / exchangeRate;
+        } else {
+          convertedAmount = amount * exchangeRate;
+        }
 
         // Use Promise.all for parallel updates when possible
         await Promise.all([
@@ -233,8 +266,14 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
       case 'Salida':
         await updateAccountBalance(existingTransaction.accountId.toString(), existingTransaction.currency as Currency, existingTransaction.amount, 'add');
         break;
-      case 'Swap':
-        const oldConvertedAmount = existingTransaction.amount * (existingTransaction.exchangeRate || 1);
+      case 'Compra Divisa':
+        let oldConvertedAmount: number;
+        if ((existingTransaction.currency === 'PESOS' && existingTransaction.targetCurrency === 'DÓLAR') ||
+            (existingTransaction.currency === 'CHEQUE' && existingTransaction.targetCurrency === 'PESOS')) {
+          oldConvertedAmount = existingTransaction.amount / (existingTransaction.exchangeRate || 1);
+        } else {
+          oldConvertedAmount = existingTransaction.amount * (existingTransaction.exchangeRate || 1);
+        }
         await Promise.all([
           updateAccountBalance(existingTransaction.accountId.toString(), existingTransaction.currency as Currency, existingTransaction.amount, 'add'),
           updateAccountBalance(existingTransaction.accountId.toString(), existingTransaction.targetCurrency! as Currency, oldConvertedAmount, 'subtract')
@@ -262,8 +301,14 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
       case 'Salida':
         await updateAccountBalance(newTransaction.accountId, newTransaction.currency as Currency, newTransaction.amount, 'subtract');
         break;
-      case 'Swap':
-        const newConvertedAmount = newTransaction.amount * (newTransaction.exchangeRate || 1);
+      case 'Compra Divisa':
+        let newConvertedAmount: number;
+        if ((newTransaction.currency === 'PESOS' && newTransaction.targetCurrency === 'DÓLAR') ||
+            (newTransaction.currency === 'CHEQUE' && newTransaction.targetCurrency === 'PESOS')) {
+          newConvertedAmount = newTransaction.amount / (newTransaction.exchangeRate || 1);
+        } else {
+          newConvertedAmount = newTransaction.amount * (newTransaction.exchangeRate || 1);
+        }
         await Promise.all([
           updateAccountBalance(newTransaction.accountId, newTransaction.currency as Currency, newTransaction.amount, 'subtract'),
           updateAccountBalance(newTransaction.accountId, newTransaction.targetCurrency as Currency, newConvertedAmount, 'add')
@@ -310,8 +355,14 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
       case 'Salida':
         await updateAccountBalance(transaction.accountId.toString(), transaction.currency as Currency, transaction.amount, 'add');
         break;
-      case 'Swap':
-        const convertedAmount = transaction.amount * (transaction.exchangeRate || 1);
+      case 'Compra Divisa':
+        let convertedAmount: number;
+        if ((transaction.currency === 'PESOS' && transaction.targetCurrency === 'DÓLAR') ||
+            (transaction.currency === 'CHEQUE' && transaction.targetCurrency === 'PESOS')) {
+          convertedAmount = transaction.amount / (transaction.exchangeRate || 1);
+        } else {
+          convertedAmount = transaction.amount * (transaction.exchangeRate || 1);
+        }
         await Promise.all([
           updateAccountBalance(transaction.accountId.toString(), transaction.currency as Currency, transaction.amount, 'add'),
           updateAccountBalance(transaction.accountId.toString(), transaction.targetCurrency! as Currency, convertedAmount, 'subtract')

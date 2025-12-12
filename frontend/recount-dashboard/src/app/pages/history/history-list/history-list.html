@@ -125,7 +125,14 @@
                 <td style="font-family: monospace; font-size: var(--font-xs);">
                   {{ formatDate(item.data.createdAt) }}
                 </td>
-                <td>{{ getAccountName(item.data.accountId) }}</td>
+                <td>
+                  <span *ngIf="item.type === 'transaction'" 
+                        style="color: var(--color-primary); cursor: pointer; text-decoration: underline;"
+                        (click)="viewAccountDetail(item.data.accountId)"
+                        title="Ver detalles de la cuenta">
+                    {{ getAccountName(item.data.accountId) }}
+                  </span>
+                </td>
                 <td>
                   <span class="transaction-type" [class]="getTransactionTypeClass(item.data.type)">
                     {{ item.data.type }}

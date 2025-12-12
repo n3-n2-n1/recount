@@ -1,40 +1,80 @@
 <!-- Simple Accounts Page -->
 <div page-content>
 
-  <!-- Alerts -->
-  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+  <!-- Toast Notifications -->
+  <div class="toast-container">
+    <div *ngFor="let toast of toasts" 
+         [class]="'toast toast-' + toast.type + ' ' + (toast.show ? 'toast-show' : '')">
+      <div class="toast-icon">
+        <i [class]="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-message">{{ toast.message }}</div>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- Stats -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
-    <div class="card">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+    <!-- Summary Stats -->
+    <!-- Currency Breakdown - Full Width -->
+    <div class="card" style="grid-column: 1 / -1;">
       <div class="card-body">
-        <div class="flex-between">
-          <span>Total de cuentas</span>
-          <strong>{{ accounts.length }}</strong>
-  </div>
-</div>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Saldos totales</h4>
+
+            <button *ngIf="authService.canEdit()" class="btn btn-primary" (click)="onAddUser()">Agregar cuenta</button>
+          </div>
+
+          <div *ngIf="getTotalBalancesCount() > 0" class="currency-breakdown">
+            <div class="currency-grid">
+              <div *ngFor="let currency of getTotalBalancesCurrencies()" class="currency-card-item">
+                <div class="currency-info">
+                  <span class="currency-name">{{ currency }}</span>
+                  <span class="currency-amount" 
+                        [class]="getTotalBalancesByCurrency()[currency] >= 0 ? 'positive' : 'negative'">
+                    {{ formatCurrencyAmount(getTotalBalancesByCurrency()[currency]) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="getTotalBalancesCount() === 0" class="text-center text-muted" style="padding: var(--space-4);">
+            <i class="fas fa-coins" style="font-size: 2rem; opacity: 0.5; margin-bottom: var(--space-2); display: block;"></i>
+            No hay saldos disponibles
+          </div>
+
+          
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-body">
-        <div class="flex-between">
-          <span>Balances activos</span>
-          <strong>{{ getActiveBalancesCount() }}</strong>
-    </div>
-  </div>
-</div>
   </div>
 
   <!-- Accounts Table -->
   <div class="card">
     <div class="card-header">
       <div class="flex-between">
-        <h3>Cuentas</h3>
-        <div style="display: flex; gap: var(--space-2); align-items: center;">
-          <input type="text" placeholder="Buscar cuentas..." class="form-control" 
-                 style="width: 200px;" [(ngModel)]="searchTerm" (input)="onSearchChange()">
-          <button *ngIf="authService.canEdit()" class="btn btn-primary" (click)="onAddUser()">Agregar cuenta</button>
-      </div>
+        <h3>Cuentas <span *ngIf="!loading">({{ totalItems }})</span></h3>
+        <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: var(--space-2); align-items: center;">
+            <input type="text" placeholder="Buscar cuentas..." class="form-control" 
+                   style="width: 200px;" [(ngModel)]="searchTerm" (input)="onSearchChange()">
+          </div>
+          <div style="display: flex; gap: var(--space-2); align-items: center;">
+            <span style="font-size: var(--font-sm); color: var(--color-gray-600);">Mostrar:</span>
+            <select class="form-control" style="width: 80px;" [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage(itemsPerPage)" [disabled]="loading">
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+              <option [value]="100">100</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     <div class="card-body">
@@ -53,16 +93,44 @@
 
       <div *ngIf="!loading && filteredAccounts.length > 0">
   <app-editable-table
-    [data]="filteredAccounts"
+    [data]="getDisplayedAccounts()"
     [columns]="columns"
     [loading]="loading"
     [canEdit]="authService.canEdit()"
     [canDelete]="authService.canEdit()"
     [canAdd]="false"
-    (edit)="onEditUser($event)"
+    [sortable]="getSortableCallbacks()"
+    [sortBy]="sortBy"
+    [sortOrder]="sortOrder"
+    (save)="onEditUser($event)"
     (delete)="onDeleteUser($event)"
     (cellClick)="$event.column === 'name' ? viewAccountDetail($event.item._id) : null">
   </app-editable-table>
+
+        <!-- Pagination -->
+        <div class="flex-between" style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--border-color);">
+          <div style="font-size: var(--font-sm); color: var(--color-gray-500);">
+            Página {{ currentPage }} de {{ getTotalPages() }} ({{ totalItems }} total)
+          </div>
+          
+          <div style="display: flex; gap: var(--space-1);">
+            <button class="btn btn-sm" [disabled]="loading || currentPage === 1" (click)="changePage(currentPage - 1)">
+              Anterior
+            </button>
+            
+            <button *ngFor="let page of getPageNumbers()" 
+                    class="btn btn-sm" 
+                    [class.btn-primary]="page === currentPage"
+                    [disabled]="loading"
+                    (click)="changePage(page)">
+              {{ page }}
+            </button>
+            
+            <button class="btn btn-sm" [disabled]="loading || currentPage === getTotalPages()" (click)="changePage(currentPage + 1)">
+              Siguiente
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 </div>
@@ -102,6 +170,36 @@
         [disabled]="!isAddFormValid() || creatingAccount">
         <span *ngIf="creatingAccount" class="loading"></span>
         {{ creatingAccount ? 'Creando...' : 'Crear Cuenta' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para eliminar cuenta -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmar Eliminación</h3>
+      <button class="btn-close" (click)="closeDeleteModal()" [disabled]="deletingAccount">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <p>¿Estás seguro de que quieres eliminar la cuenta <strong>"{{ accountToDelete?.name }}"</strong>?</p>
+      <p style="color: var(--color-error); font-size: 0.875rem; margin-top: var(--space-2);">
+        <i class="fas fa-exclamation-triangle"></i> Esta acción no se puede deshacer.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn" (click)="closeDeleteModal()" [disabled]="deletingAccount">
+        Cancelar
+      </button>
+      <button 
+        class="btn btn-danger" 
+        (click)="confirmDelete()" 
+        [disabled]="deletingAccount">
+        <span *ngIf="deletingAccount" class="loading"></span>
+        {{ deletingAccount ? 'Eliminando...' : 'Eliminar Cuenta' }}
       </button>
     </div>
   </div>

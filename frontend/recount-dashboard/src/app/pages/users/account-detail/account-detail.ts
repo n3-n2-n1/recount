@@ -40,7 +40,76 @@ export class AccountDetail implements OnInit {
   exchangeRates: ExchangeRate[] = [];
   loadingRates = false;
   preferredCurrency: CurrencyType = 'DÓLAR';
-  currencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
+  currencies: CurrencyType[] = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'];
+
+  // Predefined descriptions by currency
+  predefinedDescriptions: { [key: string]: string[] } = {
+    'DÓLAR': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'CABLE': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'PESOS': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'CHEQUE': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'DOLAR B': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ]
+  };
 
   // Modal states
   showTransactionModal = false;
@@ -53,25 +122,37 @@ export class AccountDetail implements OnInit {
   transactionForm = {
     amount: null as number | null,
     description: '',
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
     applyFee: false,
     feeType: 'percentage' as 'percentage' | 'fixed',
-    feeValue: null as number | null
+    feeValue: null as number | null,
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   // Swap form
   swapForm = {
     amount: null as number | null,
     description: '',
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
     targetCurrency: 'DÓLAR' as CurrencyType,
-    exchangeRate: 1
+    exchangeRate: 1,
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   // Transfer form
   transferForm = {
     amount: null as number | null,
     description: '',
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
     targetAccountId: '',
-    targetAccount: null as Account | null
+    targetAccount: null as Account | null,
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   // Loading states
@@ -82,7 +163,7 @@ export class AccountDetail implements OnInit {
   private toastIdCounter = 0;
 
   // Main currencies to display as cards
-  mainCurrencies: CurrencyType[] = ['CHEQUE', 'PESOS', 'DÓLAR', 'CABLE', 'DOLAR INTERNACIONAL'];
+  mainCurrencies: CurrencyType[] = ['CHEQUE', 'PESOS', 'DÓLAR', 'CABLE', 'DOLAR B'];
 
   // Fees
   fees: Fee[] = [];
@@ -301,7 +382,7 @@ export class AccountDetail implements OnInit {
     switch (type) {
       case 'Entrada': return 'text-success';
       case 'Salida': return 'text-error';
-      case 'Swap': return 'text-warning';
+      case 'Compra Divisa': return 'text-warning';
       case 'Transferencia Interna': return 'text-info';
       default: return '';
     }
@@ -366,9 +447,39 @@ export class AccountDetail implements OnInit {
     return transaction.description || '-';
   }
 
+  hasCableTransactions(): boolean {
+    return this.transactions.some(t => t.currency === 'CABLE');
+  }
+
+  hasCompraDivisaTransactions(): boolean {
+    return this.transactions.some(t => t.type === 'Compra Divisa');
+  }
+
+  formatExchangeRate(transaction: any): string {
+    if (transaction.type === 'Compra Divisa' && transaction.exchangeRate) {
+      // Show exchange rate with appropriate formatting
+      if (transaction.currency === 'CHEQUE' && transaction.targetCurrency === 'PESOS') {
+        return `1 CHEQUE = 1/${transaction.exchangeRate.toFixed(4)} PESOS`;
+      } else if (transaction.currency === 'PESOS' && transaction.targetCurrency === 'DÓLAR') {
+        return `1 DÓLAR = ${transaction.exchangeRate.toFixed(4)} PESOS`;
+      } else {
+        return `1 ${transaction.currency} = ${transaction.exchangeRate.toFixed(4)} ${transaction.targetCurrency || ''}`;
+      }
+    }
+    return '—';
+  }
+
   formatDate(date: string | Date): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('es-ES');
+    const dateObj = new Date(date);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear().toString().slice(-2);
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    const ampm = dateObj.getHours() >= 12 ? 'PM' : 'AM';
+    const displayHours = dateObj.getHours() % 12 || 12;
+    return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
   }
 
   goBack(): void {
@@ -404,9 +515,13 @@ export class AccountDetail implements OnInit {
     this.transactionForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       applyFee: !!configuredFee,
       feeType: 'percentage' as 'percentage' | 'fixed',
-      feeValue: configuredFee ? configuredFee.percentage : null
+      feeValue: configuredFee ? configuredFee.percentage : null,
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.showTransactionModal = true;
     this.cdr.detectChanges();
@@ -423,55 +538,56 @@ export class AccountDetail implements OnInit {
     this.swapForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       targetCurrency: defaultTarget,
-      exchangeRate: this.calculateExchangeRate(currency, defaultTarget)
+      exchangeRate: 1, // Start with manual rate of 1, user can calculate automatic if needed
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.showSwapModal = true;
     this.cdr.detectChanges();
   }
 
   // Calculate exchange rate between two currencies
-  // Returns: how many units of toCurrency you get for 1 unit of fromCurrency
-  // Example: If 1 DÓLAR = 1500 PESOS, then rate from PESOS to DÓLAR = 1/1500 = 0.000667
-  // But we want to show it as: 1 PESOS = 0.000667 DÓLAR, so the calculation is correct
+  // For Compra Divisa: Returns default rate of 1 since user should input manual rate
+  // The exchange rate represents: 1 fromCurrency = X toCurrency
   calculateExchangeRate(fromCurrency: CurrencyType, toCurrency: CurrencyType): number {
-    if (fromCurrency === toCurrency) {
+    // For manual Compra Divisa transactions, return 1 as default
+    // User should manually input the desired exchange rate
       return 1;
     }
-
-    if (!this.exchangeRates || this.exchangeRates.length === 0) {
-      console.warn('Exchange rates not loaded, using default rate of 1');
-      return 1;
-    }
-
-    const fromRate = this.exchangeRates.find(r => r.currency === fromCurrency);
-    const toRate = this.exchangeRates.find(r => r.currency === toCurrency);
-
-    if (!fromRate || !toRate) {
-      console.warn(`Exchange rate not found for ${fromCurrency} or ${toCurrency}, using default rate of 1`);
-      return 1;
-    }
-
-    // Calculate direct exchange rate: fromCurrency -> USD -> toCurrency
-    // All rates are stored as rateToUSD (how many USD = 1 unit of currency)
-    // To convert fromCurrency to toCurrency:
-    // 1. Convert fromCurrency to USD: 1 * fromRate.rateToUSD
-    // 2. Convert USD to toCurrency: (1 * fromRate.rateToUSD) / toRate.rateToUSD
-    // Result: how many toCurrency units = 1 fromCurrency unit
-    // Example: If PESOS rateToUSD = 0.001 and DÓLAR rateToUSD = 1
-    // Then: 1 PESOS = 0.001 / 1 = 0.001 DÓLAR
-    // Or: 1 DÓLAR = 1 / 0.001 = 1000 PESOS
-    const rate = fromRate.rateToUSD / toRate.rateToUSD;
-    return rate;
-  }
 
   // Update exchange rate when target currency changes
   onTargetCurrencyChange(): void {
     if (this.selectedCurrency && this.swapForm.targetCurrency) {
-      this.swapForm.exchangeRate = this.calculateExchangeRate(
-        this.selectedCurrency,
-        this.swapForm.targetCurrency
-      );
+      // Calculate automatic exchange rate based on USD rates
+    if (!this.exchangeRates || this.exchangeRates.length === 0) {
+        console.warn('Exchange rates not loaded, keeping manual rate');
+        return;
+    }
+
+      const fromRate = this.exchangeRates.find(r => r.currency === this.selectedCurrency);
+      const toRate = this.exchangeRates.find(r => r.currency === this.swapForm.targetCurrency);
+
+    if (!fromRate || !toRate) {
+        console.warn(`Exchange rate not found for currencies`);
+        return;
+    }
+
+      // Calculate: how many toCurrency units = 1 fromCurrency unit
+      let rate = fromRate.rateToUSD / toRate.rateToUSD;
+
+      // Special case: if CHEQUE to PESOS, this calculated rate represents
+      // what we should divide by, so we need to adjust
+      if (this.selectedCurrency === 'CHEQUE' && this.swapForm.targetCurrency === 'PESOS') {
+        // For CHEQUE to PESOS, the user inputs what 1 CHEQUE is worth in PESOS
+        // But the calculated rate gives us the USD-based conversion
+        // We keep the calculated rate as is, since the division happens in the backend
+        rate = rate;
+      }
+
+      this.swapForm.exchangeRate = rate;
       this.cdr.detectChanges();
     }
   }
@@ -486,8 +602,12 @@ export class AccountDetail implements OnInit {
     this.transferForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       targetAccountId: '',
-      targetAccount: null
+      targetAccount: null,
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.showTransferModal = true;
     this.cdr.detectChanges();
@@ -500,9 +620,13 @@ export class AccountDetail implements OnInit {
     this.transactionForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       applyFee: false,
       feeType: 'percentage' as 'percentage' | 'fixed',
-      feeValue: null
+      feeValue: null,
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.creatingTransaction = false;
   }
@@ -513,8 +637,12 @@ export class AccountDetail implements OnInit {
     this.swapForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       targetCurrency: 'DÓLAR',
-      exchangeRate: 1
+      exchangeRate: 1,
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.creatingTransaction = false;
   }
@@ -525,8 +653,12 @@ export class AccountDetail implements OnInit {
     this.transferForm = {
       amount: null,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       targetAccountId: '',
-      targetAccount: null
+      targetAccount: null,
+      bancoWallet: '',
+      titularOriginante: ''
     };
     this.creatingTransaction = false;
   }
@@ -548,9 +680,18 @@ export class AccountDetail implements OnInit {
       return;
     }
 
-    if (!this.transactionForm.description.trim()) {
+    const description = this.getDescription(this.transactionForm);
+    if (!description.trim()) {
       this.showError('La descripción es requerida');
       return;
+    }
+
+    // Validate CABLE required fields
+    if (this.selectedCurrency === 'CABLE') {
+      if (!this.transactionForm.bancoWallet?.trim() || !this.transactionForm.titularOriginante?.trim()) {
+        this.showError('Para transacciones en CABLE, Banco/Wallet y Titular/Originante son requeridos');
+        return;
+      }
     }
 
     if (this.transactionForm.applyFee && (!this.transactionForm.feeValue || this.transactionForm.feeValue <= 0)) {
@@ -572,13 +713,15 @@ export class AccountDetail implements OnInit {
     const transaction: CreateTransactionRequest = {
       accountId: this.accountId,
       type: this.transactionType,
-      description: this.transactionForm.description.trim(),
+      description: this.getDescription(this.transactionForm),
       currency: this.selectedCurrency,
       amount: finalAmount, // This is the final amount after fee
       applyFee: this.transactionForm.applyFee,
       feeType: this.transactionForm.feeType as 'percentage' | 'fixed',
       feeValue: this.transactionForm.feeValue,
-      originalAmount: this.transactionForm.applyFee && this.transactionForm.feeValue != null && this.transactionForm.feeValue > 0 ? originalAmount : undefined
+      originalAmount: this.transactionForm.applyFee && this.transactionForm.feeValue != null && this.transactionForm.feeValue > 0 ? originalAmount : undefined,
+      bancoWallet: this.selectedCurrency === 'CABLE' ? this.transactionForm.bancoWallet : undefined,
+      titularOriginante: this.selectedCurrency === 'CABLE' ? this.transactionForm.titularOriginante : undefined
     };
 
     this.creatingTransaction = true;
@@ -613,16 +756,25 @@ export class AccountDetail implements OnInit {
     });
   }
 
-  // Swap creation
-  createSwap(): void {
+  // Compra Divisa creation
+  createCompraDivisa(): void {
     // Prevent viewers from creating swaps
     if (!this.authService.canEdit()) {
       this.showError('No tienes permisos para realizar esta acción');
       return;
     }
-    if (!this.selectedCurrency || !this.swapForm.amount || this.swapForm.amount <= 0 || !this.swapForm.description) {
+    const swapDescription = this.getDescription(this.swapForm);
+    if (!this.selectedCurrency || !this.swapForm.amount || this.swapForm.amount <= 0 || !swapDescription) {
       this.showError('Por favor, complete todos los campos requeridos');
       return;
+    }
+
+    // Validate CABLE required fields
+    if (this.selectedCurrency === 'CABLE') {
+      if (!this.swapForm.bancoWallet?.trim() || !this.swapForm.titularOriginante?.trim()) {
+        this.showError('Para transacciones en CABLE, Banco/Wallet y Titular/Originante son requeridos');
+        return;
+      }
     }
 
     if (this.selectedCurrency === this.swapForm.targetCurrency) {
@@ -637,12 +789,14 @@ export class AccountDetail implements OnInit {
 
     const transaction: CreateTransactionRequest = {
       accountId: this.accountId,
-      type: 'Swap',
-      description: this.swapForm.description.trim(),
+      type: 'Compra Divisa',
+      description: this.getDescription(this.swapForm),
       currency: this.selectedCurrency,
       amount: this.swapForm.amount,
       targetCurrency: this.swapForm.targetCurrency,
-      exchangeRate: this.swapForm.exchangeRate
+      exchangeRate: this.swapForm.exchangeRate,
+      bancoWallet: this.selectedCurrency === 'CABLE' ? this.swapForm.bancoWallet : undefined,
+      titularOriginante: this.selectedCurrency === 'CABLE' ? this.swapForm.titularOriginante : undefined
     };
 
     this.creatingTransaction = true;
@@ -682,9 +836,18 @@ export class AccountDetail implements OnInit {
       this.showError('No tienes permisos para realizar esta acción');
       return;
     }
-    if (!this.selectedCurrency || !this.transferForm.amount || this.transferForm.amount <= 0 || !this.transferForm.description || !this.transferForm.targetAccountId) {
+    const transferDescription = this.getDescription(this.transferForm);
+    if (!this.selectedCurrency || !this.transferForm.amount || this.transferForm.amount <= 0 || !transferDescription || !this.transferForm.targetAccountId) {
       this.showError('Por favor, complete todos los campos requeridos');
       return;
+    }
+
+    // Validate CABLE required fields
+    if (this.selectedCurrency === 'CABLE') {
+      if (!this.transferForm.bancoWallet?.trim() || !this.transferForm.titularOriginante?.trim()) {
+        this.showError('Para transacciones en CABLE, Banco/Wallet y Titular/Originante son requeridos');
+        return;
+      }
     }
 
     if (!this.accountId) {
@@ -700,10 +863,12 @@ export class AccountDetail implements OnInit {
     const transaction: CreateTransactionRequest = {
       accountId: this.accountId,
       type: 'Transferencia Interna',
-      description: this.transferForm.description.trim(),
+      description: this.getDescription(this.transferForm),
       currency: this.selectedCurrency,
       amount: this.transferForm.amount,
-      targetAccountId: this.transferForm.targetAccountId
+      targetAccountId: this.transferForm.targetAccountId,
+      bancoWallet: this.selectedCurrency === 'CABLE' ? this.transferForm.bancoWallet : undefined,
+      titularOriginante: this.selectedCurrency === 'CABLE' ? this.transferForm.titularOriginante : undefined
     };
 
     this.creatingTransaction = true;
@@ -767,7 +932,7 @@ export class AccountDetail implements OnInit {
       case 'PESOS': return 'fas fa-coins';
       case 'DÓLAR': return 'fas fa-dollar-sign';
       case 'CABLE': return 'fas fa-exchange-alt';
-      case 'DOLAR INTERNACIONAL': return 'fas fa-handshake';
+      case 'DOLAR B': return 'fas fa-handshake';
       default: return 'fas fa-wallet';
     }
   }
@@ -778,7 +943,7 @@ export class AccountDetail implements OnInit {
       case 'PESOS': return 'text-green-600';
       case 'DÓLAR': return 'text-yellow-600';
       case 'CABLE': return 'text-purple-600';
-      case 'DOLAR INTERNACIONAL': return 'text-indigo-600';
+      case 'DOLAR B': return 'text-indigo-600';
       default: return 'text-gray-600';
     }
   }
@@ -855,6 +1020,29 @@ export class AccountDetail implements OnInit {
     }
 
     return `${fee.percentage}% fee aplicado`;
+  }
+
+  getPredefinedDescriptionsForCurrency(currency: string | null): string[] {
+    if (!currency) return ['Otro...'];
+    return this.predefinedDescriptions[currency] || ['Otro...'];
+  }
+
+  // Description handling methods
+  getDescription(form: any): string {
+    if (form.descriptionType === 'Otro...') {
+      return form.customDescription || '';
+    }
+    return form.descriptionType;
+  }
+
+  isCustomDescription(form: any): boolean {
+    return form.descriptionType === 'Otro...';
+  }
+
+  onDescriptionTypeChange(form: any): void {
+    if (form.descriptionType !== 'Otro...') {
+      form.customDescription = '';
+    }
   }
 
   // Toast functions

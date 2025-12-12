@@ -56,25 +56,41 @@
         <h3>Ingreso</h3>
       </div>
       <div class="card-body">
-        <form (ngSubmit)="createInflow()">
-          <div class="form-group">
+        <form (ngSubmit)="createInflow()" style="display: flex; flex-direction: column; gap: var(--space-4);">
+          <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Monto</label>
             <input type="number" [(ngModel)]="inflowForm.amount" name="inflowAmount" 
                    class="form-control" step="0.01" required>
           </div>
-          <div class="form-group">
+          <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Moneda</label>
             <select [(ngModel)]="inflowForm.currency" name="inflowCurrency" class="form-control">
               <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Descripción</label>
-            <input type="text" [(ngModel)]="inflowForm.description" name="inflowDescription" 
-                   class="form-control" required>
+            <select [(ngModel)]="inflowForm.descriptionType" name="inflowDescriptionType" 
+                    class="form-control" (change)="onDescriptionTypeChange(inflowForm)" style="margin-bottom: var(--space-2);">
+              <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(inflowForm.currency)" [value]="desc">{{ desc }}</option>
+            </select>
+            <input *ngIf="isCustomDescription(inflowForm)" 
+                   type="text" [(ngModel)]="inflowForm.customDescription" 
+                   name="inflowCustomDescription" class="form-control" 
+                   placeholder="Ingrese descripción personalizada" required>
+          </div>
+          <div *ngIf="inflowForm.currency === 'CABLE'" class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Banco/Wallet *</label>
+            <input type="text" [(ngModel)]="inflowForm.bancoWallet" name="inflowBancoWallet" 
+                   class="form-control" required placeholder="Ej: Binance, Coinbase, Banco X">
+          </div>
+          <div *ngIf="inflowForm.currency === 'CABLE'" class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Titular/Originante *</label>
+            <input type="text" [(ngModel)]="inflowForm.titularOriginante" name="inflowTitularOriginante" 
+                   class="form-control" required placeholder="Nombre del titular o originante">
           </div>
           <button type="submit" [disabled]="loadingInflow || !isInflowFormValid()" 
-                  class="btn btn-success w-full">
+                  class="btn btn-success w-full" style="margin-top: var(--space-2);">
             <span *ngIf="loadingInflow" class="loading"></span>
             {{ loadingInflow ? 'Procesando...' : 'Crear ingreso' }}
           </button>
@@ -102,8 +118,24 @@
           </div>
           <div class="form-group">
             <label class="form-label">Descripción</label>
-            <input type="text" [(ngModel)]="outflowForm.description" name="outflowDescription" 
-                   class="form-control" required>
+            <select [(ngModel)]="outflowForm.descriptionType" name="outflowDescriptionType" 
+                    class="form-control" (change)="onDescriptionTypeChange(outflowForm)">
+              <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(outflowForm.currency)" [value]="desc">{{ desc }}</option>
+            </select>
+            <input *ngIf="isCustomDescription(outflowForm)" 
+                   type="text" [(ngModel)]="outflowForm.customDescription" 
+                   name="outflowCustomDescription" class="form-control" 
+                   placeholder="Ingrese descripción personalizada" required>
+          </div>
+          <div *ngIf="outflowForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Banco/Wallet *</label>
+            <input type="text" [(ngModel)]="outflowForm.bancoWallet" name="outflowBancoWallet" 
+                   class="form-control" required placeholder="Ej: Binance, Coinbase, Banco X">
+          </div>
+          <div *ngIf="outflowForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Titular/Originante *</label>
+            <input type="text" [(ngModel)]="outflowForm.titularOriginante" name="outflowTitularOriginante" 
+                   class="form-control" required placeholder="Nombre del titular o originante">
           </div>
           <button type="submit" [disabled]="loadingOutflow || !isOutflowFormValid()" 
                   class="btn btn-danger w-full">
@@ -114,13 +146,13 @@
       </div>
     </div>
 
-    <!-- Swap -->
+    <!-- Compra Divisa -->
     <div class="card">
       <div class="card-header">
-        <h3>Swap</h3>
+        <h3>Compra Divisa</h3>
       </div>
       <div class="card-body">
-        <form (ngSubmit)="createSwap()">
+        <form (ngSubmit)="createCompraDivisa()">
           <div class="form-group">
             <label class="form-label">Monto</label>
             <input type="number" [(ngModel)]="swapForm.amount" name="swapAmount" 
@@ -147,13 +179,29 @@
           </div>
           <div class="form-group">
             <label class="form-label">Descripción</label>
-            <input type="text" [(ngModel)]="swapForm.description" name="swapDescription" 
-                   class="form-control" required>
+            <select [(ngModel)]="swapForm.descriptionType" name="swapDescriptionType" 
+                    class="form-control" (change)="onDescriptionTypeChange(swapForm)">
+              <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(swapForm.currency)" [value]="desc">{{ desc }}</option>
+            </select>
+            <input *ngIf="isCustomDescription(swapForm)" 
+                   type="text" [(ngModel)]="swapForm.customDescription" 
+                   name="swapCustomDescription" class="form-control" 
+                   placeholder="Ingrese descripción personalizada" required>
+          </div>
+          <div *ngIf="swapForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Banco/Wallet *</label>
+            <input type="text" [(ngModel)]="swapForm.bancoWallet" name="swapBancoWallet" 
+                   class="form-control" required placeholder="Ej: Binance, Coinbase, Banco X">
+          </div>
+          <div *ngIf="swapForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Titular/Originante *</label>
+            <input type="text" [(ngModel)]="swapForm.titularOriginante" name="swapTitularOriginante" 
+                   class="form-control" required placeholder="Nombre del titular o originante">
           </div>
           <button type="submit" [disabled]="loadingSwap || !isSwapFormValid()" 
                   class="btn btn-primary w-full">
             <span *ngIf="loadingSwap" class="loading"></span>
-            {{ loadingSwap ? 'Procesando...' : 'Ejecutar intercambio' }}
+            {{ loadingSwap ? 'Procesando...' : 'Ejecutar compra divisa' }}
           </button>
         </form>
       </div>
@@ -188,8 +236,24 @@
           </div>
           <div class="form-group">
             <label class="form-label">Descripción</label>
-            <input type="text" [(ngModel)]="transferForm.description" name="transferDescription" 
-                   class="form-control" required>
+            <select [(ngModel)]="transferForm.descriptionType" name="transferDescriptionType" 
+                    class="form-control" (change)="onDescriptionTypeChange(transferForm)">
+              <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(transferForm.currency)" [value]="desc">{{ desc }}</option>
+            </select>
+            <input *ngIf="isCustomDescription(transferForm)" 
+                   type="text" [(ngModel)]="transferForm.customDescription" 
+                   name="transferCustomDescription" class="form-control" 
+                   placeholder="Ingrese descripción personalizada" required>
+          </div>
+          <div *ngIf="transferForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Banco/Wallet *</label>
+            <input type="text" [(ngModel)]="transferForm.bancoWallet" name="transferBancoWallet" 
+                   class="form-control" required placeholder="Ej: Binance, Coinbase, Banco X">
+          </div>
+          <div *ngIf="transferForm.currency === 'CABLE'" class="form-group">
+            <label class="form-label">Titular/Originante *</label>
+            <input type="text" [(ngModel)]="transferForm.titularOriginante" name="transferTitularOriginante" 
+                   class="form-control" required placeholder="Nombre del titular o originante">
           </div>
           <button type="submit" [disabled]="loadingTransfer || !isTransferFormValid()" 
                   class="btn btn-transfer w-full">

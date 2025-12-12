@@ -369,3 +369,106 @@
 .dark-mode .transaction-summary { background: var(--color-bg-secondary); border-color: var(--color-gray-700); }
 .dark-mode .summary-label { color: var(--color-gray-300); }
 .dark-mode .summary-value { color: var(--color-text-primary); }
+
+/* CABLE Transaction Details */
+.cable-detail {
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+  font-weight: 500;
+}
+
+.dark-mode .cable-detail {
+  color: var(--color-gray-300);
+}
+
+/* Exchange Rate Display */
+.exchange-rate-display {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.dark-mode .exchange-rate-display {
+  color: var(--color-primary-light, #60a5fa);
+}
+
+.text-muted {
+  color: var(--color-gray-400);
+  font-style: italic;
+}
+
+.dark-mode .text-muted {
+  color: var(--color-gray-500);
+}
+
+/* Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th:first-child,
+.table tbody td:first-child {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.table thead {
+  background: var(--color-gray-50);
+}
+
+.table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.table th.text-right {
+  text-align: right;
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+.table td.text-right {
+  text-align: right;
+}
+
+/* Dark Mode Table Styles */
+.dark-mode .table thead {
+  background: #1e293b;
+}
+
+.dark-mode .table th {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-bottom-color: #334155;
+}
+
+.dark-mode .table td {
+  color: #e2e8f0;
+  border-bottom-color: #1e293b;
+}
+
+html.dark-mode .table thead {
+  background: #1e293b;
+}
+
+html.dark-mode .table th {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-bottom-color: #334155;
+}
+
+html.dark-mode .table td {
+  color: #e2e8f0;
+  border-bottom-color: #1e293b;
+}

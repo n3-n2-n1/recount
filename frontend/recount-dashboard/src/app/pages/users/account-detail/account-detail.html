@@ -138,11 +138,14 @@
                 <th class="text-right">Monto Total</th>
                 <th class="text-right">Fee</th>
                 <th class="text-right">Monto Real</th>
+                <th *ngIf="hasCompraDivisaTransactions()" style="min-width: 150px;">Tasa de Cambio</th>
+                <th *ngIf="hasCableTransactions()">Banco/Wallet</th>
+                <th *ngIf="hasCableTransactions()">Titular/Originante</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions">
-                <td>{{ formatDate(transaction.createdAt) }}</td>
+                <td style="font-family: monospace; font-size: var(--font-xs);">{{ formatDate(transaction.createdAt) }}</td>
                 <td>
                   <span class="transaction-type" [class]="getTransactionTypeClass(transaction.type)">
                     {{ getTransactionSignAndType(transaction).type }}
@@ -177,6 +180,30 @@
                     {{ getTransactionSignAndType(transaction).sign }}{{ formatCurrencyLatin(transaction.amount) }}
                   </span>
                 </td>
+                <td *ngIf="hasCompraDivisaTransactions()" style="min-width: 150px; white-space: nowrap;">
+                  <span *ngIf="transaction.type === 'Compra Divisa' && transaction.exchangeRate" class="exchange-rate-display">
+                    {{ formatExchangeRate(transaction) }}
+                  </span>
+                  <span *ngIf="transaction.type !== 'Compra Divisa' || !transaction.exchangeRate" class="text-muted">
+                    —
+                  </span>
+                </td>
+                <td *ngIf="hasCableTransactions()">
+                  <span *ngIf="transaction.currency === 'CABLE' && transaction.bancoWallet" class="cable-detail">
+                    {{ transaction.bancoWallet }}
+                  </span>
+                  <span *ngIf="transaction.currency !== 'CABLE' || !transaction.bancoWallet" class="text-muted">
+                    —
+                  </span>
+                </td>
+                <td *ngIf="hasCableTransactions()">
+                  <span *ngIf="transaction.currency === 'CABLE' && transaction.titularOriginante" class="cable-detail">
+                    {{ transaction.titularOriginante }}
+                  </span>
+                  <span *ngIf="transaction.currency !== 'CABLE' || !transaction.titularOriginante" class="text-muted">
+                    —
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -193,14 +220,14 @@
 <div *ngIf="showSwapModal" class="modal-overlay" (click)="closeSwapModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="fas fa-exchange-alt"></i> Swap {{ selectedCurrency }}</h3>
+      <h3><i class="fas fa-exchange-alt"></i> Compra Divisa {{ selectedCurrency }}</h3>
       <button class="modal-close" (click)="closeSwapModal()">
         <i class="fas fa-times"></i>
       </button>
     </div>
 
     <div class="modal-body">
-      <form (ngSubmit)="createSwap()" #swapFormElement="ngForm">
+      <form (ngSubmit)="createCompraDivisa()" #swapFormElement="ngForm">
 
         <!-- Amount -->
         <div class="form-group">
@@ -244,9 +271,14 @@
             required
             placeholder="1.0000">
           <small class="form-text text-muted" style="margin-top: var(--space-1); display: block;">
-            Tasa automática: 1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}
+            <ng-container *ngIf="selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS'">
+              Conversión especial: 1 CHEQUE = 1/{{ swapForm.exchangeRate }} PESOS
+            </ng-container>
+            <ng-container *ngIf="!(selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS')">
+              Tasa estándar: 1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}
+            </ng-container>
             <button type="button" class="btn btn-sm" (click)="onTargetCurrencyChange()" style="margin-left: var(--space-2); padding: 0.125rem 0.5rem;">
-              <i class="fas fa-sync-alt"></i> Actualizar
+              <i class="fas fa-sync-alt"></i> Calcular tasa automática
             </button>
           </small>
         </div>
@@ -254,14 +286,37 @@
         <!-- Description -->
         <div class="form-group">
           <label class="form-label">Descripción *</label>
+          <select [(ngModel)]="swapForm.descriptionType" name="swapDescriptionType" 
+                  class="form-control" (change)="onDescriptionTypeChange(swapForm)">
+            <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(selectedCurrency)" [value]="desc">{{ desc }}</option>
+          </select>
+          <input *ngIf="isCustomDescription(swapForm)" 
+                 type="text" [(ngModel)]="swapForm.customDescription" 
+                 name="swapCustomDescription" class="form-control" 
+                 placeholder="Ingrese descripción personalizada" required>
+        </div>
+
+        <!-- CABLE specific fields -->
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Banco/Wallet *</label>
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="swapForm.description"
-            name="swapDescription"
+            [(ngModel)]="swapForm.bancoWallet"
+            name="swapBancoWallet"
             required
-            placeholder="Descripción del intercambio"
-            maxlength="255">
+            placeholder="Ej: Binance, Coinbase, Banco X">
+        </div>
+
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Titular/Originante *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="swapForm.titularOriginante"
+            name="swapTitularOriginante"
+            required
+            placeholder="Nombre del titular o originante">
         </div>
 
         <!-- Summary -->
@@ -273,12 +328,24 @@
           <div class="summary-item">
             <span class="summary-label">Monto recibido (calculado):</span>
             <span class="summary-value" style="font-weight: 700; color: var(--color-success);">
+              <ng-container *ngIf="selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS'">
+                {{ formatCurrencyLatin(swapForm.amount / swapForm.exchangeRate) }} {{ swapForm.targetCurrency }}
+              </ng-container>
+              <ng-container *ngIf="!(selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS')">
               {{ formatCurrencyLatin(swapForm.amount * swapForm.exchangeRate) }} {{ swapForm.targetCurrency }}
+              </ng-container>
             </span>
           </div>
           <div class="summary-item">
-            <span class="summary-label">Tasa de cambio:</span>
-            <span class="summary-value">1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}</span>
+            <span class="summary-label">Tasa aplicada:</span>
+            <span class="summary-value">
+              <ng-container *ngIf="selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS'">
+                Conversión especial: 1 CHEQUE = 1/{{ swapForm.exchangeRate }} PESOS
+              </ng-container>
+              <ng-container *ngIf="!(selectedCurrency === 'CHEQUE' && swapForm.targetCurrency === 'PESOS')">
+                1 {{ selectedCurrency }} = {{ swapForm.exchangeRate | number:'1.0-4' }} {{ swapForm.targetCurrency }}
+              </ng-container>
+            </span>
           </div>
         </div>
 
@@ -292,8 +359,8 @@
       <button
         type="button"
         class="btn btn-warning"
-        [disabled]="!swapForm.amount || swapForm.amount <= 0 || !swapForm.description || !swapForm.targetCurrency || swapForm.targetCurrency === selectedCurrency || creatingTransaction"
-        (click)="createSwap()">
+        [disabled]="!swapForm.amount || swapForm.amount <= 0 || !getDescription(swapForm).trim() || !swapForm.targetCurrency || swapForm.targetCurrency === selectedCurrency || creatingTransaction"
+        (click)="createCompraDivisa()">
         <span *ngIf="creatingTransaction" class="loading"></span>
         {{ creatingTransaction ? 'Creando...' : 'Ejecutar Intercambio' }}
       </button>
@@ -347,14 +414,37 @@
         <!-- Description -->
         <div class="form-group">
           <label class="form-label">Descripción *</label>
+          <select [(ngModel)]="transferForm.descriptionType" name="transferDescriptionType" 
+                  class="form-control" (change)="onDescriptionTypeChange(transferForm)">
+            <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(selectedCurrency)" [value]="desc">{{ desc }}</option>
+          </select>
+          <input *ngIf="isCustomDescription(transferForm)" 
+                 type="text" [(ngModel)]="transferForm.customDescription" 
+                 name="transferCustomDescription" class="form-control" 
+                 placeholder="Ingrese descripción personalizada" required>
+        </div>
+
+        <!-- CABLE specific fields -->
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Banco/Wallet *</label>
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="transferForm.description"
-            name="transferDescription"
+            [(ngModel)]="transferForm.bancoWallet"
+            name="transferBancoWallet"
             required
-            placeholder="Descripción de la transferencia"
-            maxlength="255">
+            placeholder="Ej: Binance, Coinbase, Banco X">
+        </div>
+
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Titular/Originante *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="transferForm.titularOriginante"
+            name="transferTitularOriginante"
+            required
+            placeholder="Nombre del titular o originante">
         </div>
 
         <!-- Summary -->
@@ -379,7 +469,7 @@
       <button
         type="button"
         class="btn btn-info"
-        [disabled]="!transferForm.amount || transferForm.amount <= 0 || !transferForm.description || !transferForm.targetAccountId || transferForm.targetAccountId === accountId || creatingTransaction"
+        [disabled]="!transferForm.amount || transferForm.amount <= 0 || !getDescription(transferForm).trim() || !transferForm.targetAccountId || transferForm.targetAccountId === accountId || creatingTransaction"
         (click)="createTransfer()">
         <span *ngIf="creatingTransaction" class="loading"></span>
         {{ creatingTransaction ? 'Creando...' : 'Ejecutar Transferencia' }}
@@ -425,18 +515,37 @@
         <!-- Description -->
         <div class="form-group">
           <label class="form-label">Descripción *</label>
+          <select [(ngModel)]="transactionForm.descriptionType" name="descriptionType" 
+                  class="form-control" (change)="onDescriptionTypeChange(transactionForm)">
+            <option *ngFor="let desc of getPredefinedDescriptionsForCurrency(selectedCurrency)" [value]="desc">{{ desc }}</option>
+          </select>
+          <input *ngIf="isCustomDescription(transactionForm)" 
+                 type="text" [(ngModel)]="transactionForm.customDescription" 
+                 name="customDescription" class="form-control" 
+                 placeholder="Ingrese descripción personalizada" required>
+        </div>
+
+        <!-- CABLE specific fields -->
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Banco/Wallet *</label>
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="transactionForm.description"
-            name="description"
+            [(ngModel)]="transactionForm.bancoWallet"
+            name="bancoWallet"
             required
-            placeholder="Descripción de la transacción"
-            maxlength="255"
-            #descriptionInput="ngModel">
-          <div *ngIf="descriptionInput.invalid && descriptionInput.touched" class="form-error">
-            La descripción es requerida
+            placeholder="Ej: Binance, Coinbase, Banco X">
           </div>
+
+        <div *ngIf="selectedCurrency === 'CABLE'" class="form-group">
+          <label class="form-label">Titular/Originante *</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="transactionForm.titularOriginante"
+            name="titularOriginante"
+            required
+            placeholder="Nombre del titular o originante">
         </div>
 
         <!-- Fee Configuration -->
@@ -531,7 +640,7 @@
         type="button"
         class="btn"
         [class]="transactionType === 'Entrada' ? 'btn-success' : 'btn-error'"
-        [disabled]="!transactionForm.amount || transactionForm.amount <= 0 || !transactionForm.description.trim() || (transactionForm.applyFee && (!transactionForm.feeValue || transactionForm.feeValue <= 0)) || creatingTransaction"
+        [disabled]="!transactionForm.amount || transactionForm.amount <= 0 || !getDescription(transactionForm).trim() || (transactionForm.applyFee && (!transactionForm.feeValue || transactionForm.feeValue <= 0)) || creatingTransaction"
         (click)="createTransaction()">
         <span *ngIf="creatingTransaction" class="loading"></span>
         {{ creatingTransaction ? 'Creando...' : (transactionType === 'Entrada' ? 'Crear Ingreso' : 'Crear Egreso') }}

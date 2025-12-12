@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR INTERNACIONAL';
-export type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
+export type Currency = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR B';
+export type TransactionType = 'Entrada' | 'Salida' | 'Compra Divisa' | 'Transferencia Interna';
 
 export interface IFee extends Document {
   currency: Currency;
@@ -18,12 +18,12 @@ export interface IFee extends Document {
 const FeeSchema: Schema = new Schema({
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'],
     required: true
   },
   transactionType: {
     type: String,
-    enum: ['Entrada', 'Salida', 'Swap', 'Transferencia Interna'],
+    enum: ['Entrada', 'Salida', 'Compra Divisa', 'Transferencia Interna'],
     required: true
   },
   percentage: {

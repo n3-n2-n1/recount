@@ -1,8 +1,8 @@
-# 💰 Recount - Financial Management Platform
+# Recount - Financial Management Platform
 
 A modern, simple, and powerful financial management platform built with Angular and Node.js.
 
-## 🎯 Features
+## Features
 
 - **Transaction Management**: Create and track inflows, outflows, and currency swaps
 - **Multi-Currency Support**: Handle multiple currencies (USD, Cable, Pesos, Cheque, Cable Broker)

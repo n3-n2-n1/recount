@@ -1,5 +1,5 @@
-export type CurrencyType = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR INTERNACIONAL';
-export type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
+export type CurrencyType = 'DÓLAR' | 'CABLE' | 'PESOS' | 'CHEQUE' | 'DOLAR B';
+export type TransactionType = 'Entrada' | 'Salida' | 'Compra Divisa' | 'Transferencia Interna';
 
 export interface Transaction {
   _id: string;
@@ -16,6 +16,8 @@ export interface Transaction {
   feeValue?: number;
   originalAmount?: number;
   notes?: string;
+  bancoWallet?: string;
+  titularOriginante?: string;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -34,6 +36,8 @@ export interface CreateTransactionRequest {
   feeType?: 'percentage' | 'fixed';
   feeValue?: number | null;
   originalAmount?: number;
+  bancoWallet?: string;
+  titularOriginante?: string;
 }
 
 // Import User to avoid circular dependency issues

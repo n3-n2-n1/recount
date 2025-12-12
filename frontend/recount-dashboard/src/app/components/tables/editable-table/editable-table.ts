@@ -14,6 +14,9 @@ export class EditableTable implements OnInit {
   @Input() canEdit = true;
   @Input() canDelete = true;
   @Input() canAdd = true;
+  @Input() sortable: { [key: string]: (field: string) => void } | null = null;
+  @Input() sortBy: string | null = null;
+  @Input() sortOrder: 'asc' | 'desc' | null = null;
 
   @Output() edit = new EventEmitter<{ item: any; index: number }>();
   @Output() delete = new EventEmitter<{ item: any; index: number }>();
@@ -49,9 +52,7 @@ export class EditableTable implements OnInit {
   }
 
   confirmDelete(item: any, index: number): void {
-    if (confirm('¿Estás seguro de que quieres eliminar este elemento?')) {
-      this.delete.emit({ item, index });
-    }
+    this.delete.emit({ item, index });
   }
 
   addNew(): void {
@@ -79,7 +80,15 @@ export class EditableTable implements OnInit {
           currency: 'USD'
         }).format(Number(value));
       case 'date':
-        return new Date(value).toLocaleDateString();
+        const date = new Date(value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+        const displayHours = date.getHours() % 12 || 12;
+        return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
       case 'boolean':
         return value ? 'Yes' : 'No';
       default:
@@ -92,7 +101,24 @@ export class EditableTable implements OnInit {
   }
 
   trackByFn(index: number, item: any): any {
-    return index;
+    return item?._id || item?.id || index;
+  }
+
+  onHeaderClick(column: TableColumn): void {
+    if (this.sortable && column.key && this.sortable[column.key as string]) {
+      this.sortable[column.key as string](column.key as string);
+    }
+  }
+
+  isSortable(column: TableColumn): boolean {
+    return this.sortable !== null && column.key !== undefined && this.sortable[column.key as string] !== undefined;
+  }
+
+  getSortIndicator(column: TableColumn): string {
+    if (!this.isSortable(column) || this.sortBy !== column.key) {
+      return '';
+    }
+    return this.sortOrder === 'asc' ? '↑' : '↓';
   }
 
   onCellClick(item: any, column: TableColumn, index: number): void {

@@ -43,31 +43,116 @@ export class Movements implements OnInit {
   inflowForm = {
     amount: 0,
     description: '',
-    currency: 'DÓLAR'
+    descriptionType: 'ESMERALDA', // Default to first predefined description
+    customDescription: '',
+    currency: 'DÓLAR',
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   outflowForm = {
     amount: 0,
     description: '',
-    currency: 'DÓLAR'
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
+    currency: 'DÓLAR',
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   swapForm = {
     amount: 0,
     description: '',
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
     currency: 'DÓLAR',
     targetCurrency: 'CABLE',
-    exchangeRate: 1
+    exchangeRate: 1,
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
   transferForm = {
     amount: 0,
     description: '',
+    descriptionType: 'ESMERALDA',
+    customDescription: '',
     currency: 'DÓLAR',
-    targetAccountId: ''
+    targetAccountId: '',
+    bancoWallet: '',
+    titularOriginante: ''
   };
 
-  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
+  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'];
+
+  // Predefined descriptions by currency
+  predefinedDescriptions: { [key: string]: string[] } = {
+    'DÓLAR': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'CABLE': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'PESOS': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'CHEQUE': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ],
+    'DOLAR B': [
+      'ESMERALDA',
+      'BASAVILVASO',
+      'PARANA',
+      'Transferencia Activos Digitales',
+      'Transferencia a Broker',
+      'Sabadell',
+      'ITAU',
+      'BONY',
+      'CITI',
+      'CIUDAD',
+      'Otro...'
+    ]
+  };
 
   constructor(
     private accountsService: AccountsService,
@@ -198,7 +283,7 @@ export class Movements implements OnInit {
     switch (type) {
       case 'Entrada': return 'fa-arrow-down';
       case 'Salida': return 'fa-arrow-up';
-      case 'Swap': return 'fa-exchange-alt';
+      case 'Compra Divisa': return 'fa-exchange-alt';
       case 'Transferencia Interna': return 'fa-arrow-right';
       default: return 'fa-circle';
     }
@@ -208,7 +293,7 @@ export class Movements implements OnInit {
     switch (type) {
       case 'Entrada': return 'green';
       case 'Salida': return 'red';
-      case 'Swap': return 'blue';
+      case 'Compra Divisa': return 'blue';
       case 'Transferencia Interna': return 'purple';
       default: return 'gray';
     }
@@ -221,7 +306,7 @@ export class Movements implements OnInit {
         return transaction.description || 'Funds added';
       case 'Salida':
         return transaction.description || 'Funds withdrawn';
-      case 'Swap':
+      case 'Compra Divisa':
         return `${transaction.currency} → ${transaction.targetCurrency || 'Unknown'}`;
       case 'Transferencia Interna':
         return `Transfer to ${(transaction.targetAccountId as any)?.name || 'another account'}`;
@@ -234,7 +319,7 @@ export class Movements implements OnInit {
     switch (type) {
       case 'Entrada': return 'bg-green-100';
       case 'Salida': return 'bg-red-100';
-      case 'Swap': return 'bg-blue-100';
+      case 'Compra Divisa': return 'bg-blue-100';
       case 'Transferencia Interna': return 'bg-purple-100';
       default: return 'bg-gray-100';
     }
@@ -244,7 +329,7 @@ export class Movements implements OnInit {
     switch (type) {
       case 'Entrada': return 'text-green-600';
       case 'Salida': return 'text-red-600';
-      case 'Swap': return 'text-blue-600';
+      case 'Compra Divisa': return 'text-blue-600';
       case 'Transferencia Interna': return 'text-purple-600';
       default: return 'text-gray-600';
     }
@@ -255,7 +340,7 @@ export class Movements implements OnInit {
     switch (type) {
       case 'Entrada': return 'text-green-600';
       case 'Salida': return 'text-red-600';
-      case 'Swap': return 'text-blue-600';
+      case 'Compra Divisa': return 'text-blue-600';
       case 'Transferencia Interna': return 'text-purple-600';
       default: return 'text-gray-900';
     }
@@ -266,7 +351,7 @@ export class Movements implements OnInit {
     const amount = transaction.amount;
     const sign = type === 'Entrada' ? '+' : type === 'Salida' ? '-' : '';
 
-    if (type === 'Swap') {
+    if (type === 'Compra Divisa') {
       return this.formatCurrency(amount);
     }
 
@@ -297,7 +382,8 @@ export class Movements implements OnInit {
   }
 
   createInflow(): void {
-    if (!this.selectedAccountId || !this.inflowForm.amount || !this.inflowForm.description) {
+    const description = this.getDescription(this.inflowForm);
+    if (!this.selectedAccountId || !this.inflowForm.amount || !description) {
       this.showError('Please fill all required fields');
       return;
     }
@@ -312,9 +398,11 @@ export class Movements implements OnInit {
     const transaction: CreateTransactionRequest = {
       accountId: this.selectedAccountId,
       type: 'Entrada',
-      description: this.inflowForm.description,
+      description: description,
       currency: this.inflowForm.currency as any,
-      amount: this.inflowForm.amount
+      amount: this.inflowForm.amount,
+      bancoWallet: this.inflowForm.currency === 'CABLE' ? this.inflowForm.bancoWallet : undefined,
+      titularOriginante: this.inflowForm.currency === 'CABLE' ? this.inflowForm.titularOriginante : undefined
     };
 
     this.loadingInflow = true;
@@ -351,7 +439,8 @@ export class Movements implements OnInit {
   }
 
   createOutflow(): void {
-    if (!this.selectedAccountId || !this.outflowForm.amount || !this.outflowForm.description) {
+    const description = this.getDescription(this.outflowForm);
+    if (!this.selectedAccountId || !this.outflowForm.amount || !description) {
       this.showError('Please fill all required fields');
       return;
     }
@@ -366,9 +455,11 @@ export class Movements implements OnInit {
     const transaction: CreateTransactionRequest = {
       accountId: this.selectedAccountId,
       type: 'Salida',
-      description: this.outflowForm.description,
+      description: description,
       currency: this.outflowForm.currency as any,
-      amount: this.outflowForm.amount
+      amount: this.outflowForm.amount,
+      bancoWallet: this.outflowForm.currency === 'CABLE' ? this.outflowForm.bancoWallet : undefined,
+      titularOriginante: this.outflowForm.currency === 'CABLE' ? this.outflowForm.titularOriginante : undefined
     };
 
     this.loadingOutflow = true;
@@ -405,8 +496,9 @@ export class Movements implements OnInit {
     });
   }
 
-  createSwap(): void {
-    if (!this.selectedAccountId || !this.swapForm.amount || !this.swapForm.description) {
+  createCompraDivisa(): void {
+    const description = this.getDescription(this.swapForm);
+    if (!this.selectedAccountId || !this.swapForm.amount || !description) {
       this.showError('Por favor, complete todos los campos requeridos');
       return;
     }
@@ -425,12 +517,14 @@ export class Movements implements OnInit {
 
     const transaction: CreateTransactionRequest = {
       accountId: this.selectedAccountId,
-      type: 'Swap',
-      description: this.swapForm.description,
+      type: 'Compra Divisa',
+      description: description,
       currency: this.swapForm.currency as any,
       amount: this.swapForm.amount,
       targetCurrency: this.swapForm.targetCurrency as any,
-      exchangeRate: this.swapForm.exchangeRate
+      exchangeRate: this.swapForm.exchangeRate,
+      bancoWallet: this.swapForm.currency === 'CABLE' ? this.swapForm.bancoWallet : undefined,
+      titularOriginante: this.swapForm.currency === 'CABLE' ? this.swapForm.titularOriginante : undefined
     };
 
     this.loadingSwap = true;
@@ -468,7 +562,8 @@ export class Movements implements OnInit {
   }
 
   createTransfer(): void {
-    if (!this.selectedAccountId || !this.transferForm.amount || !this.transferForm.description || !this.transferForm.targetAccountId) {
+    const description = this.getDescription(this.transferForm);
+    if (!this.selectedAccountId || !this.transferForm.amount || !description || !this.transferForm.targetAccountId) {
       this.showError('Please fill all required fields');
       return;
     }
@@ -496,10 +591,12 @@ export class Movements implements OnInit {
     const transaction: CreateTransactionRequest = {
       accountId: this.selectedAccountId,
       type: 'Transferencia Interna',
-      description: this.transferForm.description,
+      description: description,
       currency: this.transferForm.currency as any,
       amount: this.transferForm.amount,
-      targetAccountId: this.transferForm.targetAccountId
+      targetAccountId: this.transferForm.targetAccountId,
+      bancoWallet: this.transferForm.currency === 'CABLE' ? this.transferForm.bancoWallet : undefined,
+      titularOriginante: this.transferForm.currency === 'CABLE' ? this.transferForm.titularOriginante : undefined
     };
 
     this.loadingTransfer = true;
@@ -540,7 +637,11 @@ export class Movements implements OnInit {
     this.inflowForm = {
       amount: 0,
       description: '',
-      currency: 'DÓLAR'
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
+      currency: 'DÓLAR',
+      bancoWallet: '',
+      titularOriginante: ''
     };
   }
 
@@ -548,7 +649,11 @@ export class Movements implements OnInit {
     this.outflowForm = {
       amount: 0,
       description: '',
-      currency: 'DÓLAR'
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
+      currency: 'DÓLAR',
+      bancoWallet: '',
+      titularOriginante: ''
     };
   }
 
@@ -556,9 +661,13 @@ export class Movements implements OnInit {
     this.swapForm = {
       amount: 0,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       currency: 'DÓLAR',
       targetCurrency: 'CABLE',
-      exchangeRate: 1
+      exchangeRate: 1,
+      bancoWallet: '',
+      titularOriginante: ''
     };
   }
 
@@ -566,8 +675,12 @@ export class Movements implements OnInit {
     this.transferForm = {
       amount: 0,
       description: '',
+      descriptionType: 'ESMERALDA',
+      customDescription: '',
       currency: 'DÓLAR',
-      targetAccountId: ''
+      targetAccountId: '',
+      bancoWallet: '',
+      titularOriginante: ''
     };
   }
 
@@ -578,28 +691,65 @@ export class Movements implements OnInit {
 
   // Validation helpers
   isInflowFormValid(): boolean {
-    return !!(this.inflowForm.amount > 0 && this.inflowForm.description.trim());
+    const description = this.getDescription(this.inflowForm);
+    const isCableValid = this.inflowForm.currency !== 'CABLE' || 
+                        (this.inflowForm.bancoWallet.trim() && this.inflowForm.titularOriginante.trim());
+    return !!(this.inflowForm.amount > 0 && description.trim() && isCableValid);
   }
 
   isOutflowFormValid(): boolean {
-    return !!(this.outflowForm.amount > 0 && this.outflowForm.description.trim());
+    const description = this.getDescription(this.outflowForm);
+    const isCableValid = this.outflowForm.currency !== 'CABLE' || 
+                        (this.outflowForm.bancoWallet.trim() && this.outflowForm.titularOriginante.trim());
+    return !!(this.outflowForm.amount > 0 && description.trim() && isCableValid);
   }
 
   isSwapFormValid(): boolean {
+    const description = this.getDescription(this.swapForm);
+    const isCableValid = this.swapForm.currency !== 'CABLE' || 
+                        (this.swapForm.bancoWallet.trim() && this.swapForm.titularOriginante.trim());
     return !!(this.swapForm.amount > 0 &&
-              this.swapForm.description.trim() &&
-              this.swapForm.currency !== this.swapForm.targetCurrency);
+              description.trim() &&
+              this.swapForm.currency !== this.swapForm.targetCurrency &&
+              isCableValid);
   }
 
   isTransferFormValid(): boolean {
+    const description = this.getDescription(this.transferForm);
+    const isCableValid = this.transferForm.currency !== 'CABLE' || 
+                        (this.transferForm.bancoWallet.trim() && this.transferForm.titularOriginante.trim());
     return !!(this.transferForm.amount > 0 &&
-              this.transferForm.description.trim() &&
+              description.trim() &&
               this.transferForm.targetAccountId &&
-              this.selectedAccountId !== this.transferForm.targetAccountId);
+              this.selectedAccountId !== this.transferForm.targetAccountId &&
+              isCableValid);
       }
 
   getAvailableTargetAccounts(): Account[] {
     return this.accounts.filter(acc => acc._id !== this.selectedAccountId);
+  }
+
+  // Description handling methods
+  getDescription(form: any): string {
+    if (form.descriptionType === 'Otro...') {
+      return form.customDescription || '';
+    }
+    return form.descriptionType;
+  }
+
+  isCustomDescription(form: any): boolean {
+    return form.descriptionType === 'Otro...';
+  }
+
+  onDescriptionTypeChange(form: any): void {
+    if (form.descriptionType !== 'Otro...') {
+      form.customDescription = '';
+    }
+  }
+
+  getPredefinedDescriptionsForCurrency(currency: string | null): string[] {
+    if (!currency) return ['Otro...'];
+    return this.predefinedDescriptions[currency] || ['Otro...'];
   }
 
 

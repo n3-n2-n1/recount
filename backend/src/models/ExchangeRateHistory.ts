@@ -12,7 +12,7 @@ export interface IExchangeRateHistory extends Document {
 const ExchangeRateHistorySchema: Schema = new Schema({
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'],
     required: true
   },
   oldRate: {

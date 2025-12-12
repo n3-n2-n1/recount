@@ -48,8 +48,8 @@ export class HistoryList implements OnInit, OnDestroy {
   };
   
   // Available options
-  transactionTypes = ['Entrada', 'Salida', 'Swap', 'Transferencia Interna'];
-  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'];
+  transactionTypes = ['Entrada', 'Salida', 'Compra Divisa', 'Transferencia Interna'];
+  currencies = ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'];
   
   // View options
   viewMode: 'table' | 'cards' = 'table';
@@ -286,8 +286,18 @@ export class HistoryList implements OnInit, OnDestroy {
       ...this.exchangeRateChanges.map(c => ({ type: 'exchange-rate-change', data: c, date: new Date(c.timestamp) }))
     ];
 
-    // Sort by date (newest first)
-    return combined.sort((a, b) => b.date.getTime() - a.date.getTime());
+    // Sort by date based on sortOrder
+    combined.sort((a, b) => {
+      const aTime = a.date.getTime();
+      const bTime = b.date.getTime();
+      if (this.sortOrder === 'asc') {
+        return aTime - bTime;
+      } else {
+        return bTime - aTime;
+      }
+    });
+
+    return combined;
   }
 
   getPaginatedTransactions(): Transaction[] {
@@ -380,6 +390,10 @@ export class HistoryList implements OnInit, OnDestroy {
   }
 
   private generateCSV(): string {
+    // Get all unique currencies from transactions
+    const currencies = this.getAllUniqueCurrencies();
+    
+    // Build headers: fixed columns + dynamic currency balance columns
     const headers = [
       'Fecha',
       'ID Trans.',
@@ -391,30 +405,134 @@ export class HistoryList implements OnInit, OnDestroy {
       'Monto Origen',
       'Moneda Destino',
       'Monto Destino',
-      'Saldo',
-      'Observaciones'
+      'Observaciones',
+      ...currencies.map(c => `Saldo ${c}`) // Dynamic currency balance columns
     ];
 
-    const rows = this.filteredTransactions.map(transaction => [
-      this.formatDate(transaction.createdAt), // Fecha
-      transaction._id, // ID Trans.
-      this.getTransactionDescription(transaction), // Descripción
-      'procesado', // Estado (todas las transacciones visibles están procesadas)
-      this.getAccountName(transaction.accountId), // Cuenta origen
-      this.getTargetAccountName(transaction), // Cuenta Destino
-      transaction.currency, // Moneda Origen
-      this.getOriginalAmount(transaction).toString(), // Monto Origen
-      this.getTargetCurrency(transaction), // Moneda Destino
-      this.getTargetAmount(transaction).toString(), // Monto Destino
-      this.calculateBalanceAfterTransaction(transaction), // Saldo
-      transaction.notes || '' // Observaciones
-    ]);
+    // Calculate balances for each transaction
+    const rows = this.filteredTransactions.map(transaction => {
+      const baseRow = [
+        this.formatDate(transaction.createdAt), // Fecha
+        transaction._id, // ID Trans.
+        this.getTransactionDescription(transaction), // Descripción
+        'procesado', // Estado
+        this.getAccountName(transaction.accountId), // Cuenta origen
+        this.getTargetAccountName(transaction), // Cuenta Destino
+        transaction.currency, // Moneda Origen
+        this.getOriginalAmount(transaction).toString(), // Monto Origen
+        this.getTargetCurrency(transaction), // Moneda Destino
+        this.getTargetAmount(transaction).toString(), // Monto Destino
+        transaction.notes || '' // Observaciones
+      ];
+      
+      // Add balance for each currency after this transaction
+      const balances = this.calculateBalancesByCurrencyAfterTransaction(transaction);
+      const currencyBalances = currencies.map(currency => {
+        const balance = balances[currency];
+        return balance !== undefined ? this.formatCurrency(balance) : '—';
+      });
+      
+      return [...baseRow, ...currencyBalances];
+    });
 
     const csvContent = [headers, ...rows]
       .map(row => row.map(field => `"${field?.toString().replace(/"/g, '""') || ''}"`).join(','))
       .join('\n');
 
     return csvContent;
+  }
+
+  private getAllUniqueCurrencies(): string[] {
+    const currenciesSet = new Set<string>();
+    
+    this.filteredTransactions.forEach(transaction => {
+      if (transaction.currency) {
+        currenciesSet.add(transaction.currency);
+      }
+      if (transaction.targetCurrency) {
+        currenciesSet.add(transaction.targetCurrency);
+      }
+    });
+    
+    return Array.from(currenciesSet).sort();
+  }
+
+  private calculateBalancesByCurrencyAfterTransaction(transaction: Transaction): { [currency: string]: number } {
+    const accountId = typeof transaction.accountId === 'object' && transaction.accountId
+      ? (transaction.accountId as any)._id || transaction.accountId
+      : transaction.accountId;
+
+    // Get all transactions for this account up to and including this transaction, sorted chronologically
+    const accountTransactions = this.filteredTransactions
+      .filter(t => {
+        const tAccountId = typeof t.accountId === 'object' && t.accountId
+          ? (t.accountId as any)._id || t.accountId
+          : t.accountId;
+        return tAccountId === accountId;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        // If same date, use _id for consistent ordering
+        return (a._id || '').localeCompare(b._id || '');
+      });
+
+    // Initialize balances for all currencies
+    const balances: { [currency: string]: number } = {};
+    
+    // Process transactions up to and including the current one
+    for (const t of accountTransactions) {
+      switch (t.type) {
+        case 'Entrada':
+          balances[t.currency] = (balances[t.currency] || 0) + t.amount;
+          break;
+          
+        case 'Salida':
+          balances[t.currency] = (balances[t.currency] || 0) - t.amount;
+          break;
+          
+        case 'Compra Divisa':
+          // Subtract from origin currency
+          balances[t.currency] = (balances[t.currency] || 0) - (t.originalAmount || t.amount);
+          
+          // Add to target currency
+          if (t.targetCurrency) {
+            let convertedAmount: number;
+            if (t.currency === 'CHEQUE' && t.targetCurrency === 'PESOS') {
+              convertedAmount = (t.originalAmount || t.amount) / (t.exchangeRate || 1);
+            } else {
+              convertedAmount = (t.originalAmount || t.amount) * (t.exchangeRate || 1);
+            }
+            balances[t.targetCurrency] = (balances[t.targetCurrency] || 0) + convertedAmount;
+          }
+          break;
+          
+        case 'Transferencia Interna':
+          const targetAccountId = typeof t.targetAccountId === 'object' && t.targetAccountId
+            ? (t.targetAccountId as any)._id || t.targetAccountId
+            : t.targetAccountId;
+          const sourceAccountId = typeof t.accountId === 'object' && t.accountId
+            ? (t.accountId as any)._id || t.accountId
+            : t.accountId;
+
+          if (targetAccountId === accountId) {
+            // This account received the transfer
+            balances[t.currency] = (balances[t.currency] || 0) + t.amount;
+          } else if (sourceAccountId === accountId) {
+            // This account sent the transfer
+            balances[t.currency] = (balances[t.currency] || 0) - t.amount;
+          }
+          break;
+      }
+
+      // Stop when we reach the current transaction
+      if (t._id === transaction._id) {
+        break;
+      }
+    }
+
+    return balances;
   }
 
   getAccountName(accountId: string | any): string {
@@ -427,6 +545,15 @@ export class HistoryList implements OnInit, OnDestroy {
     return account?.name || 'Unknown Account';
   }
 
+  viewAccountDetail(accountId: string | any): void {
+    const id = typeof accountId === 'object' && accountId?._id 
+      ? accountId._id 
+      : accountId;
+    if (id) {
+      this.router.navigate(['/account', id]);
+    }
+  }
+
   getTargetAccountName(transaction: Transaction): string {
     if (transaction.type === 'Transferencia Interna' && transaction.targetAccountId) {
       return this.getAccountName(transaction.targetAccountId);
@@ -435,14 +562,14 @@ export class HistoryList implements OnInit, OnDestroy {
   }
 
   getTargetCurrency(transaction: Transaction): string {
-    if (transaction.type === 'Swap' && transaction.targetCurrency) {
+    if (transaction.type === 'Compra Divisa' && transaction.targetCurrency) {
       return transaction.targetCurrency;
     }
     return ''; // No aplica para otros tipos de transacción
   }
 
   getTargetAmount(transaction: Transaction): number {
-    if (transaction.type === 'Swap' && transaction.exchangeRate) {
+    if (transaction.type === 'Compra Divisa' && transaction.exchangeRate) {
       // Para swaps, el monto destino es el original amount convertido
       const originalAmount = transaction.originalAmount || transaction.amount;
       return originalAmount * transaction.exchangeRate;
@@ -484,7 +611,7 @@ export class HistoryList implements OnInit, OnDestroy {
         case 'Salida':
           runningBalance -= t.amount;
           break;
-        case 'Swap':
+        case 'Compra Divisa':
           // Para swaps, el balance final es el amount (que ya incluye la conversión)
           runningBalance = t.amount;
           break;
@@ -518,13 +645,14 @@ export class HistoryList implements OnInit, OnDestroy {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    const displayHours = date.getHours() % 12 || 12;
+    return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
   }
 
   formatCurrency(amount: number): string {
@@ -540,7 +668,7 @@ export class HistoryList implements OnInit, OnDestroy {
         return 'fas fa-arrow-down';
       case 'Salida':
         return 'fas fa-arrow-up';
-      case 'Swap':
+      case 'Compra Divisa':
         return 'fas fa-exchange-alt';
       default:
         return 'fas fa-circle';
@@ -553,7 +681,7 @@ export class HistoryList implements OnInit, OnDestroy {
         return 'bg-green-100';
       case 'Salida':
         return 'bg-red-100';
-      case 'Swap':
+      case 'Compra Divisa':
         return 'bg-blue-100';
       default:
         return 'bg-gray-100';
@@ -566,7 +694,7 @@ export class HistoryList implements OnInit, OnDestroy {
         return 'balance-positive';
       case 'Salida':
         return 'balance-negative';
-      case 'Swap':
+      case 'Compra Divisa':
         return 'balance-neutral';
       default:
         return 'balance-neutral';
@@ -586,7 +714,7 @@ export class HistoryList implements OnInit, OnDestroy {
         return transaction.description || 'Funds added';
       case 'Salida':
         return transaction.description || 'Funds withdrawn';
-      case 'Swap':
+      case 'Compra Divisa':
         return `${transaction.currency} → ${transaction.targetCurrency || 'Unknown'}`;
       default:
         return transaction.description || 'Transaction';
@@ -605,7 +733,7 @@ export class HistoryList implements OnInit, OnDestroy {
     switch (type) {
       case 'Entrada': return 'text-success';
       case 'Salida': return 'text-error';
-      case 'Swap': return 'text-warning';
+      case 'Compra Divisa': return 'text-warning';
       case 'Transferencia Interna': return 'text-info';
       default: return '';
     }

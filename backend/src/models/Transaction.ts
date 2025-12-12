@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { type Currency } from './Account.js';
 
-export type TransactionType = 'Entrada' | 'Salida' | 'Swap' | 'Transferencia Interna';
+export type TransactionType = 'Entrada' | 'Salida' | 'Compra Divisa' | 'Transferencia Interna';
 
 export interface ITransaction extends Document {
   accountId: mongoose.Types.ObjectId;
@@ -9,7 +9,7 @@ export interface ITransaction extends Document {
   description: string;
   currency: Currency;
   amount: number;
-  // For Swap transactions
+  // For Compra Divisa transactions
   targetCurrency?: Currency;
   exchangeRate?: number;
   // For Transferencia Interna
@@ -17,6 +17,9 @@ export interface ITransaction extends Document {
   // For all transactions
   reference?: string;
   notes?: string;
+  // For CABLE transactions
+  bancoWallet?: string;
+  titularOriginante?: string;
   // Fee information
   feeApplied?: boolean;
   feeType?: 'percentage' | 'fixed';
@@ -35,7 +38,7 @@ const TransactionSchema: Schema = new Schema({
   },
   type: {
     type: String,
-    enum: ['Entrada', 'Salida', 'Swap', 'Transferencia Interna'],
+    enum: ['Entrada', 'Salida', 'Compra Divisa', 'Transferencia Interna'],
     required: true
   },
   description: {
@@ -45,17 +48,17 @@ const TransactionSchema: Schema = new Schema({
   },
   currency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL'],
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B'],
     required: true
   },
   amount: {
     type: Number,
     required: true
   },
-  // For Swap transactions
+  // For Compra Divisa transactions
   targetCurrency: {
     type: String,
-    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR INTERNACIONAL']
+    enum: ['DÓLAR', 'CABLE', 'PESOS', 'CHEQUE', 'DOLAR B']
   },
   exchangeRate: {
     type: Number
@@ -71,6 +74,15 @@ const TransactionSchema: Schema = new Schema({
     trim: true
   },
   notes: {
+    type: String,
+    trim: true
+  },
+  // For CABLE transactions
+  bancoWallet: {
+    type: String,
+    trim: true
+  },
+  titularOriginante: {
     type: String,
     trim: true
   },
